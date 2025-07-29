@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Campus Boost - Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="index.html">
+                <span class="fs-4">🚀 Campus Boost</span>
+            </a>
+            <a href="index.html" class="btn btn-outline-primary">← Back to Home</a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Toggle Buttons -->
+                <div class="text-center mb-4">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-primary" id="registerTab">Register</button>
+                        <button type="button" class="btn btn-outline-primary" id="loginTab">Login</button>
+                    </div>
+                </div>
+
+                <!-- Registration Form -->
+                <div class="card shadow border-0" id="registerForm">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold">Create Your Account</h2>
+                            <p class="text-muted">Start your 30-day free premium trial today!</p>
+                            <div class="mb-3">
+                                <span class="badge bg-success fs-6">✨ Free Trial Included</span>
+                            </div>
+                        </div>
+
+                        <form id="registrationForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="fullName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Username *</label>
+                                    <input type="text" class="form-control" id="username" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email Address *</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" id="phone" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Password *</label>
+                                    <input type="password" class="form-control" id="password" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Confirm Password *</label>
+                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                                    <label class="form-check-label" for="agreeTerms">
+                                        I agree to the Terms of Service and Privacy Policy
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg w-100" id="registerBtn">
+                                Create Account & Start Free Trial
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Login Form -->
+                <div class="card shadow border-0 d-none" id="loginForm">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold">Welcome Back!</h2>
+                            <p class="text-muted">Sign in to continue your learning journey</p>
+                        </div>
+
+                        <form id="loginFormSubmit">
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="loginEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" id="loginPassword" required>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">
+                                        Remember me
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg w-100" id="loginBtn">
+                                Sign In
+                            </button>
+                            <div class="text-center mt-3">
+                                <a href="#" class="text-decoration-none">Forgot your password?</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Alert Messages -->
+                <div id="alertContainer" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEFnSKxmuxZ3JKHacGn3iMzps6yuwCS0E",
+            authDomain: "campus-boost-7d7ac.firebaseapp.com",
+            projectId: "campus-boost-7d7ac",
+            storageBucket: "campus-boost-7d7ac.firebasestorage.app",
+            messagingSenderId: "755100429989",
+            appId: "1:755100429989:web:d6abbff0dd0f5b24abe74c",
+            measurementId: "G-333LVQX0KZ"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DOM Elements
+        const registerTab = document.getElementById('registerTab');
+        const loginTab = document.getElementById('loginTab');
+        const registerFormDiv = document.getElementById('registerForm');
+        const loginFormDiv = document.getElementById('loginForm');
+        const registrationForm = document.getElementById('registrationForm');
+        const loginFormSubmit = document.getElementById('loginFormSubmit');
+        const alertContainer = document.getElementById('alertContainer');
+
+        // Tab Switching
+        registerTab.addEventListener('click', () => {
+            registerTab.classList.add('btn-primary');
+            registerTab.classList.remove('btn-outline-primary');
+            loginTab.classList.add('btn-outline-primary');
+            loginTab.classList.remove('btn-primary');
+            registerFormDiv.classList.remove('d-none');
+            loginFormDiv.classList.add('d-none');
+        });
+
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('btn-primary');
+            loginTab.classList.remove('btn-outline-primary');
+            registerTab.classList.add('btn-outline-primary');
+            registerTab.classList.remove('btn-primary');
+            loginFormDiv.classList.remove('d-none');
+            registerFormDiv.classList.add('d-none');
+        });
+
+        // Show Alert Function
+        function showAlert(message, type = 'danger') {
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
+
+        // Registration Form Handler
+        registrationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match!');
+                return;
+            }
+
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating Account...';
+            registerBtn.disabled = true;
+
+            try {
+                // Create user account
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Update user profile
+                await updateProfile(user, {
+                    displayName: fullName
+                });
+
+                // Calculate premium expiry (30 days from now)
+                const premiumExpiry = new Date();
+                premiumExpiry.setDate(premiumExpiry.getDate() + 30);
+
+                // Save user data to Firestore
+                await setDoc(doc(db, 'users', user.uid), {
+                    fullName: fullName,
+                    username: username,
+                    email: email,
+                    phone: phone,
+                    premiumExpiry: premiumExpiry,
+                    isPremium: true, // Free trial
+                    isTrialUser: true,
+                    createdAt: serverTimestamp(),
+                    lastLogin: serverTimestamp()
+                });
+
+                showAlert('Account created successfully! Redirecting to dashboard...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert(error.message);
+                registerBtn.innerHTML = 'Create Account & Start Free Trial';
+                registerBtn.disabled = false;
+            }
+        });
+
+        // Login Form Handler
+        loginFormSubmit.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing In...';
+            loginBtn.disabled = true;
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                showAlert('Login successful! Redirecting...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert(error.message);
+                loginBtn.innerHTML = 'Sign In';
+                loginBtn.disabled = false;
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,1474 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Campus Boost</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-primary" href="#">
+                <span class="fs-4">🚀 Campus Boost</span>
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                        <div class="user-avatar me-2">👤</div>
+                        <span id="userName">Loading...</span>
+                        <span id="premiumBadge" class="premium-badge ms-2 d-none">💎 Premium</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="showSection('profile')">👤 Profile</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="showPayment()">💳 Upgrade</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="logout()">🚪 Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-3">
+                <div class="sidebar p-3">
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#" onclick="showSection('overview')">📊 Dashboard</a>
+                        <a class="nav-link" href="#" onclick="showSection('profile')">👤 Profile</a>
+                        <hr>
+                        <h6 class="text-muted small">Free Features</h6>
+                        <a class="nav-link" href="#" onclick="showSection('cgpa')">📈 CGPA Calculator</a>
+                        <a class="nav-link" href="#" onclick="showSection('planner')">📅 Study Planner</a>
+                        <a class="nav-link" href="#" onclick="showSection('todo')">✅ To-Do List</a>
+                        <a class="nav-link" href="#" onclick="showSection('timer')">⏰ Simple Timer</a>
+                        <a class="nav-link" href="#" onclick="showSection('notes')">📝 Notes</a>
+                        <a class="nav-link" href="#" onclick="showSection('converter')">🔄 Unit Converter</a>
+                        <a class="nav-link" href="#" onclick="showSection('dictionary')">📖 Dictionary</a>
+                        <a class="nav-link" href="#" onclick="showSection('timetable-basic')">📋 Basic Timetable</a>
+                        <a class="nav-link" href="#" onclick="showSection('budget-basic')">💰 Basic Budget</a>
+                        <a class="nav-link" href="#" onclick="showSection('marketplace')">🛍️ Marketplace</a>
+                        <a class="nav-link" href="#" onclick="showSection('community')">💬 Community</a>
+                        <hr>
+                        <h6 class="text-muted small">Premium Features</h6>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('advanced-planner')">⭐ Smart Study Planner</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('pomodoro')">🍅 Pomodoro Timer</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('flashcards')">📚 Flashcard Creator</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('calculator')">🧮 Scientific Calculator</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('goals')">🎯 Goal Tracker</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('habits')">🔄 Habit Tracker</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('vocabulary')">📚 Vocabulary Builder</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('timetable-premium')">📋 Premium Timetable</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('budget-premium')">💰 Advanced Budget</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('attendance')">👥 Attendance Generator</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('reports')">🧾 Report Card Generator</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('vip-community')">👑 VIP Community</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('promotion')">📢 Promotion Tools</a>
+                        <hr>
+                        <h6 class="text-muted small">Support</h6>
+                        <a class="nav-link" href="#" onclick="showSection('support')">💬 Contact & Social</a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Premium Status Alert -->
+                <div id="premiumAlert" class="alert alert-info d-none">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>🎉 Premium Trial Active!</strong> 
+                            <span id="trialDays">30 days</span> remaining in your free trial. Enjoy all premium features!
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="showPayment()">Upgrade Now</button>
+                    </div>
+                </div>
+
+                <!-- Overview Section -->
+                <div id="overview" class="section">
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <h2 class="fw-bold">Welcome back, <span id="dashboardUserName">Student</span>! 👋</h2>
+                            <p class="text-muted">Here's your Campus Boost dashboard with all your tools</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card stat-card">
+                                <div class="stat-value" id="currentCGPA">0.00</div>
+                                <div class="text-muted">Current CGPA</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card stat-card">
+                                <div class="stat-value" id="studyHours">0</div>
+                                <div class="text-muted">Study Hours</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card stat-card">
+                                <div class="stat-value" id="itemsSold">0</div>
+                                <div class="text-muted">Items Posted</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card dashboard-card stat-card">
+                                <div class="stat-value" id="totalEarnings">₦0</div>
+                                <div class="text-muted">Total Earnings</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8 mb-4">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">🎯 Quick Actions</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <button class="btn btn-outline-primary w-100" onclick="showSection('cgpa')">📈 Calculate CGPA</button>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <button class="btn btn-outline-primary w-100" onclick="showSection('planner')">📅 Plan Study</button>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <button class="btn btn-outline-primary w-100" onclick="showSection('marketplace')">🛍️ Marketplace</button>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <button class="btn btn-primary w-100 premium-feature" onclick="showSection('reports')">🧾 Generate Report</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-4">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">📢 Latest Updates</h5>
+                                    <div class="small">
+                                        <div class="mb-2">🎉 Welcome to your 30-day free trial!</div>
+                                        <div class="mb-2">📚 New study planner features added</div>
+                                        <div class="mb-2">💰 Budget allocator now available</div>
+                                        <div class="text-muted">More updates coming soon...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">👤 Profile Management</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <form id="profileForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Full Name</label>
+                                            <input type="text" class="form-control" id="fullName" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Username</label>
+                                            <input type="text" class="form-control" id="username" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" readonly>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Contact Number</label>
+                                            <input type="tel" class="form-control" id="contact">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h5>Account Status</h5>
+                                            <div id="accountStatus" class="mb-3">
+                                                <span class="badge bg-success">Active Trial</span>
+                                            </div>
+                                            <p class="text-muted">Enjoy all premium features during your trial period!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CGPA Calculator Section -->
+                <div id="cgpa" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">📊 CGPA Calculator</h3>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div id="subjectsContainer">
+                                        <div class="subject-row row mb-3">
+                                            <div class="col-md-4">
+                                                <input type="text" class="form-control" placeholder="Subject Name">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="number" class="form-control" placeholder="Credit Units" min="1" max="6">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select class="form-control">
+                                                    <option value="">Select Grade</option>
+                                                    <option value="5">A (5.0)</option>
+                                                    <option value="4">B (4.0)</option>
+                                                    <option value="3">C (3.0)</option>
+                                                    <option value="2">D (2.0)</option>
+                                                    <option value="1">E (1.0)</option>
+                                                    <option value="0">F (0.0)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-danger" onclick="removeSubject(this)">×</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-outline-primary me-2" onclick="addSubject()">+ Add Subject</button>
+                                    <button class="btn btn-primary" onclick="calculateCGPA()">Calculate CGPA</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h4 class="text-primary">Your CGPA</h4>
+                                            <div class="display-4 fw-bold text-primary" id="cgpaResult">0.00</div>
+                                            <div class="text-muted">out of 5.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Study Planner Section -->
+                <div id="planner" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">📅 Basic Study Planner</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Add New Task</h5>
+                                    <form id="taskForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Task Name</label>
+                                            <input type="text" class="form-control" id="taskName" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Subject</label>
+                                            <input type="text" class="form-control" id="taskSubject" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Due Date</label>
+                                            <input type="date" class="form-control" id="taskDate" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Priority</label>
+                                            <select class="form-control" id="taskPriority">
+                                                <option value="low">Low</option>
+                                                <option value="medium">Medium</option>
+                                                <option value="high">High</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Add Task</button>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Your Tasks</h5>
+                                    <div id="tasksList">
+                                        <!-- Tasks will be dynamically added here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Timetable Section -->
+                <div id="timetable-basic" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">📋 Basic Timetable Generator</h3>
+                            <p class="text-muted mb-4">Create your class schedule (Premium users get PDF export and colorful formats)</p>
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="timetableBasic">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Monday</th>
+                                            <th>Tuesday</th>
+                                            <th>Wednesday</th>
+                                            <th>Thursday</th>
+                                            <th>Friday</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>8:00 AM</td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>10:00 AM</td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>12:00 PM</td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2:00 PM</td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                            <td contenteditable="true" class="editable-cell"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-primary premium-feature">📄 Export as PDF (Premium)</button>
+                                <button class="btn btn-secondary" onclick="saveTimetable()">💾 Save Timetable</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Budget Section -->
+                <div id="budget-basic" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">💰 Basic Budget Allocator</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Add Expense</h5>
+                                    <form id="budgetForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Category</label>
+                                            <select class="form-control" id="expenseCategory" required>
+                                                <option value="">Select Category</option>
+                                                <option value="food">Food</option>
+                                                <option value="transport">Transport</option>
+                                                <option value="books">Books & Materials</option>
+                                                <option value="entertainment">Entertainment</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Amount (₦)</label>
+                                            <input type="number" class="form-control" id="expenseAmount" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Description</label>
+                                            <input type="text" class="form-control" id="expenseDescription">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Add Expense</button>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Budget Summary</h5>
+                                    <div id="budgetSummary">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Total Spent:</span>
+                                                    <strong id="totalSpent">₦0</strong>
+                                                </div>
+                                                <div class="d-flex justify-content-between">
+                                                    <span>This Month:</span>
+                                                    <strong id="monthlySpent">₦0</strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <button class="btn btn-outline-primary premium-feature">📊 Advanced Analytics (Premium)</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marketplace Section -->
+                <div id="marketplace" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="fw-bold">🛍️ Student Marketplace</h3>
+                                <div>
+                                    <button class="btn btn-outline-primary me-2" onclick="showAddProduct()">+ Post Free Item</button>
+                                    <button class="btn btn-primary premium-feature" onclick="showPromoteProduct()">📢 Promote Item (Premium)</button>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Search products..." id="marketplaceSearch">
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-control" id="categoryFilter">
+                                        <option value="">All Categories</option>
+                                        <option value="textbooks">Textbooks</option>
+                                        <option value="electronics">Electronics</option>
+                                        <option value="clothing">Clothing</option>
+                                        <option value="services">Services</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row" id="marketplaceItems">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card product-card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <h6>Engineering Textbook</h6>
+                                                <span class="badge bg-warning">Promoted</span>
+                                            </div>
+                                            <p class="text-muted small">Mathematics for Engineers - 5th Edition</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <strong class="text-primary">₦5,000</strong>
+                                                <span class="badge bg-success">Available</span>
+                                            </div>
+                                            <div class="mt-2">
+                                                <small class="text-muted">Posted by: John D.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card product-card">
+                                        <div class="card-body">
+                                            <h6>Programming Notes</h6>
+                                            <p class="text-muted small">Complete Java Programming Notes</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <strong class="text-primary">₦2,500</strong>
+                                                <span class="badge bg-success">Available</span>
+                                            </div>
+                                            <div class="mt-2">
+                                                <small class="text-muted">Posted by: Sarah K.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community Section -->
+                <div id="community" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">💬 Community Discussions</h3>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>📚 Study Group Discussions</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="discussion-item border-bottom pb-3 mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <h6>Need help with Calculus</h6>
+                                                    <small class="text-muted">2 hours ago</small>
+                                                </div>
+                                                <p class="text-muted small">Looking for study partners for upcoming exam...</p>
+                                                <div class="d-flex gap-2">
+                                                    <span class="badge bg-primary">Mathematics</span>
+                                                    <span class="text-muted small">12 replies</span>
+                                                </div>
+                                            </div>
+                                            <div class="discussion-item border-bottom pb-3 mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <h6>Selling Physics Textbook</h6>
+                                                    <small class="text-muted">5 hours ago</small>
+                                                </div>
+                                                <p class="text-muted small">University Physics 14th Edition, good condition...</p>
+                                                <div class="d-flex gap-2">
+                                                    <span class="badge bg-success">Marketplace</span>
+                                                    <span class="text-muted small">8 replies</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>👑 VIP Community Lounge</h6>
+                                            <p class="text-muted small">Access premium-only discussions with exclusive content and networking opportunities.</p>
+                                            <button class="btn btn-primary premium-feature w-100">Join VIP Lounge</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Premium Sections -->
+                <div id="advanced-planner" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">⭐ Smart Study Planner</h3>
+                            <div class="alert alert-info">
+                                <strong>Premium Feature:</strong> Get smart reminders, study analytics, and AI-powered scheduling suggestions.
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5>Advanced Task Management</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label">Study Session Duration</label>
+                                        <select class="form-control">
+                                            <option>25 minutes (Pomodoro)</option>
+                                            <option>45 minutes</option>
+                                            <option>60 minutes</option>
+                                            <option>90 minutes</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Reminder Settings</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="emailReminders">
+                                            <label class="form-check-label" for="emailReminders">Email Reminders</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="pushNotifications">
+                                            <label class="form-check-label" for="pushNotifications">Push Notifications</label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary">Create Smart Schedule</button>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>📊 Study Analytics</h6>
+                                            <p class="small">Track your study patterns and productivity.</p>
+                                            <button class="btn btn-outline-primary btn-sm w-100">View Analytics</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="timetable-premium" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">📋 Premium Timetable Generator</h3>
+                            <div class="alert alert-success">
+                                <strong>Premium Feature:</strong> Create colorful, professional timetables with PDF export functionality.
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Choose Template</label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="card border-primary">
+                                            <div class="card-body text-center">
+                                                <h6>🎨 Colorful</h6>
+                                                <p class="small">Vibrant colors for each subject</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h6>📋 Professional</h6>
+                                                <p class="small">Clean, minimal design</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h6>🌈 Custom</h6>
+                                                <p class="small">Design your own style</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-primary me-2">📄 Export as PDF</button>
+                                <button class="btn btn-outline-primary me-2">🖨️ Print</button>
+                                <button class="btn btn-success">📧 Email Timetable</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="budget-premium" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">💰 Advanced Budget Allocator</h3>
+                            <div class="alert alert-warning">
+                                <strong>Premium Feature:</strong> Get detailed analytics, budget predictions, and export capabilities.
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5>📊 Spending Analytics</h5>
+                                            <div id="budgetChart" style="height: 300px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                                <span class="text-muted">Interactive Budget Charts (Premium)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>💡 Budget Insights</h6>
+                                            <ul class="list-unstyled small">
+                                                <li>• You spend 40% on food</li>
+                                                <li>• Transport costs increased 15%</li>
+                                                <li>• You're on track this month</li>
+                                            </ul>
+                                            <button class="btn btn-primary btn-sm w-100">📄 Export Report</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="attendance" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">👥 Attendance Sheet Generator</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Create Attendance Sheet</h5>
+                                    <form id="attendanceForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Class/Group Name</label>
+                                            <input type="text" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Date</label>
+                                            <input type="date" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Students (one per line)</label>
+                                            <textarea class="form-control" rows="6" placeholder="John Doe&#10;Jane Smith&#10;Mike Johnson"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Generate Attendance Sheet</button>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Preview</h5>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="text-center mb-3">
+                                                <h6>Sample Attendance Sheet</h6>
+                                                <small class="text-muted">Date: Today's Date</small>
+                                            </div>
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>S/N</th>
+                                                        <th>Name</th>
+                                                        <th>Present</th>
+                                                        <th>Absent</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td>Student Name</td>
+                                                        <td>☐</td>
+                                                        <td>☐</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <button class="btn btn-outline-primary btn-sm w-100 mt-2">📄 Download PDF</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reports" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">🧾 Report Card Generator</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Student Information</h5>
+                                    <form id="reportForm">
+                                        <div class="mb-3">
+                                            <label class="form-label">Student Name</label>
+                                            <input type="text" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Student ID</label>
+                                            <input type="text" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Session</label>
+                                            <input type="text" class="form-control" placeholder="2023/2024" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Semester</label>
+                                            <select class="form-control" required>
+                                                <option value="">Select Semester</option>
+                                                <option value="1st">1st Semester</option>
+                                                <option value="2nd">2nd Semester</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5>Report Card Preview</h5>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="text-center mb-3">
+                                                <h6>STUDENT REPORT CARD</h6>
+                                                <small class="text-muted">Professional PDF Format</small>
+                                            </div>
+                                            <div class="small">
+                                                <div class="mb-2"><strong>Name:</strong> Student Name</div>
+                                                <div class="mb-2"><strong>ID:</strong> CS/2020/001</div>
+                                                <div class="mb-2"><strong>CGPA:</strong> 4.25</div>
+                                                <div class="mb-2"><strong>Grade:</strong> First Class</div>
+                                            </div>
+                                            <button class="btn btn-primary w-100 mt-3">📄 Generate PDF Report</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="vip-community" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">👑 VIP Community Lounge</h3>
+                            <div class="alert alert-warning">
+                                <strong>Exclusive Access:</strong> Connect with premium students and get priority support.
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h5>💎 Premium Discussions</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="discussion-item border-bottom pb-3 mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <h6>🎯 Scholarship Opportunities</h6>
+                                                    <span class="badge bg-warning">VIP Only</span>
+                                                </div>
+                                                <p class="text-muted small">Exclusive scholarship information for premium members...</p>
+                                            </div>
+                                            <div class="discussion-item">
+                                                <div class="d-flex justify-content-between">
+                                                    <h6>💼 Internship Alerts</h6>
+                                                    <span class="badge bg-warning">VIP Only</span>
+                                                </div>
+                                                <p class="text-muted small">Early access to internship opportunities...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>🌟 VIP Benefits</h6>
+                                            <ul class="list-unstyled small">
+                                                <li>✅ Priority support</li>
+                                                <li>✅ Exclusive content</li>
+                                                <li>✅ Networking events</li>
+                                                <li>✅ Job opportunities</li>
+                                                <li>✅ Scholarship alerts</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="promotion" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">📢 Promotion Tools</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card border-warning">
+                                        <div class="card-body">
+                                            <h5>📈 Promote Your Items</h5>
+                                            <div class="mb-3">
+                                                <label class="form-label">Select Item to Promote</label>
+                                                <select class="form-control">
+                                                    <option>Mathematics Textbook - ₦5,000</option>
+                                                    <option>Programming Notes - ₦2,500</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Promotion Duration</label>
+                                                <select class="form-control">
+                                                    <option value="500">1 Day - ₦500</option>
+                                                    <option value="3000">1 Week - ₦3,000</option>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-warning w-100">💳 Pay & Promote</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5>🎯 Promotion Benefits</h5>
+                                            <ul class="list-unstyled">
+                                                <li>✅ Appear at top of marketplace</li>
+                                                <li>✅ Special promotion badge</li>
+                                                <li>✅ Featured in dashboard</li>
+                                                <li>✅ Higher visibility</li>
+                                                <li>✅ Priority in search results</li>
+                                            </ul>
+                                            <div class="alert alert-info">
+                                                <small><strong>Note:</strong> Promoted items get 5x more views on average!</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timer Section -->
+                <div id="timer" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">⏰ Simple Timer</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h4>Set Timer</h4>
+                                            <div class="row mb-3">
+                                                <div class="col-6">
+                                                    <label class="form-label">Minutes</label>
+                                                    <input type="number" class="form-control" id="timerMinutes" min="0" max="60" placeholder="0">
+                                                </div>
+                                                <div class="col-6">
+                                                    <label class="form-label">Seconds</label>
+                                                    <input type="number" class="form-control" id="timerSeconds" min="0" max="59" placeholder="0">
+                                                </div>
+                                            </div>
+                                            <div class="display-4 fw-bold text-primary mb-3" id="timerDisplay">00:00</div>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-primary" id="timerStart" onclick="startTimer()">▶️ Start</button>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <button class="btn btn-warning w-100" id="timerStop" onclick="stopTimer()" disabled>⏸️ Stop</button>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <button class="btn btn-secondary w-100" id="timerReset" onclick="resetTimer()" disabled>🔄 Reset</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h4>Stopwatch</h4>
+                                            <div class="display-4 fw-bold text-success mb-3" id="stopwatchDisplay">00:00:00</div>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-success" id="stopwatchStart" onclick="startStopwatch()">▶️ Start</button>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <button class="btn btn-warning w-100" id="stopwatchStop" onclick="stopStopwatch()" disabled>⏸️ Stop</button>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <button class="btn btn-secondary w-100" onclick="resetStopwatch()">🔄 Reset</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- To-Do List Section -->
+                <div id="todo" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">✅ To-Do List</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Add New Task</h5>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" id="todoInput" placeholder="Enter a new task..." 
+                                               onkeypress="if(event.key==='Enter') addTodo()">
+                                        <button class="btn btn-primary" onclick="addTodo()">+ Add</button>
+                                    </div>
+                                    <div class="text-muted small mb-3" id="todoCounter">0/0 completed</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>📊 Quick Stats</h6>
+                                            <p class="small text-muted">Organize your tasks and track your productivity!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5>Your Tasks</h5>
+                                    <div id="todoList">
+                                        <!-- Tasks will be dynamically added here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div id="notes" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">📝 Note-Taking App</h3>
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" id="noteTitle" placeholder="Note title...">
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="btn-group w-100">
+                                        <button class="btn btn-primary" onclick="saveNote()">💾 Save</button>
+                                        <button class="btn btn-outline-primary" onclick="exportNote()">📄 Export</button>
+                                        <button class="btn btn-outline-danger" onclick="clearNote()">🗑️ Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <textarea class="form-control" id="noteEditor" rows="15" 
+                                      placeholder="Start typing your notes here..."></textarea>
+                            <div class="text-muted small mt-2" id="noteLastSaved">Auto-saves every 30 seconds</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unit Converter Section -->
+                <div id="converter" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">🔄 Unit Converter</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Category</label>
+                                        <select class="form-control" id="converterCategory" onchange="updateConverterUnits()">
+                                            <option value="">Select Category</option>
+                                            <option value="length">Length</option>
+                                            <option value="weight">Weight</option>
+                                            <option value="temperature">Temperature</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Value</label>
+                                        <input type="number" class="form-control" id="converterValue" placeholder="Enter value">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label class="form-label">From</label>
+                                            <select class="form-control" id="converterFrom"></select>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label">To</label>
+                                            <select class="form-control" id="converterTo"></select>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary w-100 mt-3" onclick="convertUnit()">🔄 Convert</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5>Result</h5>
+                                            <div class="alert alert-info" id="converterResult">
+                                                Select category and enter values to convert
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dictionary Section -->
+                <div id="dictionary" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">📖 Student Dictionary</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" id="dictionarySearch" 
+                                               placeholder="Search for a word..." 
+                                               onkeypress="if(event.key==='Enter') searchDictionary()">
+                                        <button class="btn btn-primary" onclick="searchDictionary()">🔍 Search</button>
+                                    </div>
+                                    <div id="dictionaryResult">
+                                        <p class="text-muted">Enter a word to search for its meaning</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>📚 Available Words</h6>
+                                            <p class="small text-muted">Dictionary includes common academic and everyday words to help expand your vocabulary.</p>
+                                            <div class="small">
+                                                <strong>Sample words:</strong> academic, algorithm, analysis, bibliography, calculate, data, education, framework...
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pomodoro Timer Section (Premium) -->
+                <div id="pomodoro" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">🍅 Pomodoro Timer</h3>
+                            <div class="alert alert-info">
+                                <strong>Premium Feature:</strong> Boost productivity with the proven Pomodoro Technique!
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h4 id="pomodoroStatus">Ready to Start</h4>
+                                            <div class="display-3 fw-bold text-danger mb-3" id="pomodoroDisplay">25:00</div>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-danger btn-lg" id="pomodoroStart" onclick="startPomodoro()">🍅 Start Pomodoro</button>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <button class="btn btn-warning w-100" id="pomodoroStop" onclick="stopPomodoro()" disabled>⏸️ Stop</button>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <button class="btn btn-secondary w-100" onclick="resetPomodoro()">🔄 Reset</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5>📊 Session Stats</h5>
+                                            <div class="text-center mb-3">
+                                                <div class="display-6 text-primary" id="pomodoroSessions">0</div>
+                                                <small class="text-muted">Completed Sessions</small>
+                                            </div>
+                                            <h6>🍅 How it works:</h6>
+                                            <ul class="small">
+                                                <li>25 min work sessions</li>
+                                                <li>5 min short breaks</li>
+                                                <li>15 min long break every 4 sessions</li>
+                                                <li>Proven to boost focus & productivity</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flashcards Section (Premium) -->
+                <div id="flashcards" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">📚 Flashcard Creator & Viewer</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Create New Flashcard</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label">Question</label>
+                                        <input type="text" class="form-control" id="flashcardQuestion" placeholder="Enter question...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Answer</label>
+                                        <textarea class="form-control" id="flashcardAnswer" rows="3" placeholder="Enter answer..."></textarea>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="addFlashcard()">+ Add Flashcard</button>
+                                    
+                                    <div class="mt-4">
+                                        <h6>Your Flashcards</h6>
+                                        <div id="flashcardList">
+                                            <!-- Flashcards will be listed here -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h5>Study Session</h5>
+                                                <button class="btn btn-success" onclick="startFlashcardSession()">▶️ Start</button>
+                                            </div>
+                                            <div id="flashcardViewer" class="d-none">
+                                                <div class="card border-primary mb-3" style="min-height: 200px;">
+                                                    <div class="card-body d-flex align-items-center justify-content-center" id="flashcardContent">
+                                                        <p class="text-center text-muted">Click Start to begin studying</p>
+                                                    </div>
+                                                </div>
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-primary" onclick="flipFlashcard()">🔄 Flip Card</button>
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <button class="btn btn-outline-primary w-100" onclick="prevFlashcard()">⬅️ Previous</button>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <button class="btn btn-outline-primary w-100" onclick="nextFlashcard()">➡️ Next</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scientific Calculator Section (Premium) -->
+                <div id="calculator" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">🧮 Scientific Calculator</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control text-end fs-4" id="calcDisplay" value="0" readonly>
+                                            </div>
+                                            <div class="row g-1">
+                                                <div class="col-3"><button class="btn btn-secondary w-100" onclick="calcClear()">C</button></div>
+                                                <div class="col-3"><button class="btn btn-info w-100" onclick="calcScientific('sqrt')">√</button></div>
+                                                <div class="col-3"><button class="btn btn-info w-100" onclick="calcScientific('square')">x²</button></div>
+                                                <div class="col-3"><button class="btn btn-warning w-100" onclick="calcOperation('/')">/</button></div>
+                                            </div>
+                                            <div class="row g-1 mt-1">
+                                                <div class="col-3"><button class="btn btn-primary w-100" onclick="calcInput('7')">7</button></div>
+                                                <div class="col-3"><button class="btn btn-primary w-100" onclick="calcInput('8')">8</button></div>
+                                                <div class="col-3"><button class="btn btn-primary w-100" onclick="calcInput('9')">9</button></div>
+                                                <div class="col-3"><button class="btn btn-warning w-100" onclick="calcOperation('*')">×</button></div>
+                                            </div>
+                                            <div class="row g-1 mt-1">
+                                                <div class="col-3"><button class="btn btn-primary w-100" onclick="calcInput('4')">4</button></div>
+                                                <div class="col-3"><button class="btn btn-primary w-100" onclick="calcInput('5')">5</button></div>
+                                                <div class="col-3"><button class="btn btn-primary w-100" onclick="calcInput('6')">6</button></div>
+                                                <div class="col-3"><button class="btn btn-warning w-100" onclick="calcOperation('-')">-</button></div>
+                                            </div>
+                                            <div class="row g-1 mt-1">
+                                                <div class="col-3"><button class="btn btn-primary w-100" onclick="calcInput('1')">1</button></div>
+                                                <div class="col-3"><button class="btn btn-primary w-100" onclick="calcInput('2')">2</button></div>
+                                                <div class="col-3"><button class="btn btn-primary w-100" onclick="calcInput('3')">3</button></div>
+                                                <div class="col-3"><button class="btn btn-warning w-100" onclick="calcOperation('+')">+</button></div>
+                                            </div>
+                                            <div class="row g-1 mt-1">
+                                                <div class="col-6"><button class="btn btn-primary w-100" onclick="calcInput('0')">0</button></div>
+                                                <div class="col-3"><button class="btn btn-primary w-100" onclick="calcInput('.')">.</button></div>
+                                                <div class="col-3"><button class="btn btn-success w-100" onclick="calcEquals()">=</button></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>Scientific Functions</h6>
+                                            <div class="row g-1">
+                                                <div class="col-4"><button class="btn btn-info w-100 btn-sm" onclick="calcScientific('sin')">sin</button></div>
+                                                <div class="col-4"><button class="btn btn-info w-100 btn-sm" onclick="calcScientific('cos')">cos</button></div>
+                                                <div class="col-4"><button class="btn btn-info w-100 btn-sm" onclick="calcScientific('tan')">tan</button></div>
+                                            </div>
+                                            <div class="row g-1 mt-1">
+                                                <div class="col-4"><button class="btn btn-info w-100 btn-sm" onclick="calcScientific('log')">log</button></div>
+                                                <div class="col-4"><button class="btn btn-info w-100 btn-sm" onclick="calcScientific('ln')">ln</button></div>
+                                                <div class="col-4"><button class="btn btn-warning w-100 btn-sm" onclick="calcOperation('^')">x^y</button></div>
+                                            </div>
+                                            <div class="row g-1 mt-1">
+                                                <div class="col-6"><button class="btn btn-info w-100 btn-sm" onclick="calcScientific('pi')">π</button></div>
+                                                <div class="col-6"><button class="btn btn-info w-100 btn-sm" onclick="calcScientific('e')">e</button></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goal Tracker Section (Premium) -->
+                <div id="goals" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">🎯 Goal Tracker</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Add New Goal</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label">Goal Title</label>
+                                        <input type="text" class="form-control" id="goalTitle" placeholder="e.g., Read 10 books">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Target Number</label>
+                                        <input type="number" class="form-control" id="goalTarget" min="1" placeholder="10">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Deadline (Optional)</label>
+                                        <input type="date" class="form-control" id="goalDeadline">
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="addGoal()">+ Add Goal</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>🎯 Track Your Progress</h6>
+                                            <p class="small text-muted">Set measurable goals and track your progress towards achieving them!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>Your Goals</h5>
+                                    <div id="goalsList">
+                                        <!-- Goals will be dynamically added here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Habit Tracker Section (Premium) -->
+                <div id="habits" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">🔄 Habit Tracker</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Add New Habit</h5>
+                                    <div class="mb-3">
+                                        <label class="form-label">Habit Name</label>
+                                        <input type="text" class="form-control" id="habitName" placeholder="e.g., Exercise, Read, Study">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Frequency</label>
+                                        <select class="form-control" id="habitFrequency">
+                                            <option value="daily">Daily</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="3x-week">3x per week</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-primary w-100" onclick="addHabit()">+ Add Habit</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>🔥 Build Consistency</h6>
+                                            <p class="small text-muted">Track daily habits and build powerful streaks that lead to lasting change!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h5>Your Habits</h5>
+                                    <div id="habitsList">
+                                        <!-- Habits will be dynamically added here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vocabulary Builder Section (Premium) -->
+                <div id="vocabulary" class="section d-none premium-section">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">📚 Vocabulary Builder</h3>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h4 class="text-primary" id="vocabWord">vocabulary</h4>
+                                            <div class="badge bg-secondary mb-3" id="vocabDifficulty">intermediate</div>
+                                            <p class="lead" id="vocabMeaning">the body of words used in a particular language</p>
+                                            <div class="d-flex justify-content-center gap-2 mb-3">
+                                                <button class="btn btn-outline-success" id="vocabKnown" onclick="markVocabKnown()">✅ I Know This</button>
+                                                <button class="btn btn-outline-warning" id="vocabLearning" onclick="markVocabLearning()">📚 Learning</button>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <button class="btn btn-outline-primary" onclick="prevVocabWord()">⬅️ Previous</button>
+                                                <span class="text-muted" id="vocabCounter">1 of 10</span>
+                                                <button class="btn btn-outline-primary" onclick="nextVocabWord()">Next ➡️</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>📊 Your Progress</h6>
+                                            <div id="vocabStats">
+                                                <div class="row text-center">
+                                                    <div class="col-4">
+                                                        <div class="h4 text-success">0</div>
+                                                        <small>Known</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="h4 text-warning">0</div>
+                                                        <small>Learning</small>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="h4 text-muted">10</div>
+                                                        <small>New</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Section -->
+                <div id="support" class="section d-none">
+                    <div class="card dashboard-card">
+                        <div class="card-body">
+                            <h3 class="fw-bold mb-4">💬 Contact & Social Links</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5>📞 Contact Information</h5>
+                                            <div class="mb-3">
+                                                <strong>📧 Email:</strong><br>
+                                                <a href="mailto:boostcampus9@gmail.com">boostcampus9@gmail.com</a>
+                                            </div>
+                                            <div class="mb-3">
+                                                <strong>📱 WhatsApp Support:</strong><br>
+                                                <a href="https://wa.me/+2348086556841" target="_blank" class="btn btn-success btn-sm">
+                                                    💬 Chat on WhatsApp
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5>🌐 Follow Us</h5>
+                                            <div class="d-grid gap-2">
+                                                <a href="#" target="_blank" class="btn btn-primary">
+                                                    📱 Join our Telegram
+                                                </a>
+                                                <a href="#" target="_blank" class="btn btn-dark">
+                                                    🎵 Follow on TikTok
+                                                </a>
+                                                <a href="#" target="_blank" class="btn btn-info">
+                                                    📧 Subscribe to Updates
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Modal -->
+                <div class="modal fade" id="paymentModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">💎 Upgrade to Premium</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="text-center mb-4">
+                                    <h4 class="text-primary">₦500/month</h4>
+                                    <p class="text-muted">Continue enjoying all premium features after your trial</p>
+                                </div>
+                                <h6>✨ Premium Features Include:</h6>
+                                <ul class="list-unstyled">
+                                    <li>✅ Smart Study Planner with Reminders</li>
+                                    <li>✅ Premium Timetable Generator (PDF Export)</li>
+                                    <li>✅ Advanced Budget Allocator with Analytics</li>
+                                    <li>✅ Attendance Sheet Generator</li>
+                                    <li>✅ Report Card Generator</li>
+                                    <li>✅ Unlimited Marketplace Posting</li>
+                                    <li>✅ Priority Product Promotion</li>
+                                    <li>✅ VIP Community Access</li>
+                                    <li>✅ Premium Badge & Priority Support</li>
+                                </ul>
+                                <button class="btn btn-primary w-100" onclick="processPayment()">Pay with Flutterwave</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase and App Scripts -->
+    <script type="module" src="dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+</body>
+</html>
