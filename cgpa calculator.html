@@ -1,0 +1,174 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CGPA Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #212121;
+      --card: #1A1D23;
+      --accent: #34C759;
+      --text: #ffffff;
+    }* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  background: var(--card);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.6);
+}
+
+h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+input {
+  padding: 10px;
+  flex: 1;
+  border-radius: 8px;
+  border: none;
+  background: #2c2f35;
+  color: var(--text);
+}
+
+button {
+  padding: 10px 15px;
+  background: var(--accent);
+  color: black;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #2fd250;
+}
+
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+th {
+  color: var(--accent);
+}
+
+.result {
+  margin-top: 20px;
+  font-size: 1.3rem;
+  text-align: right;
+  color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .input-group {
+    flex-direction: column;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>CGPA Calculator</h2><div class="input-group">
+  <input type="text" id="course" placeholder="Course Title" />
+  <input type="number" id="unit" placeholder="Course Unit" />
+  <input type="text" id="grade" placeholder="Grade (A-F)" />
+  <button onclick="addCourse()">Add</button>
+</div>
+
+<table id="cgpaTable" style="display:none;">
+  <thead>
+    <tr>
+      <th>Course</th>
+      <th>Unit</th>
+      <th>Grade</th>
+      <th>Point</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+
+<div class="result" id="cgpaResult" style="display:none;">
+  CGPA: <span id="cgpa">0.00</span>
+</div>
+ <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>  
+  
+  <script>
+    const gradeMap = {
+      A: 5,
+      B: 4,
+      C: 3,
+      D: 2,
+      E: 1,
+      F: 0
+    };
+
+    let totalUnits = 0;
+    let totalPoints = 0;
+
+    function addCourse() {
+      const course = document.getElementById("course").value.trim();
+      const unit = parseInt(document.getElementById("unit").value);
+      const grade = document.getElementById("grade").value.trim().toUpperCase();
+
+      if (!course || isNaN(unit) || !gradeMap.hasOwnProperty(grade)) {
+        alert("Please enter valid course, unit and grade (A-F).")
+        return;
+      }
+
+      const point = gradeMap[grade] * unit;
+      totalUnits += unit;
+      totalPoints += point;
+
+      document.getElementById("tableBody").innerHTML += `
+        <tr>
+          <td>${course}</td>
+          <td>${unit}</td>
+          <td>${grade}</td>
+          <td>${point}</td>
+        </tr>
+      `;
+
+      document.getElementById("cgpaTable").style.display = "table";
+      document.getElementById("cgpaResult").style.display = "block";
+      document.getElementById("cgpa").textContent = (totalPoints / totalUnits).toFixed(2);
+
+      document.getElementById("course").value = "";
+      document.getElementById("unit").value = "";
+      document.getElementById("grade").value = "";
+    }
+  </script></body>
+</html>

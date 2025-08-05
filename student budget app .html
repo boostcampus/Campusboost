@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Budget Planner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #212121;
+      --card: #1A1D23;
+      --accent: #34C759;
+      --text: #ffffff;
+    }* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  background: var(--card);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+}
+
+h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background-color: #2c2f35;
+  color: var(--text);
+}
+
+button {
+  background-color: var(--accent);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #000;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #2fd250;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #444;
+  text-align: left;
+}
+
+th {
+  color: var(--accent);
+}
+
+.summary {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.summary span {
+  color: var(--accent);
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+@media(max-width: 600px) {
+  .input-group {
+    flex-direction: column;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Student Budget Planner</h2><div class="input-group">
+  <input type="text" id="desc" placeholder="Expense Description">
+  <input type="number" id="amount" placeholder="Amount (₦)">
+  <button onclick="addExpense()">Add</button>
+      <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+</div>
+
+<table id="expenseTable" style="display:none;">
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th>Amount (₦)</th>
+    </tr>
+  </thead>
+  <tbody id="expenseBody"></tbody>
+</table>
+
+<div class="summary">
+  Total Spent: ₦<span id="total">0.00</span>
+</div>
+
+<div class="input-group" style="margin-top: 30px;">
+  <input type="number" id="budget" placeholder="Enter Monthly Budget (₦)" oninput="updateBalance()">
+</div>
+
+<div class="summary">
+  Remaining Balance: ₦<span id="balance">0.00</span>
+</div>
+
+  </div>  <script>
+    let total = 0;
+
+    function addExpense() {
+      const desc = document.getElementById('desc').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+
+      if (!desc || isNaN(amount) || amount <= 0) {
+        alert('Enter a valid description and amount.');
+        return;
+      }
+
+      total += amount;
+      const row = `<tr><td>${desc}</td><td>₦${amount.toFixed(2)}</td></tr>`;
+      document.getElementById('expenseBody').innerHTML += row;
+      document.getElementById('expenseTable').style.display = 'table';
+      document.getElementById('total').textContent = total.toFixed(2);
+
+      updateBalance();
+
+      document.getElementById('desc').value = '';
+      document.getElementById('amount').value = '';
+    }
+
+    function updateBalance() {
+      const budget = parseFloat(document.getElementById('budget').value) || 0;
+      const balance = budget - total;
+      document.getElementById('balance').textContent = balance.toFixed(2);
+    }
+  </script></body>
+</html>

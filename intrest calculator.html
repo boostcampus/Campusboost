@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interest Calculator</title>
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: var(--card);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 25px;
+    }
+
+    label {
+      margin-bottom: 5px;
+      display: block;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      background: #2a2a2a;
+      color: var(--text);
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: var(--light-text);
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      background: var(--accent-secondary);
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: var(--success);
+      text-align: center;
+    }
+
+    a.back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: var(--info);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    a.back-link:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Interest Calculator</h1>
+
+    <label for="principal">Principal Amount (₦)</label>
+    <input type="number" id="principal" placeholder="e.g. 10000" />
+
+    <label for="rate">Annual Interest Rate (%)</label>
+    <input type="number" id="rate" placeholder="e.g. 5" />
+
+    <label for="time">Time (Years)</label>
+    <input type="number" id="time" placeholder="e.g. 2" />
+
+    <button onclick="calculateInterest()">Calculate Interest</button>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function formatNaira(amount) {
+      return '₦' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+
+    function calculateInterest() {
+      const P = parseFloat(document.getElementById('principal').value);
+      const R = parseFloat(document.getElementById('rate').value);
+      const T = parseFloat(document.getElementById('time').value);
+      const resultDiv = document.getElementById('result');
+
+      if (isNaN(P) || isNaN(R) || isNaN(T)) {
+        resultDiv.innerHTML = `<span style="color: var(--danger);">Please enter valid values.</span>`;
+        return;
+      }
+
+      const interest = (P * R * T) / 100;
+      const total = P + interest;
+
+      resultDiv.innerHTML = `
+        Interest: <strong>${formatNaira(interest)}</strong><br/>
+        Total Amount: <strong>${formatNaira(total)}</strong>
+      `;
+    }
+  </script>
+</body>
+</html>

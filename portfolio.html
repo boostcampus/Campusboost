@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Computer Engineering Roadmap</title>
+  <style>
+    :root {
+      --primary: #0A84FF;
+      --secondary: #0077CC;
+      --bg: #F5F9FF;
+      --text: #1C1C1E;
+      --card: #FFFFFF;
+      --border: #D1E3FF;
+    }* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  padding: 2rem;
+  color: var(--text);
+}
+
+h1 {
+  text-align: center;
+  color: var(--primary);
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+.grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 132, 255, 0.1);
+  transition: transform 0.3s ease, background 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 100%;
+  background: var(--primary);
+  left: 0;
+  top: 0;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  background: #EBF4FF;
+}
+
+.card h2 {
+  color: var(--secondary);
+  font-size: 1.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.card ul {
+  list-style-type: square;
+  padding-left: 1.2rem;
+}
+
+.card ul li {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+  </style>
+</head>
+<body>
+  <h1>Computer Engineering Roadmap</h1>
+  <div class="grid">
+    <div class="card">
+      <h2>🧱 Foundations</h2>
+      <ul>
+        <li><input type="checkbox"> Digital Logic & Circuits</li>
+        <li><input type="checkbox"> Discrete Math, Linear Algebra</li>
+        <li><input type="checkbox"> Basic Electronics</li>
+        <li><input type="checkbox"> Intro to Programming (C/C++)</li>
+      </ul>
+    </div><div class="card">
+  <h2>💻 Programming & Software</h2>
+  <ul>
+    <li><input type="checkbox"> Data Structures & Algorithms</li>
+    <li><input type="checkbox"> Operating Systems</li>
+    <li><input type="checkbox"> Computer Architecture</li>
+    <li><input type="checkbox"> OOP (Java, Python)</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>🔌 Hardware & Embedded</h2>
+  <ul>
+    <li><input type="checkbox"> Microcontrollers (Arduino, STM32)</li>
+    <li><input type="checkbox"> Assembly Language</li>
+    <li><input type="checkbox"> Embedded C Programming</li>
+    <li><input type="checkbox"> PCB Design & Simulation</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>🌐 Networking & Security</h2>
+  <ul>
+    <li><input type="checkbox"> Computer Networks</li>
+    <li><input type="checkbox"> Internet Protocols</li>
+    <li><input type="checkbox"> Firewalls & Encryption</li>
+    <li><input type="checkbox"> Cybersecurity Basics</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>⚙️ Advanced Topics</h2>
+  <ul>
+    <li><input type="checkbox"> IoT Systems</li>
+    <li><input type="checkbox"> FPGA & HDL</li>
+    <li><input type="checkbox"> Robotics & Automation</li>
+    <li><input type="checkbox"> VLSI Design</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>🤖 AI & Emerging Tech</h2>
+  <ul>
+    <li><input type="checkbox"> AI & Machine Learning</li>
+    <li><input type="checkbox"> Cloud Computing</li>
+    <li><input type="checkbox"> Quantum Computing Basics</li>
+    <li><input type="checkbox"> Edge Computing</li>
+  </ul>
+</div>
+
+  </div>
+</body>
+</html>

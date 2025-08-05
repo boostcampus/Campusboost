@@ -1,0 +1,164 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Boost - Gigs & Jobs</title>
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
+  <style>
+    :root {
+      --primary-color: #3B82F6;
+      --accent-color: #9333EA;
+      --background-color: #F9FAFB;
+      --text-dark: #1F2937;
+      --text-muted: #6B7280;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: var(--background-color);
+      color: var(--text-dark);
+    }
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.5rem;
+    }
+    .container {
+      max-width: 960px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    input, textarea, button, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid var(--text-muted);
+    }
+    .btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: var(--accent-color);
+    }
+    .gig, .job {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    .gig img, .job img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    .gig h4, .job h4 {
+      color: var(--accent-color);
+    }
+    .comment-box { margin-top: 10px; }
+    .comment { background: #f1f1f1; margin-top: 5px; padding: 5px; border-radius: 5px; font-size: 0.9em; }
+    .favorite-btn { position: absolute; top: 10px; right: 10px; cursor: pointer; font-size: 18px; color: var(--accent-color); }
+    .form-section {
+      margin: 20px 0;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+<header>Campus Boost - Gigs & Job Board</header>
+<div class="container">
+  <div class="form-section">
+    <h3>Post a Job Vacancy (Free & Unlimited)</h3>
+    <input type="text" id="jobName" placeholder="Job Title">
+    <textarea id="jobDetails" placeholder="Job Description"></textarea>
+    <input type="text" id="jobContact" placeholder="Contact Info">
+    <input type="file" id="jobImage">
+    <button onclick="postJob()" class="btn">Post Job</button>
+  </div>  <div class="form-section">
+    <h3>Post a Gig</h3>
+    <input type="text" id="gigName" placeholder="Gig Title">
+    <textarea id="gigDetails" placeholder="Gig Description"></textarea>
+    <input type="text" id="gigContact" placeholder="Contact Info">
+    <input type="file" id="gigImage">
+    <button onclick="payForPromotion('daily')" class="btn">Promote Daily (₦500)</button>
+    <button onclick="payForPromotion('weekly')" class="btn">Promote Weekly (₦3000)</button>
+  </div>  <input type="text" id="searchInput" placeholder="Search gigs or jobs..." oninput="loadGigs()">
+  <select id="categoryFilter" onchange="loadGigs()">
+    <option value="">All Categories</option>
+    <option value="Gig">Gigs</option>
+    <option value="Job">Jobs</option>
+  </select>
+  <button class="btn" onclick="toggleFavorites()">💖 View Favorites</button>
+  <div id="gigList"></div>
+</div>
+<script>
+let viewingFavorites = false;
+let pendingGig = null;
+function toggleFavorites() {
+  viewingFavorites = !viewingFavorites;
+  loadGigs();
+}
+function toggleFavorite(index) {
+  const ip = getIP();
+  let favs = JSON.parse(localStorage.getItem('favorites_' + ip) || '[]');
+  if (favs.includes(index)) {
+    favs = favs.filter(f => f !== index);
+  } else {
+    favs.push(index);
+  }
+  localStorage.setItem('favorites_' + ip, JSON.stringify(favs));
+  loadGigs();
+}
+function getIP() {
+  let ip = localStorage.getItem('user_ip');
+  if (!ip) {
+    ip = Math.random().toString(36).substring(2);
+    localStorage.setItem('user_ip', ip);
+  }
+  return ip;
+}
+function addComment(index) {
+  const name = prompt("Your name:");
+  const comment = prompt("Your comment:");
+  if (!name || !comment) return;
+  const comments = JSON.parse(localStorage.getItem('comments') || '{}');
+  if (!comments[index]) comments[index] = [];
+  comments[index].push({ name, comment });
+  localStorage.setItem('comments', JSON.stringify(comments));
+  loadGigs();
+}
+function postJob() {
+  const name = document.getElementById('jobName').value;
+  const details = document.getElementById('jobDetails').value;
+  const contact = document.getElementById('jobContact').value;
+  const file = document.getElementById('jobImage').files[0];
+  if (!name || !details || !contact) return alert("Please fill all fields");const reader = new FileReader(); reader.onload = function(e) { const image = e.target.result; const gigs = JSON.parse(localStorage.getItem('gigs') || '[]'); gigs.push({ name, details, contact, image, category: "Job" }); localStorage.setItem('gigs', JSON.stringify(gigs)); document.getElementById('jobName').value = ""; document.getElementById('jobDetails').value = ""; document.getElementById('jobContact').value = ""; document.getElementById('jobImage').value = ""; loadGigs(); } if (file) { reader.readAsDataURL(file); } else { const gigs = JSON.parse(localStorage.getItem('gigs') || '[]'); gigs.push({ name, details, contact, image: '', category: "Job" }); localStorage.setItem('gigs', JSON.stringify(gigs)); loadGigs(); } } function payForPromotion(type) { const name = document.getElementById('gigName').value; const details = document.getElementById('gigDetails').value; const contact = document.getElementById('gigContact').value; const file = document.getElementById('gigImage').files[0]; if (!name || !details || !contact) return alert("Please fill all fields");
+
+const reader = new FileReader(); reader.onload = function(e) { const image = e.target.result; pendingGig = { name, details, contact, image, category: "Gig", promote: type }; makePayment(type); }; if (file) { reader.readAsDataURL(file); } else { pendingGig = { name, details, contact, image: '', category: "Gig", promote: type }; makePayment(type); } } function makePayment(type) { const amount = type === 'daily' ? 500 : 3000; FlutterwaveCheckout({ public_key: "FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X", tx_ref: Date.now(), amount: amount, currency: "NGN", payment_options: "card,ussd", customer: { email: "user@campusboost.com", name: "Gig Poster" }, callback: function (data) { const gigs = JSON.parse(localStorage.getItem('gigs') || '[]'); gigs.unshift(pendingGig); localStorage.setItem('gigs', JSON.stringify(gigs)); document.getElementById('gigName').value = ""; document.getElementById('gigDetails').value = ""; document.getElementById('gigContact').value = ""; document.getElementById('gigImage').value = ""; pendingGig = null; loadGigs(); }, customizations: { title: "Promote Gig", description: Promote ${type} gig, logo: "https://campusboost.netlify.app/logo.png", }, }); } function loadGigs() { const gigs = JSON.parse(localStorage.getItem('gigs') || '[]'); const comments = JSON.parse(localStorage.getItem('comments') || '{}'); const ip = getIP(); const favs = JSON.parse(localStorage.getItem('favorites_' + ip) || '[]');
+
+const search = document.getElementById('searchInput')?.value?.toLowerCase() || ''; const filter = document.getElementById('categoryFilter')?.value;
+
+let displayGigs = viewingFavorites ? gigs.filter((_, i) => favs.includes(i)) : gigs;
+
+if (search) { displayGigs = displayGigs.filter(g => g.name.toLowerCase().includes(search) || g.details.toLowerCase().includes(search) || g.contact.toLowerCase().includes(search)); } if (filter) { displayGigs = displayGigs.filter(g => g.category === filter); }
+
+document.getElementById('gigList').innerHTML = displayGigs.map((g, i) => <div class="gig"> <div class="favorite-btn" onclick="toggleFavorite(${i})"> ${favs.includes(i) ? '💖' : '🤍'} </div> <strong>${g.name} (${g.category}) ${g.promote ? '🔥 Promoted' : ''}</strong> <h4>${g.details}</h4> <p>📞 ${g.contact}</p> ${g.image ?<img src="${g.image}" alt="Image">: ''} <div class="comment-box"> <button onclick="addComment(${i})" class="btn">💬 Add Comment</button> ${(comments[i] || []).map(c =><div class='comment'><strong>${c.name}</strong>: ${c.comment}</div>).join('')} </div> </div> ).join(''); } loadGigs(); </script>
+
+</body>
+</html>

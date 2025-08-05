@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tool Usage History</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #212121;
+      --bg-light: #1A1D23;
+      --accent: #34C759;
+      --text: #ffffff;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+    }
+    header {
+      background: var(--bg-light);
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--accent);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    }
+    .history-container {
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+      background: var(--bg-light);
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+    .tool-entry {
+      background: #2b2b2b;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+    .tool-entry:hover {
+      transform: scale(1.02);
+    }
+    .tool-entry h3 {
+      margin: 0 0 5px;
+      color: var(--accent);
+    }
+    .tool-entry small {
+      color: #aaa;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>My Tool Usage History</header>
+  <div class="history-container" id="historyList">Loading...</div>  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const historyList = document.getElementById("historyList");
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return location.href = "login.html";
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      const tools = userSnap.data().tools || {};
+      const toolListSnap = await getDocs(collection(db, "toolList"));
+
+      const toolsMap = {};
+      toolListSnap.forEach(doc => toolsMap[doc.id] = doc.data());
+
+      const entries = Object.entries(tools).sort((a, b) => b[1].expires - a[1].expires);
+      if (!entries.length) return historyList.innerHTML = "<p style='text-align:center;'>No tool usage history yet.</p>";
+
+      historyList.innerHTML = entries.map(([id, data]) => {
+        const tool = toolsMap[id];
+        if (!tool) return "";
+        const date = new Date(data.expires).toLocaleString();
+        return `
+          <div class="tool-entry">
+            <h3>${tool.name}</h3>
+            <small>Expires: ${date}</small>
+            <p>${tool.description}</p>
+          </div>
+        `;
+      }).join("");
+    });
+  </script></body>
+</html>

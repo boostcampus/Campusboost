@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VAT Calculator</title>
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .calculator {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: var(--card-shadow);
+      width: 100%;
+      max-width: 450px;
+      animation: fadeIn 1s ease-in-out;
+      transition: var(--transition);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #2e2e2e;
+      color: var(--text);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      box-shadow: 0 0 5px var(--accent);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--light-text);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      background: var(--success);
+    }
+
+    .result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #2a2a2a;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      text-align: center;
+      color: var(--accent);
+      animation: slideUp 0.7s ease-out;
+    }
+
+    a.back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: var(--accent);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    a.back-link:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.9);}
+      to {opacity: 1; transform: scale(1);}
+    }
+
+    @keyframes slideUp {
+      from {opacity: 0; transform: translateY(30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h2>Professional VAT Calculator</h2>
+    <div class="form-group">
+      <label for="amount">Enter Amount (₦)</label>
+      <input type="number" id="amount" placeholder="e.g. 20000" />
+    </div>
+    <div class="form-group">
+      <label for="vatRate">VAT Rate (%)</label>
+      <input type="number" id="vatRate" placeholder="e.g. 7.5" value="7.5" />
+    </div>
+    <button onclick="calculateVAT()">Calculate VAT</button>
+    <div id="vatResult" class="result" style="display: none;"></div>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    function calculateVAT() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const rate = parseFloat(document.getElementById('vatRate').value);
+      const resultBox = document.getElementById('vatResult');
+
+      if (isNaN(amount) || isNaN(rate)) {
+        resultBox.innerText = "Please enter valid numbers.";
+        resultBox.style.display = 'block';
+        return;
+      }
+
+      const vat = (amount * rate) / 100;
+      const total = amount + vat;
+
+      resultBox.innerHTML = `
+        <strong>VAT Amount:</strong> ₦${vat.toFixed(2)}<br>
+        <strong>Total with VAT:</strong> ₦${total.toFixed(2)}
+      `;
+      resultBox.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

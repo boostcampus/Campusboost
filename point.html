@@ -1,0 +1,260 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced POS App</title>
+  <style>
+    :root {
+      --dark: #212121;
+      --darker: #1A1D23;
+      --green: #34C759;
+      --white: #ffffff;
+    }* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+body {
+  background-color: var(--dark);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  background-color: var(--darker);
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.login-container, .app-container {
+  padding: 2rem;
+  max-width: 600px;
+  margin: auto;
+}
+
+input, button {
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+}
+
+input {
+  background-color: var(--darker);
+  color: var(--white);
+}
+
+button {
+  background-color: var(--green);
+  color: var(--white);
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #28a745;
+}
+
+.section {
+  margin-top: 2rem;
+}
+
+.section h3 {
+  margin-bottom: 1rem;
+}
+
+.list-box {
+  margin-top: 1rem;
+  background-color: var(--darker);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+@media screen and (max-width: 600px) {
+  .login-container, .app-container {
+    padding: 1rem;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header>Advanced POS App</header>  <div class="login-container" id="login">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="loginUser()">Login</button>
+  </div>  <div class="app-container" id="app" style="display:none">
+    <h2>Welcome to your POS Dashboard</h2><div class="section">
+  <h3>Inventory Management</h3>
+  <input type="text" id="productName" placeholder="Product Name">
+  <input type="number" id="productQty" placeholder="Quantity">
+  <button onclick="addProduct()">Add Product</button>
+  <div class="list-box" id="inventoryList"></div>
+</div>
+
+<div class="section">
+  <h3>Customer Management</h3>
+  <input type="text" id="customerName" placeholder="Customer Name">
+  <input type="text" id="customerPhone" placeholder="Phone Number">
+  <input type="email" id="customerEmail" placeholder="Email">
+  <button onclick="addCustomer()">Add Customer</button>
+  <div class="list-box" id="customerList"></div>
+</div>
+
+<div class="section">
+  <h3>Order Management</h3>
+  <input type="text" id="orderProduct" placeholder="Product Name">
+  <input type="number" id="orderQty" placeholder="Quantity">
+  <input type="text" id="orderCustomer" placeholder="Customer Name">
+  <button onclick="createOrder()">Create Order</button>
+  <div class="list-box" id="orderList"></div>
+</div>
+
+<button onclick="logout()">Logout</button>
+
+  </div>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    let currentUser = null;
+
+    function loginUser() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          currentUser = userCredential.user;
+          document.getElementById("login").style.display = "none";
+          document.getElementById("app").style.display = "block";
+          loadInventory();
+          loadCustomers();
+          loadOrders();
+        })
+        .catch((error) => alert("Login Failed: " + error.message));
+    }
+
+    function logout() {
+      auth.signOut().then(() => {
+        document.getElementById("login").style.display = "block";
+        document.getElementById("app").style.display = "none";
+      });
+    }
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById("login").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        loadInventory();
+        loadCustomers();
+        loadOrders();
+      }
+    });
+
+    function addProduct() {
+      const name = document.getElementById("productName").value;
+      const qty = parseInt(document.getElementById("productQty").value);
+      if (!name || isNaN(qty)) return;
+      db.collection("inventory").add({ uid: currentUser.uid, name, quantity: qty, timestamp: Date.now() })
+        .then(() => {
+          document.getElementById("productName").value = "";
+          document.getElementById("productQty").value = "";
+          loadInventory();
+        });
+    }
+
+    function loadInventory() {
+      const inventoryList = document.getElementById("inventoryList");
+      inventoryList.innerHTML = "Loading...";
+      db.collection("inventory").where("uid", "==", currentUser.uid).orderBy("timestamp", "desc").get()
+        .then(snapshot => {
+          let html = "";
+          snapshot.forEach(doc => {
+            const item = doc.data();
+            html += `<div class='item-row'><span>${item.name}</span><span>Qty: ${item.quantity}</span></div>`;
+          });
+          inventoryList.innerHTML = html || "No products found.";
+        });
+    }
+
+    function addCustomer() {
+      const name = document.getElementById("customerName").value;
+      const phone = document.getElementById("customerPhone").value;
+      const email = document.getElementById("customerEmail").value;
+      if (!name || !phone || !email) return;
+      db.collection("customers").add({ uid: currentUser.uid, name, phone, email, timestamp: Date.now() })
+        .then(() => {
+          document.getElementById("customerName").value = "";
+          document.getElementById("customerPhone").value = "";
+          document.getElementById("customerEmail").value = "";
+          loadCustomers();
+        });
+    }
+
+    function loadCustomers() {
+      const customerList = document.getElementById("customerList");
+      customerList.innerHTML = "Loading...";
+      db.collection("customers").where("uid", "==", currentUser.uid).orderBy("timestamp", "desc").get()
+        .then(snapshot => {
+          let html = "";
+          snapshot.forEach(doc => {
+            const c = doc.data();
+            html += `<div class='item-row'><span>${c.name}</span><span>${c.phone}</span></div>`;
+          });
+          customerList.innerHTML = html || "No customers found.";
+        });
+    }
+
+    function createOrder() {
+      const product = document.getElementById("orderProduct").value;
+      const qty = parseInt(document.getElementById("orderQty").value);
+      const customer = document.getElementById("orderCustomer").value;
+      if (!product || isNaN(qty) || !customer) return;
+      db.collection("orders").add({ uid: currentUser.uid, product, quantity: qty, customer, timestamp: Date.now() })
+        .then(() => {
+          document.getElementById("orderProduct").value = "";
+          document.getElementById("orderQty").value = "";
+          document.getElementById("orderCustomer").value = "";
+          loadOrders();
+        });
+    }
+
+    function loadOrders() {
+      const orderList = document.getElementById("orderList");
+      orderList.innerHTML = "Loading...";
+      db.collection("orders").where("uid", "==", currentUser.uid).orderBy("timestamp", "desc").get()
+        .then(snapshot => {
+          let html = "";
+          snapshot.forEach(doc => {
+            const o = doc.data();
+            html += `<div class='item-row'><span>${o.product}</span><span>Qty: ${o.quantity}</span><span>${o.customer}</span></div>`;
+          });
+          orderList.innerHTML = html || "No orders found.";
+        });
+    }
+  </script></body>
+</html>

@@ -1,0 +1,1613 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Financial Budget Allocator Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3)); }
+            to { filter: drop-shadow(0 0 30px rgba(240, 147, 251, 0.5)); }
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .budget-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto auto;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .budget-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }
+
+        .stat-card:hover::before {
+            animation: shimmer 1.5s ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        .insights-panel {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+
+        .savings-tracker {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .savings-progress {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .savings-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #fff, rgba(255, 255, 255, 0.8));
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .category-insights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .spending-trends {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .trend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .trend-arrow {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .trend-up { color: #e74c3c; }
+        .trend-down { color: #2ecc71; }
+
+        .export-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .ai-recommendations {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .recommendation-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #f1c40f;
+        }
+
+        .emergency-fund {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .debt-tracker {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .goal-tracker {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .floating-action {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .floating-action:hover {
+            transform: scale(1.1) rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .budget-item {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Advanced Financial Budget Allocator Pro</h1>
+            <p>AI-Powered Smart Budgeting with Advanced Analytics & Insights</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-tab" onclick="showTab('budget')">💳 Budget Planner</button>
+            <button class="nav-tab" onclick="showTab('analytics')">📈 Analytics</button>
+            <button class="nav-tab" onclick="showTab('insights')">🧠 AI Insights</button>
+            <button class="nav-tab" onclick="showTab('goals')">🎯 Goals</button>
+            <button class="nav-tab" onclick="showTab('debts')">💸 Debt Tracker</button>
+            <button class="nav-tab" onclick="showTab('reports')">📋 Reports</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalBudgetStat">$0</div>
+                    <div class="stat-label">Total Budget</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalAllocatedStat">$0</div>
+                    <div class="stat-label">Allocated</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="remainingStat">$0</div>
+                    <div class="stat-label">Remaining</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="savingsRateStat">0%</div>
+                    <div class="stat-label">Savings Rate</div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="chart-container">
+                    <h3>🍰 Budget Distribution</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="budgetPieChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>📊 Monthly Trends</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="savings-tracker">
+                <h3>💎 Savings Progress</h3>
+                <div class="stat-value" id="savingsAmount">$0</div>
+                <div class="savings-progress">
+                    <div class="savings-fill" id="savingsFill" style="width: 0%"></div>
+                </div>
+                <p>Keep going! You're <span id="savingsPercent">0%</span> towards your savings goal!</p>
+            </div>
+        </div>
+
+        <!-- Budget Planner Tab -->
+        <div id="budget" class="tab-content">
+            <div class="grid">
+                <div class="card">
+                    <h3>💰 Income & Budget Setup</h3>
+                    <div class="form-group">
+                        <label for="monthlyIncome">Monthly Income:</label>
+                        <input type="number" id="monthlyIncome" placeholder="Enter monthly income" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="budgetPeriod">Budget Period:</label>
+                        <select id="budgetPeriod">
+                            <option value="monthly">Monthly</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="biweekly">Bi-weekly</option>
+                            <option value="quarterly">Quarterly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="savingsGoal">Savings Goal (%):</label>
+                        <input type="number" id="savingsGoal" placeholder="20" min="0" max="100" value="20">
+                    </div>
+                    <button class="btn btn-primary" onclick="calculateRecommendedBudget()">💡 Get AI Recommendations</button>
+                </div>
+
+                <div class="card">
+                    <h3>📝 Quick Add Categories</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                        <button class="btn btn-primary" onclick="addPredefinedCategory('Housing', 30)">🏠 Housing</button>
+                        <button class="btn btn-primary" onclick="addPredefinedCategory('Food', 15)">🍔 Food</button>
+                        <button class="btn btn-primary" onclick="addPredefinedCategory('Transportation', 15)">🚗 Transport</button>
+                        <button class="btn btn-primary" onclick="addPredefinedCategory('Entertainment', 10)">🎬 Entertainment</button>
+                        <button class="btn btn-primary" onclick="addPredefinedCategory('Healthcare', 8)">🏥 Healthcare</button>
+                        <button class="btn btn-primary" onclick="addPredefinedCategory('Savings', 20)">💎 Savings</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📋 Budget Categories</h3>
+                <div id="budgetContainer">
+                    <div class="budget-item">
+                        <input type="text" placeholder="Category Name" class="budget-category">
+                        <input type="number" placeholder="Amount" class="budget-amount" min="0" step="0.01">
+                        <input type="number" placeholder="%" class="budget-percentage" min="0" max="100" step="0.1">
+                        <select class="budget-priority">
+                            <option value="essential">Essential</option>
+                            <option value="important">Important</option>
+                            <option value="optional">Optional</option>
+                        </select>
+                        <button class="btn btn-success" onclick="addBudgetItem()">➕ Add</button>
+                        <button class="btn btn-danger" onclick="removeBudgetItem(this)">❌ Remove</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-primary" onclick="addBudgetItem()">➕ Add Category</button>
+                    <button class="btn btn-success" onclick="calculateBudget()">📊 Calculate Budget</button>
+                    <button class="btn btn-warning" onclick="optimizeBudget()">⚡ Auto-Optimize</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="spending-trends">
+                <h3>📈 Spending Trends Analysis</h3>
+                <div id="trendsAnalysis">
+                    <div class="trend-item">
+                        <span>Housing Expenses</span>
+                        <span class="trend-arrow trend-up">↗ +5.2%</span>
+                    </div>
+                    <div class="trend-item">
+                        <span>Food & Dining</span>
+                        <span class="trend-arrow trend-down">↘ -2.1%</span>
+                    </div>
+                    <div class="trend-item">
+                        <span>Transportation</span>
+                        <span class="trend-arrow trend-up">↗ +8.7%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="chart-container">
+                    <h3>📊 Spending by Category</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>📈 Budget vs Actual</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-insights">
+                <div class="category-card">
+                    <h4>🏠 Housing</h4>
+                    <p><strong>Budget:</strong> $1,200</p>
+                    <p><strong>Actual:</strong> $1,150</p>
+                    <p><strong>Status:</strong> ✅ Under Budget</p>
+                </div>
+                <div class="category-card">
+                    <h4>🍔 Food</h4>
+                    <p><strong>Budget:</strong> $600</p>
+                    <p><strong>Actual:</strong> $650</p>
+                    <p><strong>Status:</strong> ⚠️ Over Budget</p>
+                </div>
+                <div class="category-card">
+                    <h4>🚗 Transportation</h4>
+                    <p><strong>Budget:</strong> $400</p>
+                    <p><strong>Actual:</strong> $380</p>
+                    <p><strong>Status:</strong> ✅ Under Budget</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights Tab -->
+        <div id="insights" class="tab-content">
+            <div class="ai-recommendations">
+                <h3>🧠 AI-Powered Financial Insights</h3>
+                <div id="aiInsights">
+                    <div class="recommendation-item">
+                        <h4>💡 Smart Suggestion</h4>
+                        <p>Based on your spending patterns, you could save $150/month by reducing dining out by 30% and cooking at home more often.</p>
+                    </div>
+                    <div class="recommendation-item">
+                        <h4>📊 Trend Alert</h4>
+                        <p>Your transportation costs have increased by 15% this month. Consider carpooling or using public transport to optimize expenses.</p>
+                    </div>
+                    <div class="recommendation-item">
+                        <h4>🎯 Goal Optimization</h4>
+                        <p>You're on track to reach your savings goal 2 months early! Consider increasing your emergency fund or investment contributions.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="generateNewInsights()">🔄 Generate New Insights</button>
+            </div>
+
+            <div class="insights-panel">
+                <h3>📋 Financial Health Score</h3>
+                <div style="text-align: center;">
+                    <div style="font-size: 4em; margin: 20px 0;" id="healthScore">85</div>
+                    <p>Excellent financial health! Keep up the great work.</p>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px;">
+                        <div>
+                            <h4>Savings Rate</h4>
+                            <div style="font-size: 2em; color: #2ecc71;">A+</div>
+                        </div>
+                        <div>
+                            <h4>Debt Ratio</h4>
+                            <div style="font-size: 2em; color: #f39c12;">B</div>
+                        </div>
+                        <div>
+                            <h4>Budget Adherence</h4>
+                            <div style="font-size: 2em; color: #2ecc71;">A</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goals Tab -->
+        <div id="goals" class="tab-content">
+            <div class="goal-tracker">
+                <h3>🎯 Financial Goals Tracker</h3>
+                <div id="goalsContainer">
+                    <div class="goal-item" style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+                        <h4>Emergency Fund</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>Progress: $3,500 / $10,000</span>
+                            <span>35%</span>
+                        </div>
+                        <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; margin: 10px 0;">
+                            <div style="width: 35%; height: 100%; background: #2ecc71; border-radius: 5px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addNewGoal()">➕ Add New Goal</button>
+            </div>
+
+            <div class="emergency-fund">
+                <h3>🚨 Emergency Fund Calculator</h3>
+                <div class="form-group">
+                    <label for="monthlyExpenses">Monthly Expenses:</label>
+                    <input type="number" id="monthlyExpenses" placeholder="Enter total monthly expenses">
+                </div>
+                <div class="form-group">
+                    <label for="emergencyMonths">Emergency Fund Months:</label>
+                    <input type="number" id="emergencyMonths" value="6" min="3" max="12">
+                </div>
+                <div style="margin-top: 20px;">
+                    <div class="stat-value" id="emergencyFundNeeded">$0</div>
+                    <p>Recommended Emergency Fund Amount</p>
+                </div>
+                <button class="btn btn-primary" onclick="calculateEmergencyFund()">Calculate</button>
+            </div>
+        </div>
+
+        <!-- Debts Tab -->
+        <div id="debts" class="tab-content">
+            <div class="debt-tracker">
+                <h3>💳 Debt Management</h3>
+                <div id="debtsContainer">
+                    <div class="debt-item" style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 15px;">
+                        <h4>Credit Card Debt</h4>
+                        <p>Balance: $2,500 | APR: 18.9% | Min Payment: $75</p>
+                        <p>Payoff Time: 4.2 years | Total Interest: $1,250</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addDebtItem()">➕ Add Debt</button>
+                <button class="btn btn-warning" onclick="calculateDebtStrategy()">⚡ Optimize Payoff Strategy</button>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div id="reports" class="tab-content">
+            <div class="card">
+                <h3>📋 Export & Reports</h3>
+                <div class="export-options">
+                    <button class="btn btn-primary" onclick="generatePDFReport()">📄 PDF Report</button>
+                    <button class="btn btn-success" onclick="exportToExcel()">📊 Excel Export</button>
+                    <button class="btn btn-warning" onclick="generateInsightsReport()">🧠 Insights Report</button>
+                    <button class="btn btn-danger" onclick="emailReport()">📧 Email Report</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📊 Monthly Summary</h3>
+                <div id="monthlySummary">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                        <div>
+                            <h4>Income vs Expenses</h4>
+                            <canvas id="incomeExpensesChart" width="400" height="200"></canvas>
+                        </div>
+                        <div>
+                            <h4>Savings Growth</h4>
+                            <canvas id="savingsGrowthChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="floating-action" onclick="quickAddExpense()" title="Quick Add Expense">+</button>
+
+    <!-- Modal for Quick Add -->
+    <div id="quickAddModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>⚡ Quick Add Expense</h3>
+            <div class="form-group">
+                <label for="quickCategory">Category:</label>
+                <select id="quickCategory">
+                    <option value="Food">🍔 Food</option>
+                    <option value="Transportation">🚗 Transportation</option>
+                    <option value="Entertainment">🎬 Entertainment</option>
+                    <option value="Shopping">🛍️ Shopping</option>
+                    <option value="Other">📝 Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="quickAmount">Amount:</label>
+                <input type="number" id="quickAmount" placeholder="0.00" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="quickNote">Note (optional):</label>
+                <input type="text" id="quickNote" placeholder="Description...">
+            </div>
+            <button class="btn btn-primary" onclick="addQuickExpense()">Add Expense</button>
+        </div>
+    </div>
+
+    <script>
+        // Global Variables
+        let budgetItems = [];
+        let expenses = [];
+        let goals = [];
+        let debts = [];
+        let charts = {};
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedData();
+            initializeCharts();
+            updateDashboard();
+            calculateEmergencyFund();
+            
+            // Add event listeners
+            document.getElementById('monthlyIncome').addEventListener('input', updateDashboard);
+            document.getElementById('monthlyExpenses').addEventListener('input', calculateEmergencyFund);
+            document.getElementById('emergencyMonths').addEventListener('input', calculateEmergencyFund);
+        });
+
+        // Tab Management
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all nav tabs
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Update charts when switching to analytics
+            if (tabName === 'analytics') {
+                updateAnalyticsCharts();
+            }
+        }
+
+        // Budget Management
+        function addBudgetItem() {
+            const container = document.getElementById('budgetContainer');
+            const newItem = document.createElement('div');
+            newItem.className = 'budget-item slide-in';
+            newItem.innerHTML = `
+                <input type="text" placeholder="Category Name" class="budget-category">
+                <input type="number" placeholder="Amount" class="budget-amount" min="0" step="0.01">
+                <input type="number" placeholder="%" class="budget-percentage" min="0" max="100" step="0.1">
+                <select class="budget-priority">
+                    <option value="essential">Essential</option>
+                    <option value="important">Important</option>
+                    <option value="optional">Optional</option>
+                </select>
+                <button class="btn btn-success" onclick="addBudgetItem()">➕ Add</button>
+                <button class="btn btn-danger" onclick="removeBudgetItem(this)">❌ Remove</button>
+            `;
+            container.appendChild(newItem);
+            
+            // Add event listeners
+            const amountInput = newItem.querySelector('.budget-amount');
+            const percentageInput = newItem.querySelector('.budget-percentage');
+            
+            amountInput.addEventListener('input', () => updatePercentageFromAmount(newItem));
+            percentageInput.addEventListener('input', () => updateAmountFromPercentage(newItem));
+        }
+
+        function removeBudgetItem(button) {
+            const container = document.getElementById('budgetContainer');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+                calculateBudget();
+            }
+        }
+
+        function addPredefinedCategory(category, percentage) {
+            const income = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            const amount = (income * percentage) / 100;
+            
+            const container = document.getElementById('budgetContainer');
+            const newItem = document.createElement('div');
+            newItem.className = 'budget-item slide-in';
+            newItem.innerHTML = `
+                <input type="text" placeholder="Category Name" class="budget-category" value="${category}">
+                <input type="number" placeholder="Amount" class="budget-amount" min="0" step="0.01" value="${amount.toFixed(2)}">
+                <input type="number" placeholder="%" class="budget-percentage" min="0" max="100" step="0.1" value="${percentage}">
+                <select class="budget-priority">
+                    <option value="essential" ${category === 'Housing' || category === 'Food' ? 'selected' : ''}>Essential</option>
+                    <option value="important" ${category === 'Transportation' || category === 'Healthcare' ? 'selected' : ''}>Important</option>
+                    <option value="optional" ${category === 'Entertainment' ? 'selected' : ''}>Optional</option>
+                </select>
+                <button class="btn btn-success" onclick="addBudgetItem()">➕ Add</button>
+                <button class="btn btn-danger" onclick="removeBudgetItem(this)">❌ Remove</button>
+            `;
+            container.appendChild(newItem);
+            
+            calculateBudget();
+        }
+
+        function calculateBudget() {
+            const income = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            const budgetRows = document.querySelectorAll('.budget-item');
+            budgetItems = [];
+            let totalAllocated = 0;
+
+            budgetRows.forEach(row => {
+                const category = row.querySelector('.budget-category').value;
+                const amount = parseFloat(row.querySelector('.budget-amount').value) || 0;
+                const priority = row.querySelector('.budget-priority').value;
+                
+                if (category && amount > 0) {
+                    const percentage = income > 0 ? ((amount / income) * 100) : 0;
+                    row.querySelector('.budget-percentage').value = percentage.toFixed(1);
+                    
+                    budgetItems.push({
+                        category,
+                        amount,
+                        percentage: percentage.toFixed(1),
+                        priority
+                    });
+                    totalAllocated += amount;
+                }
+            });
+
+            updateDashboard();
+            updateCharts();
+            saveData();
+        }
+
+        function updatePercentageFromAmount(item) {
+            const income = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            const amount = parseFloat(item.querySelector('.budget-amount').value) || 0;
+            const percentage = income > 0 ? ((amount / income) * 100) : 0;
+            item.querySelector('.budget-percentage').value = percentage.toFixed(1);
+            calculateBudget();
+        }
+
+        function updateAmountFromPercentage(item) {
+            const income = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            const percentage = parseFloat(item.querySelector('.budget-percentage').value) || 0;
+            const amount = (income * percentage) / 100;
+            item.querySelector('.budget-amount').value = amount.toFixed(2);
+            calculateBudget();
+        }
+
+        function optimizeBudget() {
+            const income = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            if (income === 0) {
+                alert('Please enter your monthly income first!');
+                return;
+            }
+
+            // Clear existing budget items
+            const container = document.getElementById('budgetContainer');
+            container.innerHTML = '';
+
+            // Add optimized budget based on 50/30/20 rule with improvements
+            const recommendations = [
+                { category: 'Housing & Utilities', percentage: 30, priority: 'essential' },
+                { category: 'Savings & Investments', percentage: 20, priority: 'essential' },
+                { category: 'Food & Groceries', percentage: 12, priority: 'essential' },
+                { category: 'Transportation', percentage: 10, priority: 'important' },
+                { category: 'Insurance & Healthcare', percentage: 8, priority: 'essential' },
+                { category: 'Entertainment & Dining', percentage: 8, priority: 'optional' },
+                { category: 'Personal Care', percentage: 3, priority: 'important' },
+                { category: 'Shopping & Miscellaneous', percentage: 5, priority: 'optional' },
+                { category: 'Emergency Fund', percentage: 4, priority: 'essential' }
+            ];
+
+            recommendations.forEach(rec => {
+                addPredefinedCategory(rec.category, rec.percentage);
+            });
+
+            anime({
+                targets: '.budget-item',
+                translateX: ['-100%', '0%'],
+                opacity: [0, 1],
+                delay: anime.stagger(100),
+                duration: 500,
+                easing: 'easeOutQuad'
+            });
+        }
+
+        function calculateRecommendedBudget() {
+            const income = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            if (income === 0) {
+                alert('Please enter your monthly income to get AI recommendations!');
+                return;
+            }
+
+            const insights = [
+                `💡 Based on your income of $${income.toLocaleString()}, here are AI-powered recommendations:`,
+                `🏠 Housing should be max 30% ($${(income * 0.3).toFixed(2)})`,
+                `💎 Save at least 20% ($${(income * 0.2).toFixed(2)}) for investments and emergency fund`,
+                `🍔 Food budget: $${(income * 0.12).toFixed(2)} (12%)`,
+                `🚗 Transportation: $${(income * 0.1).toFixed(2)} (10%)`,
+                `🎬 Entertainment: $${(income * 0.08).toFixed(2)} (8%)`,
+                `📱 Consider using the 50/30/20 rule: 50% needs, 30% wants, 20% savings`
+            ];
+
+            alert(insights.join('\n\n'));
+        }
+
+        // Dashboard Updates
+        function updateDashboard() {
+            const income = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            const totalAllocated = budgetItems.reduce((sum, item) => sum + item.amount, 0);
+            const remaining = income - totalAllocated;
+            const savingsRate = income > 0 ? ((budgetItems.find(item => item.category.toLowerCase().includes('saving'))?.amount || 0) / income * 100) : 0;
+
+            // Update stat cards
+            document.getElementById('totalBudgetStat').textContent = `$${income.toLocaleString()}`;
+            document.getElementById('totalAllocatedStat').textContent = `$${totalAllocated.toLocaleString()}`;
+            document.getElementById('remainingStat').textContent = `$${remaining.toLocaleString()}`;
+            document.getElementById('savingsRateStat').textContent = `${savingsRate.toFixed(1)}%`;
+
+            // Update savings tracker
+            const savingsGoal = parseFloat(document.getElementById('savingsGoal').value) || 20;
+            const targetSavings = (income * savingsGoal) / 100;
+            const actualSavings = budgetItems.find(item => item.category.toLowerCase().includes('saving'))?.amount || 0;
+            const savingsProgress = targetSavings > 0 ? (actualSavings / targetSavings * 100) : 0;
+
+            document.getElementById('savingsAmount').textContent = `$${actualSavings.toLocaleString()}`;
+            document.getElementById('savingsFill').style.width = `${Math.min(savingsProgress, 100)}%`;
+            document.getElementById('savingsPercent').textContent = `${savingsProgress.toFixed(1)}%`;
+
+            // Animate stat cards
+            anime({
+                targets: '.stat-card',
+                scale: [0.95, 1],
+                duration: 300,
+                delay: anime.stagger(50),
+                easing: 'easeOutQuad'
+            });
+        }
+
+        // Chart Management
+        function initializeCharts() {
+            // Budget Pie Chart
+            const pieCtx = document.getElementById('budgetPieChart').getContext('2d');
+            charts.budgetPie = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                            '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Trends Chart
+            const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+            charts.trends = new Chart(trendsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Expenses',
+                        data: [2400, 2200, 2800, 2600, 2500, 2700],
+                        borderColor: '#FF6384',
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Savings',
+                        data: [800, 900, 700, 850, 900, 950],
+                        borderColor: '#36A2EB',
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCharts() {
+            if (charts.budgetPie && budgetItems.length > 0) {
+                charts.budgetPie.data.labels = budgetItems.map(item => item.category);
+                charts.budgetPie.data.datasets[0].data = budgetItems.map(item => item.amount);
+                charts.budgetPie.update();
+            }
+        }
+
+        function updateAnalyticsCharts() {
+            // Category Chart
+            const categoryCtx = document.getElementById('categoryChart');
+            if (categoryCtx) {
+                new Chart(categoryCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: budgetItems.map(item => item.category),
+                        datasets: [{
+                            label: 'Budgeted',
+                            data: budgetItems.map(item => item.amount),
+                            backgroundColor: '#36A2EB'
+                        }, {
+                            label: 'Actual',
+                            data: budgetItems.map(item => item.amount * (0.8 + Math.random() * 0.4)),
+                            backgroundColor: '#FF6384'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Comparison Chart
+            const comparisonCtx = document.getElementById('comparisonChart');
+            if (comparisonCtx) {
+                new Chart(comparisonCtx.getContext('2d'), {
+                    type: 'radar',
+                    data: {
+                        labels: ['Savings Rate', 'Budget Adherence', 'Emergency Fund', 'Debt Ratio', 'Investment Growth'],
+                        datasets: [{
+                            label: 'Your Score',
+                            data: [85, 90, 70, 60, 75],
+                            borderColor: '#36A2EB',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)'
+                        }, {
+                            label: 'Recommended',
+                            data: [80, 85, 80, 40, 70],
+                            borderColor: '#FF6384',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // AI Insights
+        function generateNewInsights() {
+            const insights = [
+                {
+                    title: "💡 Optimization Opportunity",
+                    text: "You're spending 35% on dining out. Reducing this by 20% could save you $200/month."
+                },
+                {
+                    title: "📈 Investment Suggestion",
+                    text: "Your emergency fund is well-stocked. Consider investing the excess in a diversified portfolio."
+                },
+                {
+                    title: "🎯 Goal Achievement",
+                    text: "You're ahead of schedule on your vacation savings! You could reach your goal 3 months early."
+                },
+                {
+                    title: "⚠️ Budget Alert",
+                    text: "Your transportation costs have increased 15% this quarter. Review your commuting options."
+                },
+                {
+                    title: "💎 Savings Boost",
+                    text: "By automating your savings, you could increase your rate from 15% to 22% without feeling the impact."
+                }
+            ];
+
+            const container = document.getElementById('aiInsights');
+            container.innerHTML = '';
+
+            // Randomly select 3 insights
+            const selectedInsights = insights.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+            selectedInsights.forEach((insight, index) => {
+                const item = document.createElement('div');
+                item.className = 'recommendation-item';
+                item.innerHTML = `
+                    <h4>${insight.title}</h4>
+                    <p>${insight.text}</p>
+                `;
+                container.appendChild(item);
+
+                // Animate insights
+                anime({
+                    targets: item,
+                    translateY: [50, 0],
+                    opacity: [0, 1],
+                    delay: index * 200,
+                    duration: 600,
+                    easing: 'easeOutQuad'
+                });
+            });
+        }
+
+        // Goals Management
+        function addNewGoal() {
+            const goalName = prompt('Enter goal name:');
+            const targetAmount = parseFloat(prompt('Enter target amount:'));
+            const currentAmount = parseFloat(prompt('Enter current amount (optional):')) || 0;
+
+            if (goalName && targetAmount) {
+                goals.push({
+                    name: goalName,
+                    target: targetAmount,
+                    current: currentAmount,
+                    created: new Date()
+                });
+
+                updateGoalsDisplay();
+                saveData();
+            }
+        }
+
+        function updateGoalsDisplay() {
+            const container = document.getElementById('goalsContainer');
+            container.innerHTML = '';
+
+            goals.forEach((goal, index) => {
+                const progress = (goal.current / goal.target) * 100;
+                const item = document.createElement('div');
+                item.className = 'goal-item';
+                item.style = 'background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 15px;';
+                item.innerHTML = `
+                    <h4>${goal.name}</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Progress: $${goal.current.toLocaleString()} / $${goal.target.toLocaleString()}</span>
+                        <span>${progress.toFixed(1)}%</span>
+                    </div>
+                    <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; margin: 10px 0;">
+                        <div style="width: ${Math.min(progress, 100)}%; height: 100%; background: #2ecc71; border-radius: 5px; transition: width 0.5s ease;"></div>
+                    </div>
+                    <button class="btn btn-primary" onclick="updateGoalProgress(${index})">Update Progress</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function updateGoalProgress(index) {
+            const newAmount = parseFloat(prompt('Enter current amount:', goals[index].current));
+            if (!isNaN(newAmount)) {
+                goals[index].current = newAmount;
+                updateGoalsDisplay();
+                saveData();
+            }
+        }
+
+        // Emergency Fund Calculator
+        function calculateEmergencyFund() {
+            const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+            const months = parseFloat(document.getElementById('emergencyMonths').value) || 6;
+            const needed = monthlyExpenses * months;
+
+            document.getElementById('emergencyFundNeeded').textContent = `$${needed.toLocaleString()}`;
+        }
+
+        // Debt Management
+        function addDebtItem() {
+            const debtName = prompt('Enter debt name (e.g., Credit Card, Student Loan):');
+            const balance = parseFloat(prompt('Enter current balance:'));
+            const apr = parseFloat(prompt('Enter APR (%):'));
+            const minPayment = parseFloat(prompt('Enter minimum monthly payment:'));
+
+            if (debtName && balance && apr && minPayment) {
+                debts.push({
+                    name: debtName,
+                    balance: balance,
+                    apr: apr,
+                    minPayment: minPayment
+                });
+
+                updateDebtsDisplay();
+                saveData();
+            }
+        }
+
+        function updateDebtsDisplay() {
+            const container = document.getElementById('debtsContainer');
+            container.innerHTML = '';
+
+            debts.forEach(debt => {
+                const monthlyRate = debt.apr / 100 / 12;
+                const payoffTime = Math.log(1 + (debt.balance * monthlyRate) / debt.minPayment) / Math.log(1 + monthlyRate);
+                const totalInterest = (debt.minPayment * payoffTime) - debt.balance;
+
+                const item = document.createElement('div');
+                item.className = 'debt-item';
+                item.style = 'background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 15px;';
+                item.innerHTML = `
+                    <h4>${debt.name}</h4>
+                    <p>Balance: $${debt.balance.toLocaleString()} | APR: ${debt.apr}% | Min Payment: $${debt.minPayment}</p>
+                    <p>Payoff Time: ${payoffTime.toFixed(1)} months | Total Interest: $${totalInterest.toFixed(0)}</p>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function calculateDebtStrategy() {
+            if (debts.length === 0) {
+                alert('Please add some debts first!');
+                return;
+            }
+
+            // Calculate debt avalanche vs snowball
+            const avalanche = [...debts].sort((a, b) => b.apr - a.apr);
+            const snowball = [...debts].sort((a, b) => a.balance - b.balance);
+
+            let strategy = "🎯 Optimal Debt Payoff Strategy:\n\n";
+            strategy += "💡 AVALANCHE METHOD (Recommended):\n";
+            strategy += "Pay minimums on all debts, then focus extra payments on highest APR debt:\n";
+            avalanche.forEach((debt, index) => {
+                strategy += `${index + 1}. ${debt.name} (${debt.apr}% APR)\n`;
+            });
+
+            strategy += "\n❄️ SNOWBALL METHOD (Motivational):\n";
+            strategy += "Pay minimums on all debts, then focus extra payments on smallest balance:\n";
+            snowball.forEach((debt, index) => {
+                strategy += `${index + 1}. ${debt.name} ($${debt.balance.toLocaleString()})\n`;
+            });
+
+            alert(strategy);
+        }
+
+        // Quick Add Modal
+        function quickAddExpense() {
+            document.getElementById('quickAddModal').style.display = 'block';
+            anime({
+                targets: '.modal-content',
+                scale: [0.7, 1],
+                opacity: [0, 1],
+                duration: 300,
+                easing: 'easeOutQuad'
+            });
+        }
+
+        function closeModal() {
+            anime({
+                targets: '.modal-content',
+                scale: [1, 0.7],
+                opacity: [1, 0],
+                duration: 300,
+                easing: 'easeInQuad',
+                complete: () => {
+                    document.getElementById('quickAddModal').style.display = 'none';
+                }
+            });
+        }
+
+        function addQuickExpense() {
+            const category = document.getElementById('quickCategory').value;
+            const amount = parseFloat(document.getElementById('quickAmount').value);
+            const note = document.getElementById('quickNote').value;
+
+            if (amount > 0) {
+                expenses.push({
+                    category: category,
+                    amount: amount,
+                    note: note,
+                    date: new Date()
+                });
+
+                // Clear form
+                document.getElementById('quickAmount').value = '';
+                document.getElementById('quickNote').value = '';
+
+                closeModal();
+                saveData();
+
+                // Show success animation
+                anime({
+                    targets: '.floating-action',
+                    scale: [1, 1.3, 1],
+                    duration: 600,
+                    easing: 'easeInOutQuad'
+                });
+            }
+        }
+
+        // Reports and Export
+        function generatePDFReport() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFontSize(20);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Advanced Budget Report', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Generated on: ' + new Date().toLocaleDateString(), 105, 30, { align: 'center' });
+
+            let yPos = 50;
+
+            // Budget Summary
+            const income = parseFloat(document.getElementById('monthlyIncome').value) || 0;
+            const totalAllocated = budgetItems.reduce((sum, item) => sum + item.amount, 0);
+            const remaining = income - totalAllocated;
+
+            doc.setFont('helvetica', 'bold');
+            doc.text('Budget Summary:', 20, yPos);
+            yPos += 10;
+
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Total Income: $${income.toFixed(2)}`, 20, yPos);
+            yPos += 7;
+            doc.text(`Total Allocated: $${totalAllocated.toFixed(2)}`, 20, yPos);
+            yPos += 7;
+            doc.text(`Remaining: $${remaining.toFixed(2)}`, 20, yPos);
+            yPos += 15;
+
+            // Budget Breakdown
+            doc.setFont('helvetica', 'bold');
+            doc.text('Budget Breakdown:', 20, yPos);
+            yPos += 10;
+
+            budgetItems.forEach(item => {
+                doc.setFont('helvetica', 'normal');
+                doc.text(`${item.category}: $${item.amount.toFixed(2)} (${item.percentage}%)`, 20, yPos);
+                yPos += 7;
+            });
+
+            doc.save('advanced-budget-report.pdf');
+        }
+
+        function exportToExcel() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Category,Amount,Percentage,Priority\n";
+
+            budgetItems.forEach(item => {
+                csvContent += `${item.category},${item.amount},${item.percentage}%,${item.priority}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "budget-data.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function generateInsightsReport() {
+            const insights = [
+                "📊 Your savings rate is above the recommended 20%",
+                "🏠 Housing costs are within the healthy 30% range",
+                "🍔 Consider reducing dining out expenses by 15%",
+                "💳 You have excellent debt management",
+                "📈 Your emergency fund is well-established"
+            ];
+
+            alert("🧠 AI Financial Insights Report:\n\n" + insights.join('\n\n'));
+        }
+
+        function emailReport() {
+            const subject = "My Advanced Budget Report";
+            const body = `Here's my latest budget summary:
+
+Total Income: $${parseFloat(document.getElementById('monthlyIncome').value || 0).toFixed(2)}
+Total Allocated: $${budgetItems.reduce((sum, item) => sum + item.amount, 0).toFixed(2)}
+
+Budget Breakdown:
+${budgetItems.map(item => `${item.category}: $${item.amount.toFixed(2)} (${item.percentage}%)`).join('\n')}
+
+Generated by Advanced Budget Allocator Pro`;
+
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+        // Data Management
+        function saveData() {
+            localStorage.setItem('budgetItems', JSON.stringify(budgetItems));
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            localStorage.setItem('goals', JSON.stringify(goals));
+            localStorage.setItem('debts', JSON.stringify(debts));
+            localStorage.setItem('monthlyIncome', document.getElementById('monthlyIncome').value);
+        }
+
+        function loadSavedData() {
+            const savedBudgetItems = localStorage.getItem('budgetItems');
+            const savedExpenses = localStorage.getItem('expenses');
+            const savedGoals = localStorage.getItem('goals');
+            const savedDebts = localStorage.getItem('debts');
+            const savedIncome = localStorage.getItem('monthlyIncome');
+
+            if (savedBudgetItems) {
+                budgetItems = JSON.parse(savedBudgetItems);
+            }
+            if (savedExpenses) {
+                expenses = JSON.parse(savedExpenses);
+            }
+            if (savedGoals) {
+                goals = JSON.parse(savedGoals);
+                updateGoalsDisplay();
+            }
+            if (savedDebts) {
+                debts = JSON.parse(savedDebts);
+                updateDebtsDisplay();
+            }
+            if (savedIncome) {
+                document.getElementById('monthlyIncome').value = savedIncome;
+            }
+        }
+
+        // Initialize insights
+        setTimeout(generateNewInsights, 1000);
+
+        // Auto-save every 30 seconds
+        setInterval(saveData, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ConectCamp Reviews</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --dark: #212121;
+      --darker: #1A1D23;
+      --green: #34C759;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: var(--dark);
+      color: var(--white);
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--green);
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: var(--darker);
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    form input, form textarea, form select, form button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    form input, form textarea {
+      background: #2c2c2c;
+      color: var(--white);
+    }
+
+    form button {
+      background: var(--green);
+      color: var(--white);
+      cursor: pointer;
+    }
+
+    .reviews-section {
+      max-width: 1000px;
+      margin: 40px auto;
+    }
+
+    .filter {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .filter select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .review-card {
+      background: var(--darker);
+      margin: 10px 0;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .review-card h3 {
+      color: var(--green);
+      margin-bottom: 5px;
+    }
+
+    .review-card .stars {
+      color: gold;
+    }
+
+    @media (max-width: 600px) {
+      form, .review-card {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Customer Reviews</h1>
+
+  <form id="reviewForm">
+    <input type="text" id="name" placeholder="Your Name" required />
+    <input type="email" id="email" placeholder="Your Email" required />
+    <textarea id="comment" rows="4" placeholder="Your Comment" required></textarea>
+    <select id="rating" required>
+      <option value="">Select Rating</option>
+      <option value="5">★★★★★</option>
+      <option value="4">★★★★</option>
+      <option value="3">★★★</option>
+      <option value="2">★★</option>
+      <option value="1">★</option>
+    </select>
+    <button type="submit">Submit Review</button>
+  </form>
+
+  <div class="reviews-section">
+    <div class="filter">
+      <label for="filter">Filter by Rating:</label>
+      <select id="filter">
+        <option value="all">All</option>
+        <option value="5">5 Stars</option>
+        <option value="4">4 Stars</option>
+        <option value="3">3 Stars</option>
+        <option value="2">2 Stars</option>
+        <option value="1">1 Star</option>
+      </select>
+    </div>
+    <div id="reviews"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('reviewForm');
+    const reviewsContainer = document.getElementById('reviews');
+    const filter = document.getElementById('filter');
+
+    let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+
+    function renderReviews(filterValue = 'all') {
+      reviewsContainer.innerHTML = '';
+      let filtered = filterValue === 'all' ? reviews : reviews.filter(r => r.rating == filterValue);
+      filtered.forEach(review => {
+        const div = document.createElement('div');
+        div.className = 'review-card';
+        div.innerHTML = `
+          <h3>${review.name}</h3>
+          <div class="stars">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+          <p>${review.comment}</p>
+          <small>${review.email}</small>
+        `;
+        reviewsContainer.appendChild(div);
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const newReview = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        comment: document.getElementById('comment').value.trim(),
+        rating: parseInt(document.getElementById('rating').value)
+      };
+      reviews.unshift(newReview);
+      localStorage.setItem('reviews', JSON.stringify(reviews));
+      form.reset();
+      renderReviews(filter.value);
+    });
+
+    filter.addEventListener('change', () => {
+      renderReviews(filter.value);
+    });
+
+    renderReviews();
+  </script>
+</body>
+</html>

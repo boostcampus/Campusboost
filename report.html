@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Advanced Report Card Generator</title>
+  <style>
+    :root {
+      --dark: #212121;
+      --darker: #1A1D23;
+      --green: #34C759;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: var(--dark);
+      color: var(--white);
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--green);
+      margin-bottom: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: var(--darker);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #000;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .input-group button {
+      padding: 10px 15px;
+      background: var(--green);
+      color: var(--dark);
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .input-group button:hover {
+      background: #2ebf55;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #444;
+    }
+
+    th {
+      background: var(--dark);
+    }
+
+    .summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: #111;
+      border-radius: 10px;
+    }
+
+    .summary p {
+      margin: 5px 0;
+      font-size: 1.1rem;
+    }
+
+    .actions {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .actions button {
+      padding: 12px 25px;
+      font-size: 1rem;
+      background: var(--green);
+      color: var(--dark);
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    @media (max-width: 600px) {
+      .input-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 Report Card Generator</h1>
+  <div class="container">
+    <div class="input-group">
+      <input type="text" id="subject" placeholder="Subject" />
+      <input type="number" id="score" placeholder="Score (0 - 100)" />
+      <button onclick="addSubject()">Add</button>
+    </div>
+
+    <table id="report-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Subject</th>
+          <th>Score</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="summary" id="summary">
+      <p>Total Subjects: 0</p>
+      <p>Total Score: 0</p>
+      <p>Average: 0</p>
+      <p>Final Grade: -</p>
+    </div>
+
+    <div class="actions">
+      <button onclick="window.print()">🖨️ Print Report</button>
+    </div>
+  </div>
+
+  <script>
+    const tableBody = document.querySelector("#report-table tbody");
+    const summary = document.getElementById("summary");
+
+    let subjects = [];
+
+    function addSubject() {
+      const subject = document.getElementById("subject").value.trim();
+      const score = parseFloat(document.getElementById("score").value);
+
+      if (!subject || isNaN(score) || score < 0 || score > 100) {
+        alert("Please enter a valid subject and score between 0 and 100.");
+        return;
+      }
+
+      subjects.push({ subject, score });
+      document.getElementById("subject").value = "";
+      document.getElementById("score").value = "";
+
+      renderTable();
+      updateSummary();
+    }
+
+    function getGrade(score) {
+      if (score >= 90) return 'A+';
+      if (score >= 80) return 'A';
+      if (score >= 70) return 'B';
+      if (score >= 60) return 'C';
+      if (score >= 50) return 'D';
+      return 'F';
+    }
+
+    function renderTable() {
+      tableBody.innerHTML = "";
+      subjects.forEach((item, index) => {
+        const row = `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${item.subject}</td>
+            <td>${item.score}</td>
+            <td>${getGrade(item.score)}</td>
+          </tr>`;
+        tableBody.innerHTML += row;
+      });
+    }
+
+    function updateSummary() {
+      const totalSubjects = subjects.length;
+      const totalScore = subjects.reduce((acc, item) => acc + item.score, 0);
+      const average = totalSubjects ? (totalScore / totalSubjects).toFixed(2) : 0;
+      const finalGrade = getGrade(average);
+
+      summary.innerHTML = `
+        <p>Total Subjects: ${totalSubjects}</p>
+        <p>Total Score: ${totalScore}</p>
+        <p>Average: ${average}</p>
+        <p>Final Grade: ${finalGrade}</p>`;
+    }
+  </script>
+</body>
+</html>

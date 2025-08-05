@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Universal To-Do List</title>
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg);
+      font-family: 'Segoe UI', sans-serif;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      background-color: var(--card);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: var(--card-shadow);
+      animation: slideIn 1s ease;
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 25px;
+      font-size: 28px;
+      animation: fadeIn 1s ease;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #2c2f36;
+      color: var(--text);
+      font-size: 16px;
+      transition: var(--transition);
+    }
+
+    input[type="text"]:focus {
+      outline: 2px solid var(--accent);
+    }
+
+    button {
+      background: var(--accent);
+      color: var(--light-text);
+      padding: 12px 18px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      background: var(--accent-secondary);
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    li {
+      background: #2c2f36;
+      padding: 14px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: fadeInItem 0.4s ease;
+    }
+
+    li.completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .actions button {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      margin-left: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .actions button:hover {
+      transform: scale(1.2);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #333;
+      color: var(--accent);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .back-link:hover {
+      background: #444;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInItem {
+      from { opacity: 0; transform: translateX(-30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 22px; }
+      input[type="text"], button { font-size: 14px; }
+      button { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Universal To-Do List</h1>
+    <form id="todo-form">
+      <input type="text" id="task-input" placeholder="Enter your task..." required />
+      <button type="submit">Add</button>
+    </form>
+    <ul id="task-list"></ul>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('todo-form');
+    const input = document.getElementById('task-input');
+    const list = document.getElementById('task-list');
+
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    function renderTasks() {
+      list.innerHTML = '';
+      tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        if (task.completed) li.classList.add('completed');
+
+        li.innerHTML = `
+          <span>${task.text}</span>
+          <div class="actions">
+            <button onclick="toggleTask(${index})">✔</button>
+            <button onclick="deleteTask(${index})">✖</button>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    function saveTasks() {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function addTask(text) {
+      tasks.push({ text, completed: false });
+      saveTasks();
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      saveTasks();
+      renderTasks();
+    }
+
+    function toggleTask(index) {
+      tasks[index].completed = !tasks[index].completed;
+      saveTasks();
+      renderTasks();
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (text !== '') {
+        addTask(text);
+        input.value = '';
+      }
+    });
+
+    // Initial Load
+    renderTasks();
+  </script>
+</body>
+</html>

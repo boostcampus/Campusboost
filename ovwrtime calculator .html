@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Overtime Pay Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .calculator {
+      background-color: var(--card);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: var(--card-shadow);
+      max-width: 400px;
+      width: 100%;
+      animation: fadeIn 1s ease-in-out;
+      transition: var(--transition);
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    h2 {
+      color: var(--accent);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      background-color: #2c2f35;
+      color: var(--text);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      background: var(--accent);
+      border: none;
+      color: var(--light-text);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      background: var(--accent-secondary);
+    }
+
+    .result {
+      margin-top: 25px;
+      background: #2b2f33;
+      padding: 15px;
+      border-radius: 12px;
+      line-height: 1.8;
+    }
+
+    .result span {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    a.back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: var(--info);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    a.back-link:hover {
+      color: var(--accent);
+    }
+
+    @media screen and (max-width: 480px) {
+      .calculator {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h2>Overtime Pay Calculator</h2>
+    <label for="hourlyRate">Hourly Rate (₦)</label>
+    <input type="number" id="hourlyRate" placeholder="e.g., 1500" />
+
+    <label for="overtimeHours">Overtime Hours</label>
+    <input type="number" id="overtimeHours" placeholder="e.g., 5" />
+
+    <button onclick="calculatePay()">Calculate</button>
+
+    <div class="result" id="resultBox" style="display: none;">
+      <p>Overtime Pay: <span id="overtimePay">₦0</span></p>
+      <p>Total Pay (Only Overtime): <span id="totalPay">₦0</span></p>
+    </div>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    function calculatePay() {
+      const rate = parseFloat(document.getElementById("hourlyRate").value);
+      const overtime = parseFloat(document.getElementById("overtimeHours").value);
+
+      if (isNaN(rate) || isNaN(overtime) || rate <= 0 || overtime < 0) {
+        alert("Please enter valid values.");
+        return;
+      }
+
+      const overtimeRate = 1.5 * rate;
+      const overtimePay = overtimeRate * overtime;
+
+      document.getElementById("overtimePay").textContent = "₦" + overtimePay.toFixed(2);
+      document.getElementById("totalPay").textContent = "₦" + overtimePay.toFixed(2);
+      document.getElementById("resultBox").style.display = "block";
+    }
+  </script>
+</body>
+</html>

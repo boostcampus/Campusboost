@@ -1,0 +1,244 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Church Management App</title>
+  <style>
+    :root {
+      --bg-main: #212121;
+      --bg-card: #1A1D23;
+      --accent: #34C759;
+      --text: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text); padding: 1rem; }
+    section { margin-bottom: 2rem; background-color: var(--bg-card); border-radius: 10px; padding: 1rem; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
+    h1, h2 { color: var(--accent); margin-bottom: 1rem; }
+    form { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1rem; }
+    input, textarea, button { padding: 0.7rem; border: none; border-radius: 5px; font-size: 1rem; }
+    input, textarea { background-color: #2e2e2e; color: var(--text); }
+    button { background-color: var(--accent); color: #000; cursor: pointer; font-weight: bold; transition: background 0.3s ease; }
+    button:hover { background-color: #28a745; }
+    #logout-btn { margin-top: 1rem; background-color: crimson; color: white; }
+    .admin-section { background-color: #333; padding: 1rem; border-radius: 10px; }
+    .admin-section h3 { color: #f0ad4e; }
+    @media (max-width: 768px) { body { padding: 0.5rem; } section { padding: 0.8rem; } }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <!-- Login Section -->
+  <section id="login-section">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="email" placeholder="Email" id="email" required />
+      <input type="password" placeholder="Password" id="password" required />
+      <button type="submit">Login</button>
+    </form>
+  </section>  <!-- Dashboard Section -->  <section id="dashboard" style="display:none">
+    <h1>Church Management App</h1>
+    <button id="logout-btn">Logout</button><!-- Admin: Create User Account -->
+<div class="admin-section">
+  <h3>👤 Create New User</h3>
+  <form id="create-user-form">
+    <input type="email" id="new-user-email" placeholder="New User Email" required />
+    <input type="password" id="new-user-password" placeholder="New User Password" required />
+    <button type="submit">Create Account</button>
+  </form>
+  <p id="user-create-message"></p>
+</div>
+
+<!-- Announcements -->
+<section id="announcements">
+  <h2>📢 Announcements</h2>
+  <form id="announcement-form">
+    <input type="text" id="ann-title" placeholder="Title" required />
+    <textarea id="ann-msg" placeholder="Message" required></textarea>
+    <button type="submit">Post Announcement</button>
+  </form>
+  <div id="announcement-list"></div>
+</section>
+
+<!-- Sermons -->
+<section id="sermons">
+  <h2>⛪ Sermons</h2>
+  <form id="sermon-form">
+    <input type="text" id="sermon-title" placeholder="Sermon Title" required />
+    <input type="text" id="sermon-speaker" placeholder="Speaker" required />
+    <input type="date" id="sermon-date" required />
+    <input type="url" id="sermon-link" placeholder="YouTube Video Link (optional)" />
+    <textarea id="sermon-notes" placeholder="Notes (optional)"></textarea>
+    <button type="submit">Add Sermon</button>
+  </form>
+  <div id="sermon-list"></div>
+</section>
+
+<!-- Attendance -->
+<section id="attendance">
+  <h2>📊 Attendance</h2>
+  <form id="attendance-form">
+    <input type="text" id="attendee-name" placeholder="Member Name" required />
+    <input type="date" id="attendee-date" required />
+    <button type="submit">Mark Attendance</button>
+  </form>
+  <div id="attendance-list"></div>
+</section>
+
+<!-- Expenses -->
+<section id="expenses">
+  <h2>🧾 Expense Management</h2>
+  <form id="expense-form">
+    <input type="text" id="exp-title" placeholder="Expense Title" required />
+    <input type="number" id="exp-amount" placeholder="Amount" required />
+    <textarea id="exp-desc" placeholder="Description"></textarea>
+    <input type="date" id="exp-date" required />
+    <button type="submit">Add Expense</button>
+  </form>
+  <div id="expense-list"></div>
+</section>
+
+<!-- Feedback -->
+<section id="feedback">
+  <h2>📥 Feedback</h2>
+  <form id="feedback-form">
+    <textarea id="feedback-msg" placeholder="Your Feedback" required></textarea>
+    <button type="submit">Submit Feedback</button>
+  </form>
+  <div id="feedback-list"></div>
+</section>
+
+  </section>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const loginForm = document.getElementById("login-form");
+    const dashboard = document.getElementById("dashboard");
+    const loginSection = document.getElementById("login-section");
+    const logoutBtn = document.getElementById("logout-btn");
+    const createUserForm = document.getElementById("create-user-form");
+    const userCreateMsg = document.getElementById("user-create-message");
+
+    let currentUser = null;
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        loginSection.style.display = "none";
+        dashboard.style.display = "block";
+        loadData();
+      } else {
+        currentUser = null;
+        loginSection.style.display = "block";
+        dashboard.style.display = "none";
+      }
+    });
+
+    loginForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password).catch(console.error);
+    });
+
+    logoutBtn.onclick = () => auth.signOut();
+
+    createUserForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const newEmail = document.getElementById("new-user-email").value;
+      const newPassword = document.getElementById("new-user-password").value;
+      try {
+        const userCredential = await firebase.auth().createUserWithEmailAndPassword(newEmail, newPassword);
+        userCreateMsg.textContent = `✅ Created user: ${newEmail}`;
+      } catch (error) {
+        userCreateMsg.textContent = `❌ ${error.message}`;
+      }
+      e.target.reset();
+    };
+
+    function saveData(collection, data) {
+      if (!currentUser) return;
+      db.collection(collection).add({ ...data, visibleTo: currentUser.uid, created: firebase.firestore.FieldValue.serverTimestamp() });
+    }
+
+    function loadData() {
+      const uid = currentUser.uid;
+      loadAndDisplay("announcements", "announcement-list", uid, d => `<p><strong>${d.title}</strong>: ${d.message}</p>`);
+      loadAndDisplay("sermons", "sermon-list", uid, d => `<p><strong>${d.title}</strong> by ${d.speaker} on ${d.date}</p>`);
+      loadAndDisplay("attendance", "attendance-list", uid, d => `<p>${d.name} - ${d.date}</p>`);
+      loadAndDisplay("expenses", "expense-list", uid, d => `<p><strong>${d.title}</strong>: ₦${d.amount} (${d.date})</p>`);
+      loadAndDisplay("feedback", "feedback-list", uid, d => `<p>${d.message}</p>`);
+    }
+
+    function loadAndDisplay(collection, containerId, uid, renderFn) {
+      const container = document.getElementById(containerId);
+      db.collection(collection)
+        .where("visibleTo", "==", uid)
+        .orderBy("created", "desc")
+        .onSnapshot(snapshot => {
+          container.innerHTML = snapshot.docs.map(doc => renderFn(doc.data())).join("");
+        });
+    }
+
+    document.getElementById("announcement-form").onsubmit = e => {
+      e.preventDefault();
+      saveData("announcements", {
+        title: document.getElementById("ann-title").value,
+        message: document.getElementById("ann-msg").value
+      });
+      e.target.reset();
+    };
+
+    document.getElementById("sermon-form").onsubmit = e => {
+      e.preventDefault();
+      saveData("sermons", {
+        title: document.getElementById("sermon-title").value,
+        speaker: document.getElementById("sermon-speaker").value,
+        date: document.getElementById("sermon-date").value,
+        link: document.getElementById("sermon-link").value,
+        notes: document.getElementById("sermon-notes").value
+      });
+      e.target.reset();
+    };
+
+    document.getElementById("attendance-form").onsubmit = e => {
+      e.preventDefault();
+      saveData("attendance", {
+        name: document.getElementById("attendee-name").value,
+        date: document.getElementById("attendee-date").value
+      });
+      e.target.reset();
+    };
+
+    document.getElementById("expense-form").onsubmit = e => {
+      e.preventDefault();
+      saveData("expenses", {
+        title: document.getElementById("exp-title").value,
+        amount: document.getElementById("exp-amount").value,
+        description: document.getElementById("exp-desc").value,
+        date: document.getElementById("exp-date").value
+      });
+      e.target.reset();
+    };
+
+    document.getElementById("feedback-form").onsubmit = e => {
+      e.preventDefault();
+      saveData("feedback", {
+        message: document.getElementById("feedback-msg").value
+      });
+      e.target.reset();
+    };
+  </script></body>
+</html>

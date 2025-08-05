@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --bg-color: #212121;
+      --text-color: #ffffff;
+      --accent-color: #34C759;
+      --card-color: #1A1D23;
+    }
+    .light-mode {
+      --bg-color: #f4f4f4;
+      --text-color: #000000;
+      --card-color: #ffffff;
+    }
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: 0.3s ease;
+    }
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: var(--card-color);
+      padding: 20px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      transition: transform 0.3s ease;
+      transform: translateX(-100%);
+      z-index: 1000;
+    }
+    .sidebar.active {
+      transform: translateX(0);
+    }
+    .sidebar h2 {
+      color: var(--accent-color);
+      margin-bottom: 20px;
+    }
+    .sidebar a {
+      display: block;
+      margin: 15px 0;
+      color: var(--text-color);
+      text-decoration: none;
+    }
+    .main {
+      flex: 1;
+      margin-left: 0;
+      padding: 20px;
+      width: 100%;
+      transition: margin 0.3s;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .menu-btn {
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: var(--accent-color);
+      cursor: pointer;
+    }
+    .theme-switch input {
+      width: 40px; height: 20px;
+      appearance: none;
+      background: #888; border-radius: 20px;
+      position: relative; cursor: pointer;
+    }
+    .theme-switch input:checked {
+      background: var(--accent-color);
+    }
+    .theme-switch input::before {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #fff; transition: 0.3s;
+    }
+    .theme-switch input:checked::before {
+      transform: translateX(20px);
+    }
+    .section {
+      background: var(--card-color);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    h2 {
+      margin-bottom: 15px;
+      color: var(--accent-color);
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      margin-bottom: 10px;
+    }
+    button {
+      background: var(--accent-color);
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #555;
+      text-align: center;
+    }
+    .action-btns button {
+      margin: 0 3px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+    .logout-btn {
+      background: red;
+      color: #fff;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 200px;
+      }
+      .main {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <h2>Admin Panel</h2>
+      <a href="#">Dashboard</a>
+      <a href="#">Users</a>
+      <a href="#">Tools</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+      <div class="topbar">
+        <button class="menu-btn" id="menuToggle"><i class="fas fa-bars"></i></button>
+        <h1>Admin Dashboard</h1>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="theme-switch">
+            <input type="checkbox" id="themeToggle">
+          </div>
+          <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+      </div>
+
+      <!-- Tool Form -->
+      <div class="section">
+        <h2>Add Tool (Free or Premium)</h2>
+        <label>Tool Name</label>
+        <input type="text" id="toolName">
+        <label>Tool Link</label>
+        <input type="text" id="toolLink">
+        <label>Type</label>
+        <select id="toolType">
+          <option value="Free">Free</option>
+          <option value="Premium">Premium</option>
+        </select>
+        <button onclick="addTool()">Add Tool</button>
+      </div>
+
+      <!-- Tools Table -->
+      <div class="section">
+        <h2>All Tools</h2>
+        <table id="toolsTable">
+          <thead>
+            <tr><th>Name</th><th>Type</th><th>Link</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Users Table -->
+      <div class="section">
+        <h2>Registered Users</h2>
+        <table id="usersTable">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Balance</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('menuToggle');
+    const themeToggle = document.getElementById('themeToggle');
+
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+
+    themeToggle.addEventListener('change', () => {
+      document.body.classList.toggle('light-mode');
+    });
+
+    // Dummy Users
+    const users = JSON.parse(localStorage.getItem('users')) || [
+      { name: 'Jane Doe', email: 'jane@example.com', balance: 1000, blocked: false },
+      { name: 'John Smith', email: 'john@example.com', balance: 500, blocked: false }
+    ];
+
+    const tools = JSON.parse(localStorage.getItem('tools')) || [];
+
+    function addTool() {
+      const name = document.getElementById('toolName').value;
+      const link = document.getElementById('toolLink').value;
+      const type = document.getElementById('toolType').value;
+      if (!name || !link) return alert("Fill all fields!");
+      tools.push({ name, link, type });
+      localStorage.setItem('tools', JSON.stringify(tools));
+      loadTools();
+      document.getElementById('toolName').value = '';
+      document.getElementById('toolLink').value = '';
+    }
+
+    function loadTools() {
+      const tbody = document.querySelector('#toolsTable tbody');
+      tbody.innerHTML = '';
+      tools.forEach(tool => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${tool.name}</td>
+            <td>${tool.type}</td>
+            <td><a href="${tool.link}" target="_blank">Visit</a></td>
+          </tr>`;
+      });
+    }
+
+    function loadUsers() {
+      const tbody = document.querySelector('#usersTable tbody');
+      tbody.innerHTML = '';
+      users.forEach((user, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>₦${user.balance}</td>
+            <td>${user.blocked ? 'Blocked' : 'Active'}</td>
+            <td class="action-btns">
+              <button onclick="editUser(${i})">Edit</button>
+              <button onclick="toggleBlock(${i})">${user.blocked ? 'Unblock' : 'Block'}</button>
+              <button onclick="addCoins(${i})">Add Coins</button>
+            </td>
+          </tr>`;
+      });
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    function editUser(i) {
+      const name = prompt("New name:", users[i].name);
+      const email = prompt("New email:", users[i].email);
+      if (name && email) {
+        users[i].name = name;
+        users[i].email = email;
+        loadUsers();
+      }
+    }
+
+    function toggleBlock(i) {
+      users[i].blocked = !users[i].blocked;
+      loadUsers();
+    }
+
+    function addCoins(i) {
+      const coins = parseInt(prompt("Coins to add:", "0"));
+      if (!isNaN(coins)) {
+        users[i].balance += coins;
+        loadUsers();
+      }
+    }
+
+    function logout() {
+      window.location.href = "register.html";
+    }
+
+    // Init
+    loadTools();
+    loadUsers();
+  </script>
+</body>
+</html>

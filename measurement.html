@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Measurement Converter</title>
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .converter {
+      background-color: var(--card);
+      padding: 2rem;
+      border-radius: 1rem;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: var(--card-shadow);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+    }
+
+    select,
+    input,
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    select,
+    input {
+      background-color: var(--sidebar);
+      color: var(--text);
+    }
+
+    button {
+      background-color: var(--accent);
+      color: var(--light-text);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: var(--accent-secondary);
+    }
+
+    #result {
+      text-align: center;
+      font-size: 1.25rem;
+      margin-top: 1rem;
+      color: var(--accent);
+    }
+
+    @media screen and (max-width: 600px) {
+      .converter {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="converter">
+    <h1>Measurement Converter</h1>
+    <input type="number" id="inputValue" placeholder="Enter value" />
+    <select id="measurementType" onchange="populateUnits()">
+      <option value="length">Length</option>
+      <option value="mass">Mass</option>
+      <option value="temperature">Temperature</option>
+      <option value="time">Time</option>
+      <option value="area">Area</option>
+      <option value="volume">Volume</option>
+      <option value="speed">Speed</option>
+    </select>
+    <select id="fromUnit"></select>
+    <select id="toUnit"></select>
+    <button onclick="convertMeasurement()">Convert</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const units = {
+      length: ["Meter", "Kilometer", "Centimeter", "Millimeter", "Mile", "Yard", "Foot", "Inch"],
+      mass: ["Kilogram", "Gram", "Milligram", "Pound", "Ounce"],
+      temperature: ["Celsius", "Fahrenheit", "Kelvin"],
+      time: ["Second", "Minute", "Hour", "Day"],
+      area: ["Square Meter", "Square Kilometer", "Square Mile", "Square Foot", "Square Yard", "Acre", "Hectare"],
+      volume: ["Cubic Meter", "Liter", "Milliliter", "Cubic Inch", "Cubic Foot", "Gallon"],
+      speed: ["Meter/Second", "Kilometer/Hour", "Mile/Hour", "Foot/Second"]
+    };
+
+    const conversions = {
+      length: {
+        base: "Meter",
+        convert: {
+          Meter: 1,
+          Kilometer: 0.001,
+          Centimeter: 100,
+          Millimeter: 1000,
+          Mile: 0.000621371,
+          Yard: 1.09361,
+          Foot: 3.28084,
+          Inch: 39.3701
+        }
+      },
+      mass: {
+        base: "Kilogram",
+        convert: {
+          Kilogram: 1,
+          Gram: 1000,
+          Milligram: 1000000,
+          Pound: 2.20462,
+          Ounce: 35.274
+        }
+      },
+      temperature: {
+        custom: true
+      },
+      time: {
+        base: "Second",
+        convert: {
+          Second: 1,
+          Minute: 1 / 60,
+          Hour: 1 / 3600,
+          Day: 1 / 86400
+        }
+      },
+      area: {
+        base: "Square Meter",
+        convert: {
+          "Square Meter": 1,
+          "Square Kilometer": 1e-6,
+          "Square Mile": 3.861e-7,
+          "Square Foot": 10.7639,
+          "Square Yard": 1.19599,
+          "Acre": 0.000247105,
+          "Hectare": 0.0001
+        }
+      },
+      volume: {
+        base: "Cubic Meter",
+        convert: {
+          "Cubic Meter": 1,
+          Liter: 1000,
+          Milliliter: 1e6,
+          "Cubic Inch": 61023.7,
+          "Cubic Foot": 35.3147,
+          Gallon: 264.172
+        }
+      },
+      speed: {
+        base: "Meter/Second",
+        convert: {
+          "Meter/Second": 1,
+          "Kilometer/Hour": 3.6,
+          "Mile/Hour": 2.23694,
+          "Foot/Second": 3.28084
+        }
+      }
+    };
+
+    function populateUnits() {
+      const type = document.getElementById("measurementType").value;
+      const from = document.getElementById("fromUnit");
+      const to = document.getElementById("toUnit");
+      from.innerHTML = to.innerHTML = "";
+      units[type].forEach(unit => {
+        const option1 = document.createElement("option");
+        option1.text = unit;
+        const option2 = document.createElement("option");
+        option2.text = unit;
+        from.add(option1);
+        to.add(option2);
+      });
+    }
+
+    function convertMeasurement() {
+      const type = document.getElementById("measurementType").value;
+      const value = parseFloat(document.getElementById("inputValue").value);
+      const from = document.getElementById("fromUnit").value;
+      const to = document.getElementById("toUnit").value;
+      const resultDiv = document.getElementById("result");
+
+      if (isNaN(value)) {
+        resultDiv.textContent = "Please enter a valid number.";
+        return;
+      }
+
+      if (type === "temperature") {
+        let result = null;
+        if (from === to) result = value;
+        else if (from === "Celsius" && to === "Fahrenheit") result = value * 9 / 5 + 32;
+        else if (from === "Celsius" && to === "Kelvin") result = value + 273.15;
+        else if (from === "Fahrenheit" && to === "Celsius") result = (value - 32) * 5 / 9;
+        else if (from === "Fahrenheit" && to === "Kelvin") result = (value - 32) * 5 / 9 + 273.15;
+        else if (from === "Kelvin" && to === "Celsius") result = value - 273.15;
+        else if (from === "Kelvin" && to === "Fahrenheit") result = (value - 273.15) * 9 / 5 + 32;
+        resultDiv.textContent = `${value} ${from} = ${result.toFixed(2)} ${to}`;
+        return;
+      }
+
+      const conv = conversions[type];
+      const base = value / conv.convert[from];
+      const final = base * conv.convert[to];
+      resultDiv.textContent = `${value} ${from} = ${final.toFixed(4)} ${to}`;
+    }
+
+    populateUnits();
+  </script>
+</body>
+</html>

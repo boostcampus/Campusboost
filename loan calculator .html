@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loan Calculator</title>
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: var(--accent);
+      animation: fadeIn 1.2s ease;
+    }
+
+    .calculator-card {
+      background-color: var(--card);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+    }
+
+    .calculator-card:hover {
+      transform: scale(1.015);
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+      animation: slideIn 0.5s ease;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #bbb;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background-color: #2c2f36;
+      color: var(--text);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    input:focus, select:focus {
+      border: 1px solid var(--accent);
+      box-shadow: 0 0 5px var(--accent);
+      outline: none;
+    }
+
+    .calculate-btn {
+      background-color: var(--accent);
+      color: var(--light-text);
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .calculate-btn:hover {
+      background-color: var(--accent-secondary);
+    }
+
+    .results {
+      margin-top: 20px;
+      text-align: left;
+      animation: fadeIn 1s ease;
+    }
+
+    .results p {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #333;
+      color: var(--accent);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .back-link:hover {
+      background: #444;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Loan Calculator</h1>
+    <div class="calculator-card">
+      <form id="loan-form">
+        <div class="input-group">
+          <label for="amount">Loan Amount (₦):</label>
+          <input type="number" id="amount" placeholder="Enter amount" required />
+        </div>
+        <div class="input-group">
+          <label for="interest">Interest Rate (% per year):</label>
+          <input type="number" id="interest" placeholder="e.g. 10" required />
+        </div>
+        <div class="input-group">
+          <label for="duration">Loan Duration:</label>
+          <input type="number" id="duration" placeholder="e.g. 2" required />
+        </div>
+        <div class="input-group">
+          <label for="type">Duration Type:</label>
+          <select id="type" required>
+            <option value="years">Years</option>
+            <option value="months">Months</option>
+          </select>
+        </div>
+        <button type="submit" class="calculate-btn">Calculate</button>
+      </form>
+
+      <div id="results" class="results hidden">
+        <h3>Results</h3>
+        <p><strong>Monthly Payment:</strong> ₦<span id="monthly-payment">0</span></p>
+        <p><strong>Total Payment:</strong> ₦<span id="total-payment">0</span></p>
+        <p><strong>Total Interest:</strong> ₦<span id="total-interest">0</span></p>
+      </div>
+    </div>
+
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    const form = document.getElementById('loan-form');
+    const results = document.getElementById('results');
+
+    const formatCurrency = (num) => {
+      return parseFloat(num).toLocaleString("en-NG", {
+        style: "currency",
+        currency: "NGN",
+        minimumFractionDigits: 2
+      });
+    };
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const amount = parseFloat(document.getElementById('amount').value);
+      const interest = parseFloat(document.getElementById('interest').value);
+      let duration = parseFloat(document.getElementById('duration').value);
+      const type = document.getElementById('type').value;
+
+      if (type === "years") {
+        duration *= 12;
+      }
+
+      const principal = amount;
+      const monthlyRate = interest / 100 / 12;
+      const numberOfPayments = duration;
+
+      const x = Math.pow(1 + monthlyRate, numberOfPayments);
+      const monthly = (principal * x * monthlyRate) / (x - 1);
+
+      if (isFinite(monthly)) {
+        const total = monthly * numberOfPayments;
+        const totalInterest = total - principal;
+
+        document.getElementById('monthly-payment').innerText = formatCurrency(monthly);
+        document.getElementById('total-payment').innerText = formatCurrency(total);
+        document.getElementById('total-interest').innerText = formatCurrency(totalInterest);
+        results.classList.remove('hidden');
+      } else {
+        results.classList.add('hidden');
+        alert('Please enter valid input values.');
+      }
+    });
+  </script>
+</body>
+</html>

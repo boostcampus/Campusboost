@@ -1,0 +1,374 @@
+import React, { useState, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
+
+// Define the Firebase config and app ID using global variables
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+// Hashed credentials for client-side comparison (NOT truly secure hashing for production)
+// In a real application, passwords would be hashed and stored server-side,
+// and authentication would involve sending credentials to a server for verification.
+// For this client-side demo, we're using simple Base64 encoding as a placeholder for "hashing".
+const HASHED_EMAIL = btoa('boostcamp@gmail.com'); // Base64 encoded 'boostcamp@gmail.com'
+const HASHED_PASSWORD = btoa('Fawizzy'); // Base64 encoded 'Fawizzy'
+
+function App() {
+  const [db, setDb] = useState(null);
+  const [auth, setAuth] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [isAuthReady, setIsAuthReady] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  const [bookTitle, setBookTitle] = useState('');
+  const [bookAuthor, setBookAuthor] = useState('');
+  const [bookPrice, setBookPrice] = useState('');
+  const [isFree, setIsFree] = useState(false);
+  const [books, setBooks] = useState([]);
+  const [addBookMessage, setAddBookMessage] = useState('');
+
+  // Initialize Firebase and set up authentication listener
+  useEffect(() => {
+    try {
+      const app = initializeApp(firebaseConfig);
+      const firestoreDb = getFirestore(app);
+      const firebaseAuth = getAuth(app);
+
+      setDb(firestoreDb);
+      setAuth(firebaseAuth);
+
+      const unsubscribe = onAuthStateChanged(firebaseAuth, async (user) => {
+        if (user) {
+          setUserId(user.uid);
+          setIsAuthReady(true);
+        } else {
+          // Sign in anonymously if no initial auth token is provided or user is not logged in
+          if (initialAuthToken) {
+            try {
+              await signInWithCustomToken(firebaseAuth, initialAuthToken);
+            } catch (error) {
+              console.error("Error signing in with custom token:", error);
+              // Fallback to anonymous if custom token fails
+              await signInAnonymously(firebaseAuth);
+            }
+          } else {
+            await signInAnonymously(firebaseAuth);
+          }
+        }
+      });
+
+      return () => unsubscribe();
+    } catch (error) {
+      console.error("Error initializing Firebase:", error);
+    }
+  }, []);
+
+  // Fetch books from Firestore
+  useEffect(() => {
+    if (db && isAuthReady) {
+      const booksCollectionRef = collection(db, `artifacts/${appId}/public/data/books`);
+      // Note: orderBy is commented out as per instructions to avoid index issues.
+      // If sorting is critical, fetch all and sort client-side.
+      const q = query(booksCollectionRef); // , orderBy('timestamp', 'desc')
+
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const booksData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setBooks(booksData);
+      }, (error) => {
+        console.error("Error fetching books:", error);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [db, isAuthReady, appId]);
+
+  // Handle login attempt
+  const handleLogin = () => {
+    setLoginError('');
+    const enteredEmailHashed = btoa(loginEmail);
+    const enteredPasswordHashed = btoa(loginPassword);
+
+    if (enteredEmailHashed === HASHED_EMAIL && enteredPasswordHashed === HASHED_PASSWORD) {
+      setIsLoggedIn(true);
+      setLoginEmail('');
+      setLoginPassword('');
+    } else {
+      setLoginError('Invalid email or password.');
+    }
+  };
+
+  // Handle adding a new book
+  const handleAddBook = async () => {
+    if (!db) {
+      setAddBookMessage('Database not initialized. Please try again.');
+      return;
+    }
+    if (!bookTitle || !bookAuthor) {
+      setAddBookMessage('Please fill in both title and author.');
+      return;
+    }
+
+    try {
+      const booksCollectionRef = collection(db, `artifacts/${appId}/public/data/books`);
+      await addDoc(booksCollectionRef, {
+        title: bookTitle,
+        author: bookAuthor,
+        price: isFree ? 'Free' : (bookPrice || 'N/A'),
+        timestamp: new Date().toISOString(), // Add a timestamp for potential sorting
+      });
+      setAddBookMessage('Book added successfully!');
+      setBookTitle('');
+      setBookAuthor('');
+      setBookPrice('');
+      setIsFree(false);
+      setTimeout(() => setAddBookMessage(''), 3000); // Clear message after 3 seconds
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      setAddBookMessage('Error adding book. Please try again.');
+    }
+  };
+
+  // Close modal and reset states
+  const closeModal = () => {
+    setShowModal(false);
+    setIsLoggedIn(false);
+    setLoginError('');
+    setLoginEmail('');
+    setLoginPassword('');
+    setBookTitle('');
+    setBookAuthor('');
+    setBookPrice('');
+    setIsFree(false);
+    setAddBookMessage('');
+  };
+
+  return (
+    <div className="min-h-screen bg-bg text-text font-inter p-4 flex flex-col items-center">
+      {/* Tailwind CSS CDN */}
+      <script src="https://cdn.tailwindcss.com"></script>
+      {/* Google Fonts - Inter */}
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+      {/* Custom CSS for variables and base styles */}
+      <style>
+        {`
+        :root {
+          --primary-color: #3b82f6;
+          --accent-color: #9333ea;
+          --background-color: #f9fafb;
+          --text-dark: #1f2937;
+          --text-muted: #6b7280;
+
+          /* Updated variables */
+          --bg: var(--background-color);
+          --sidebar: #e5e7eb; /* Lighter sidebar for light mode */
+          --card: #ffffff; /* White card background */
+
+          --accent: var(--primary-color);
+          --accent-secondary: var(--accent-color);
+
+          --text: var(--text-dark);
+          --light-text: #ffffff; /* For dark elements on light background */
+          --light-bg: #e5e7eb; /* Lighter background for elements */
+
+          --success: #22c55e;
+          --danger: #ef4444;
+          --warning: #f59e0b;
+          --info: #3b82f6;
+
+          --gradient: linear-gradient(
+            135deg,
+            var(--primary-color) 0%,
+            var(--accent-color) 100%
+          );
+          --gradient-subtle: linear-gradient(
+            135deg,
+            rgba(59, 130, 246, 0.1) 0%,
+            rgba(147, 51, 234, 0.1) 100%
+          );
+          --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+          --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+          --glass-border: 1px solid rgba(0, 0, 0, 0.05);
+          --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        body {
+          font-family: 'Inter', sans-serif;
+          background-color: var(--bg);
+          color: var(--text);
+        }
+        .btn-gradient {
+          background: var(--gradient);
+          transition: var(--transition);
+        }
+        .btn-gradient:hover {
+          opacity: 0.9;
+          transform: translateY(-2px);
+        }
+        .card-shadow {
+          box-shadow: var(--card-shadow);
+        }
+        .modal-overlay {
+          background-color: rgba(0, 0, 0, 0.6);
+        }
+        `}
+      </style>
+
+      <header className="w-full max-w-4xl bg-card card-shadow rounded-xl p-6 mb-8 flex flex-col sm:flex-row justify-between items-center">
+        <h1 className="text-3xl font-bold text-accent mb-4 sm:mb-0">My Bookshop</h1>
+        <button
+          onClick={() => setShowModal(true)}
+          className="btn-gradient text-light-text font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-accent-secondary focus:ring-opacity-75 transition-all duration-300 ease-in-out transform hover:scale-105"
+        >
+          Add Book
+        </button>
+      </header>
+
+      <main className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {books.length === 0 ? (
+          <p className="col-span-full text-center text-text-muted text-lg">No books added yet. Click "Add Book" to get started!</p>
+        ) : (
+          books.map(book => (
+            <div key={book.id} className="bg-card card-shadow rounded-xl p-6 flex flex-col justify-between transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl">
+              <div>
+                <h3 className="text-xl font-semibold text-text mb-2">{book.title}</h3>
+                <p className="text-text-muted text-sm mb-4">by {book.author}</p>
+              </div>
+              <div className="flex justify-between items-center pt-4 border-t border-light-bg">
+                <span className={`font-bold text-lg ${book.price === 'Free' ? 'text-success' : 'text-accent'}`}>
+                  {book.price}
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+      </main>
+
+      {/* Login/Add Book Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+          <div className="bg-card card-shadow rounded-xl p-8 w-full max-w-md transform transition-all duration-300 ease-out scale-95 opacity-0 animate-modal-open">
+            <h2 className="text-2xl font-bold text-accent mb-6 text-center">
+              {isLoggedIn ? 'Add New Book' : 'Admin Login'}
+            </h2>
+
+            {!isLoggedIn ? (
+              // Login Form
+              <>
+                <div className="mb-4">
+                  <label htmlFor="email" className="block text-text-muted text-sm font-medium mb-2">Email</label>
+                  <input
+                    type="email"
+                    id="email"
+                    className="w-full p-3 border border-light-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-200"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    placeholder="boostcamp@gmail.com"
+                  />
+                </div>
+                <div className="mb-6">
+                  <label htmlFor="password" className="block text-text-muted text-sm font-medium mb-2">Password</label>
+                  <input
+                    type="password"
+                    id="password"
+                    className="w-full p-3 border border-light-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-200"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    placeholder="Fawizzy"
+                  />
+                </div>
+                {loginError && (
+                  <p className="text-danger text-sm mb-4 text-center">{loginError}</p>
+                )}
+                <button
+                  onClick={handleLogin}
+                  className="btn-gradient w-full text-light-text font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-secondary focus:ring-opacity-75 transition-all duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Login
+                </button>
+              </>
+            ) : (
+              // Add Book Form
+              <>
+                <div className="mb-4">
+                  <label htmlFor="bookTitle" className="block text-text-muted text-sm font-medium mb-2">Book Title</label>
+                  <input
+                    type="text"
+                    id="bookTitle"
+                    className="w-full p-3 border border-light-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-200"
+                    value={bookTitle}
+                    onChange={(e) => setBookTitle(e.target.value)}
+                    placeholder="e.g., The Great Adventure"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="bookAuthor" className="block text-text-muted text-sm font-medium mb-2">Author</label>
+                  <input
+                    type="text"
+                    id="bookAuthor"
+                    className="w-full p-3 border border-light-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-200"
+                    value={bookAuthor}
+                    onChange={(e) => setBookAuthor(e.target.value)}
+                    placeholder="e.g., Jane Doe"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="bookPrice" className="block text-text-muted text-sm font-medium mb-2">Price</label>
+                  <div className="flex items-center space-x-4">
+                    <input
+                      type="number"
+                      id="bookPrice"
+                      className="flex-grow p-3 border border-light-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-200"
+                      value={bookPrice}
+                      onChange={(e) => setBookPrice(e.target.value)}
+                      placeholder="e.g., 19.99"
+                      disabled={isFree}
+                    />
+                    <label className="flex items-center text-text-muted text-sm font-medium">
+                      <input
+                        type="checkbox"
+                        className="mr-2 h-4 w-4 text-accent rounded focus:ring-accent"
+                        checked={isFree}
+                        onChange={(e) => setIsFree(e.target.checked)}
+                      />
+                      Free
+                    </label>
+                  </div>
+                </div>
+                {addBookMessage && (
+                  <p className={`text-sm mb-4 text-center ${addBookMessage.includes('successfully') ? 'text-success' : 'text-danger'}`}>
+                    {addBookMessage}
+                  </p>
+                )}
+                <button
+                  onClick={handleAddBook}
+                  className="btn-gradient w-full text-light-text font-semibold py-3 px-6 rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-secondary focus:ring-opacity-75 transition-all duration-300 ease-in-out transform hover:scale-105"
+                >
+                  Add Book
+                </button>
+              </>
+            )}
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 text-text-muted hover:text-text-dark text-2xl font-bold transition-all duration-200"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;

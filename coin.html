@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buy Coins</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+      
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+      
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+      
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    h1, h2 {
+      color: var(--accent);
+      text-align: center;
+    }
+
+    .section {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 0 auto 30px;
+      box-shadow: var(--card-shadow);
+      max-width: 500px;
+      transition: var(--transition);
+    }
+
+    .option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 15px 0;
+      background: #2c2c2c;
+      padding: 12px 16px;
+      border-radius: 10px;
+      transition: var(--transition);
+    }
+
+    .option span {
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 18px;
+      background-color: var(--accent);
+      color: var(--light-text);
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      background: var(--accent-secondary);
+    }
+
+    .balance {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: var(--info);
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: var(--accent);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .back-link:hover {
+      color: var(--accent-secondary);
+    }
+  </style>
+</head>
+<body>
+
+<h1>👛 Buy Coins</h1>
+
+<div class="balance" id="balance">Balance: ₦0 coins</div>
+
+<div class="section">
+  <h2>🪙 Coin Packs (₦1 = 1 Coin + Bonuses)</h2>
+  <div class="option"><span>₦2,000 → <b>2,500 Coins</b></span><button onclick="buyCoins(2000, 2500)">Buy</button></div>
+  <div class="option"><span>₦5,000 → <b>6,500 Coins</b></span><button onclick="buyCoins(5000, 6500)">Buy</button></div>
+  <div class="option"><span>₦10,000 → <b>15,000 Coins</b></span><button onclick="buyCoins(10000, 15000)">Buy</button></div>
+  <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+</div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+    authDomain: "conectcamp-db2c2.firebaseapp.com",
+    projectId: "conectcamp-db2c2",
+    storageBucket: "conectcamp-db2c2.appspot.com",
+    messagingSenderId: "648442230919",
+    appId: "1:648442230919:web:28b61283dbb72f8f966022",
+    measurementId: "G-3Q2ZS872YC"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  let currentUID = null;
+
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      alert("Please log in first.");
+      window.location.href = "login.html";
+    } else {
+      currentUID = user.uid;
+      updateBalanceUI();
+    }
+  });
+
+  function updateBalanceUI() {
+    if (currentUID) {
+      db.collection("users").doc(currentUID).get().then(doc => {
+        const coins = doc.exists ? (doc.data().coins || 0) : 0;
+        document.getElementById("balance").textContent = `Balance: ₦${coins.toLocaleString()} coins`;
+      }).catch(error => {
+        console.error("Error fetching balance:", error);
+      });
+    }
+  }
+
+  function buyCoins(nairaAmount, bonusCoins) {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Login required to buy coins.");
+      return;
+    }
+
+    FlutterwaveCheckout({
+      public_key: "FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X",
+      tx_ref: "coin_purchase_" + Date.now() + "_" + user.uid.substring(0, 5),
+      amount: nairaAmount,
+      currency: "NGN",
+      payment_options: "card,ussd,banktransfer",
+      customer: {
+        email: user.email,
+        phonenumber: user.phoneNumber || "N/A",
+        name: user.displayName || "Customer"
+      },
+      customizations: {
+        title: "Coin Purchase",
+        description: `Get ${bonusCoins} coins for ₦${nairaAmount}`,
+        logo: "https://your-website.com/logo.png"
+      },
+      callback: function (data) {
+        if (data.status === "successful") {
+          const userRef = db.collection("users").doc(user.uid);
+          db.runTransaction(async (transaction) => {
+            const doc = await transaction.get(userRef);
+            const currentCoins = doc.exists ? (doc.data().coins || 0) : 0;
+            transaction.update(userRef, { coins: currentCoins + bonusCoins });
+          }).then(() => {
+            updateBalanceUI();
+            alert(`✅ Payment successful! You received ${bonusCoins} coins.`);
+          }).catch(error => {
+            console.error("Firebase transaction failed:", error);
+            alert("⚠️ Payment went through, but we couldn't credit your coins. Contact support.");
+          });
+        } else {
+          alert("❌ Payment failed or cancelled.");
+        }
+      },
+      onclose: function () {
+        console.log("Payment popup closed.");
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

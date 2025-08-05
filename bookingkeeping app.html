@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📚 Bookkeeping App</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", sans-serif; }
+    body {
+      background-color: #212121;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: #1A1D23;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 0 12px rgba(52, 199, 89, 0.25);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #34C759;
+    }
+
+    form, .filter-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    form input, form select, form button, .filter-box input, .filter-box button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    input, select {
+      background: #2a2d33;
+      color: #fff;
+    }
+
+    button {
+      background: #34C759;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #28a745;
+    }
+
+    .summary, .monthly-summary {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background: #2a2d33;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .entries {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .entry {
+      background: #2a2d33;
+      padding: 10px;
+      border-left: 6px solid #34C759;
+      border-radius: 8px;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .entry.expense { border-left-color: red; }
+
+    .entry .top {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+
+    .entry .bottom {
+      font-size: 13px;
+      color: #ccc;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5px;
+    }
+
+    .chat-box {
+      margin-top: 30px;
+      padding: 10px;
+      background: #2a2d33;
+      border-radius: 8px;
+    }
+
+    .chat-box textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      background: #1A1D23;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .chat-box button {
+      width: 100%;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      form input, form select, form button {
+        font-size: 14px;
+      }
+
+      .summary {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Bookkeeping</h1>
+
+    <form id="bookForm">
+      <input type="text" id="desc" placeholder="Description" required />
+      <input type="number" id="amount" placeholder="Amount (₦)" required />
+      <input type="date" id="date" required />
+      <select id="category">
+        <option value="income">Income</option>
+        <option value="sales">Sales</option>
+        <option value="purchase">Purchase</option>
+        <option value="expense">Expense</option>
+      </select>
+      <button type="submit">Add Entry</button>
+    </form>
+
+    <div class="filter-box">
+      <input type="date" id="filterDate" />
+      <button onclick="applyDateFilter()">Filter by Date</button>
+      <button onclick="clearFilter()">Clear Filter</button>
+    </div>
+
+    <div class="summary">
+      <div>Income: ₦<span id="inc">0</span></div>
+      <div>Expense: ₦<span id="exp">0</span></div>
+      <div>Balance: ₦<span id="bal">0</span></div>
+    </div>
+
+    <div class="monthly-summary">
+      <div>This Month: ₦<span id="monthlyTotal">0</span></div>
+    </div>
+
+    <div class="entries" id="entries"></div>
+
+    <div class="chat-box">
+      <textarea placeholder="Ask a finance question... (demo only)"></textarea>
+      <button onclick="alert('Chatbot feature coming soon!')">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const uid = new URLSearchParams(window.location.search).get("uid");
+    if (!uid) {
+      alert("No UID provided. Please access with ?uid=your_id");
+      throw new Error("UID is required");
+    }
+
+    const STORAGE_KEY = `bookData_${uid}`;
+
+    const form = document.getElementById("bookForm");
+    const desc = document.getElementById("desc");
+    const amount = document.getElementById("amount");
+    const date = document.getElementById("date");
+    const category = document.getElementById("category");
+    const entries = document.getElementById("entries");
+    const inc = document.getElementById("inc");
+    const exp = document.getElementById("exp");
+    const bal = document.getElementById("bal");
+    const monthlyTotal = document.getElementById("monthlyTotal");
+
+    let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let filteredDate = null;
+
+    function formatDate(d) {
+      return new Date(d).toLocaleDateString("en-GB", {
+        day: "2-digit", month: "short", year: "numeric"
+      });
+    }
+
+    function render() {
+      entries.innerHTML = "";
+      let totalIncome = 0;
+      let totalExpense = 0;
+      let thisMonthTotal = 0;
+
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      let list = data;
+      if (filteredDate) {
+        list = list.filter(entry => entry.date === filteredDate);
+      }
+
+      list.forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "entry " + (["expense", "purchase"].includes(entry.category) ? "expense" : "");
+
+        div.innerHTML = `
+          <div class="top">
+            <span>${entry.desc}</span>
+            <span>₦${entry.amount.toLocaleString()}</span>
+          </div>
+          <div class="bottom">
+            <span>${entry.category.toUpperCase()}</span>
+            <span>${formatDate(entry.date)}</span>
+          </div>
+        `;
+
+        entries.appendChild(div);
+
+        if (["income", "sales"].includes(entry.category)) {
+          totalIncome += Number(entry.amount);
+        } else {
+          totalExpense += Number(entry.amount);
+        }
+
+        const d = new Date(entry.date);
+        if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+          thisMonthTotal += Number(entry.amount);
+        }
+      });
+
+      inc.textContent = totalIncome.toLocaleString();
+      exp.textContent = totalExpense.toLocaleString();
+      bal.textContent = (totalIncome - totalExpense).toLocaleString();
+      monthlyTotal.textContent = thisMonthTotal.toLocaleString();
+    }
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const entry = {
+        desc: desc.value.trim(),
+        amount: parseFloat(amount.value),
+        date: date.value,
+        category: category.value
+      };
+
+      if (!entry.desc || !entry.amount || !entry.date) return;
+
+      data.push(entry);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      form.reset();
+      render();
+    });
+
+    function applyDateFilter() {
+      const dateVal = document.getElementById("filterDate").value;
+      filteredDate = dateVal;
+      render();
+    }
+
+    function clearFilter() {
+      filteredDate = null;
+      document.getElementById("filterDate").value = "";
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

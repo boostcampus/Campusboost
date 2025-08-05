@@ -1,0 +1,139 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buy Coins - ToolBox Vault</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
+  <style>
+    :root {
+      --bg-dark: #212121;
+      --bg-light: #1A1D23;
+      --accent: #34C759;
+      --text: #ffffff;
+    }body {
+  margin: 0;
+  background: var(--bg-dark);
+  color: var(--text);
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+}
+
+h1 {
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.coin-pack {
+  background: var(--bg-light);
+  padding: 20px;
+  margin: 15px;
+  border-radius: 15px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  transition: 0.3s;
+}
+
+.coin-pack:hover {
+  transform: scale(1.03);
+}
+
+.coin-pack button {
+  margin-top: 10px;
+  background: var(--accent);
+  color: var(--bg-dark);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.back {
+  margin-top: 40px;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+  </style>
+</head>
+<body>
+  <h1>🪙 Buy Coins</h1>  <div class="coin-pack">
+    <h2>Buy 100 Coins</h2>
+    <p>Price: ₦100</p>
+    <button onclick="makePayment(100, 100)">Buy Now</button>
+  </div>  <div class="coin-pack">
+    <h2>Buy 500 Coins</h2>
+    <p>Price: ₦500</p>
+    <button onclick="makePayment(500, 500)">Buy Now</button>
+  </div>  <div class="coin-pack">
+    <h2>Buy 1,000 Coins</h2>
+    <p>Price: ₦1000</p>
+    <button onclick="makePayment(1000, 1000)">Buy Now</button>
+  </div>  <div class="back" onclick="location.href='dashboard.html'">⬅ Back to Dashboard</div>  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser;
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) return window.location.href = "login.html";
+      currentUser = user;
+    });
+
+    window.makePayment = (amount, coins) => {
+      if (!currentUser) return alert("Login required");
+
+      FlutterwaveCheckout({
+        public_key: "FLWPUBK_TEST-xxxxxxxxxxxxxxxxxxxxx-X", // Replace with your Flutterwave public key
+        tx_ref: `TX-${Date.now()}`,
+        amount: amount,
+        currency: "NGN",
+        payment_options: "card,ussd,banktransfer",
+        customer: {
+          email: currentUser.email,
+        },
+        callback: async function (data) {
+          if (data.status === "successful") {
+            const userRef = doc(db, "users", currentUser.uid);
+            const snap = await getDoc(userRef);
+            const current = snap.exists() ? (snap.data().coins || 0) : 0;
+            await updateDoc(userRef, {
+              coins: current + coins
+            });
+            alert("✅ Coins added successfully!");
+            location.href = "dashboard.html";
+          }
+        },
+        onclose: function () {
+          console.log("Payment closed");
+        },
+        customizations: {
+          title: "ToolBox Vault Coins",
+          description: `Buying ${coins} coins`,
+          logo: "https://your-logo-url.png"
+        },
+      });
+    }
+  </script></body>
+</html>

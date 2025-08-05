@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tax Calculator</title>
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .calculator {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: var(--card-shadow);
+      width: 100%;
+      max-width: 450px;
+      animation: fadeIn 1s ease-in-out;
+      transition: var(--transition);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input[type="number"], select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #2e2e2e;
+      color: var(--text);
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    input[type="number"]:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 5px var(--accent);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--light-text);
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: var(--accent-secondary);
+    }
+
+    .result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #2a2a2a;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      text-align: center;
+      color: var(--accent);
+      animation: slideUp 0.7s ease-out;
+    }
+
+    a.back-link {
+      display: block;
+      margin-top: 1rem;
+      text-align: center;
+      color: var(--info);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    a.back-link:hover {
+      color: var(--accent-secondary);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h2>Professional Tax Calculator</h2>
+    <div class="form-group">
+      <label for="income">Enter Income (₦)</label>
+      <input type="number" id="income" placeholder="e.g. 500000" />
+    </div>
+    <div class="form-group">
+      <label for="rate">Tax Rate (%)</label>
+      <input type="number" id="rate" placeholder="e.g. 7.5" />
+    </div>
+    <div class="form-group">
+      <label for="period">Income Period</label>
+      <select id="period">
+        <option value="yearly">Yearly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+    </div>
+    <button onclick="calculateTax()">Calculate Tax</button>
+    <div id="result" class="result" style="display: none;"></div>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    function calculateTax() {
+      const income = parseFloat(document.getElementById('income').value);
+      const rate = parseFloat(document.getElementById('rate').value);
+      const period = document.getElementById('period').value;
+      const resultBox = document.getElementById('result');
+
+      if (isNaN(income) || isNaN(rate)) {
+        resultBox.innerText = "Please enter valid numbers.";
+        resultBox.style.display = 'block';
+        return;
+      }
+
+      const tax = (income * rate) / 100;
+      const netIncome = income - tax;
+
+      let message = `<strong>Total Tax:</strong> ₦${tax.toFixed(2)}<br>
+                     <strong>Net Income:</strong> ₦${netIncome.toFixed(2)}<br>`;
+
+      if (period === 'monthly') {
+        message += `<br><em>Equivalent Yearly Tax:</em> ₦${(tax * 12).toFixed(2)}<br>
+                    <em>Equivalent Yearly Net:</em> ₦${(netIncome * 12).toFixed(2)}`;
+      } else {
+        message += `<br><em>Equivalent Monthly Tax:</em> ₦${(tax / 12).toFixed(2)}<br>
+                    <em>Equivalent Monthly Net:</em> ₦${(netIncome / 12).toFixed(2)}`;
+      }
+
+      resultBox.innerHTML = message;
+      resultBox.style.display = 'block';
+    }
+  </script>
+</body>
+</html>

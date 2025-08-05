@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chucky AI - Business Assistant</title>
+</head>
+<style>
+/* === Global Styles === */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: all 0.3s ease;
+}
+
+body {
+  background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+  color: #fff;
+  padding: 0;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  background-color: #1e1e2f;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  height: 95vh; /* Adjusted for better fit on screen */
+}
+
+header {
+  background-color: #151521;
+  padding: 16px;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 1px solid #444;
+}
+
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
+}
+
+.message {
+  padding: 10px 14px;
+  border-radius: 20px;
+  max-width: 80%;
+  word-wrap: break-word;
+  animation: fadeIn 0.3s ease;
+}
+
+.user {
+  align-self: flex-end;
+  background-color: #4e54c8;
+}
+
+.ai {
+  align-self: flex-start;
+  background-color: #27293d;
+}
+
+.chat-input {
+  display: flex;
+  padding: 10px;
+  background: #151521;
+  gap: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background-color: #333; /* Darker input background */
+  color: #fff;
+}
+
+.chat-input button {
+  padding: 10px 18px;
+  background: #4e54c8;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.tool-section {
+  display: none;
+  background-color: #23263a;
+  padding: 15px;
+  border-top: 1px solid #333;
+  animation: slideDown 0.4s ease;
+  overflow-y: auto; /* Allows scrolling within the tool section */
+  flex-shrink: 0; /* Prevents shrinking when chat window grows */
+  max-height: 60%; /* Limit height to ensure it fits on smaller screens */
+}
+
+/* Specific style for the donation wallet list container */
+#donationWalletList {
+  max-height: 200px; /* Adjust as needed to fit well within the screen */
+  overflow-y: auto;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #1a1a25;
+}
+
+.tool-section h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #ffc107;
+}
+
+.tool-section input,
+.tool-section textarea,
+.tool-section button,
+.tool-section select { /* Added select for VAT rate */
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  background-color: #333; /* Darker input background */
+  color: #fff;
+}
+
+.tool-section input[type="date"],
+.tool-section input[type="datetime-local"] {
+    color: #fff;
+}
+
+
+.tool-section button {
+  background-color: #4e54c8;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tool-section textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  background: #333;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 10px;
+  color: #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Allows content to wrap if too long */
+}
+
+ul li code {
+    word-break: break-all; /* Ensures long addresses wrap */
+    flex-grow: 1; /* Allows code to take up available space */
+    margin-right: 10px;
+}
+
+ul li.completed {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+ul li .delete-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 10px;
+  flex-shrink: 0; /* Prevents button from shrinking */
+}
+
+.copy-btn {
+  background-color: #007bff; /* Blue */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: auto; /* Pushes button to the right */
+  flex-shrink: 0; /* Prevents button from shrinking */
+}
+.copy-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Styles for item input sections */
+.item-input {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+    align-items: center;
+}
+.item-input input {
+    margin-bottom: 0;
+}
+.item-input button {
+    width: auto;
+    padding: 8px 12px;
+    margin-bottom: 0;
+    font-size: 12px;
+    border-radius: 5px;
+}
+.item-list-display {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+.item-list-display div {
+    padding: 3px 0;
+    border-bottom: 1px dashed #555;
+}
+.item-list-display div:last-child {
+    border-bottom: none;
+}
+.total-display {
+    font-weight: bold;
+    margin-top: 10px;
+    padding-top: 5px;
+    border-top: 1px solid #555;
+}
+
+/* Invoice/Quotation/Receipt styling for image generation */
+.document-template {
+    background-color: #fff;
+    color: #000;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+    width: 100%;
+    max-width: 400px; /* Constrain width for image */
+    margin: 10px auto;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.document-template h3 {
+    text-align: center;
+    color: #4e54c8;
+    margin-bottom: 15px;
+}
+.document-template .header-info,
+.document-template .client-info,
+.document-template .company-info {
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eee;
+}
+.document-template .items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+.document-template .items-table th,
+.document-template .items-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    font-size: 0.9em;
+}
+.document-template .items-table th {
+    background-color: #f2f2f2;
+}
+.document-template .totals {
+    margin-top: 15px;
+    text-align: right;
+    font-size: 0.95em;
+}
+.document-template .totals div {
+    margin-bottom: 5px;
+}
+.document-template .footer-notes {
+    margin-top: 20px;
+    font-size: 0.8em;
+    color: #555;
+    text-align: center;
+}
+
+/* Styling for download links */
+.download-link {
+    display: block;
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    margin-top: 15px;
+    font-weight: bold;
+}
+.download-link:hover {
+    background-color: #218838;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #23263a;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    position: relative;
+    max-height: 80vh; /* Make modal scrollable if content is too long */
+    overflow-y: auto;
+}
+
+.modal-content h2 {
+    color: #ffc107;
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.modal-content p {
+    margin-bottom: 15px;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #aaa;
+    cursor: pointer;
+}
+.modal-close-btn:hover {
+    color: #fff;
+}
+
+/* Modal specific wallet list styling */
+.modal-wallet-list {
+    max-height: 250px; /* Keep this if you want it to scroll independently in modal */
+    overflow-y: auto;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #1a1a25;
+}
+
+.modal-wallet-list ul {
+    padding: 0;
+    list-style: none;
+}
+
+.modal-wallet-list ul li {
+    background: #333;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    color: #eee;
+    display: flex;
+    flex-direction: column; /* Stack address and button */
+    align-items: flex-start;
+    gap: 5px;
+}
+
+.modal-wallet-list ul li code {
+    word-break: break-all;
+    font-size: 0.85em;
+    padding-bottom: 5px; /* Space between code and button */
+    flex-grow: 1;
+    width: 100%; /* Make code span full width */
+}
+
+.modal-wallet-list .copy-btn {
+    margin-left: 0; /* Reset margin */
+    width: 100%; /* Make button full width in modal */
+    padding: 8px 10px; /* Adjust padding */
+    font-size: 14px; /* Adjust font size */
+}
+
+
+/* === Animations === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* === Responsive Design === */
+@media (max-width: 600px) {
+  .container {
+    border-radius: 0;
+    max-width: 100%;
+    height: 100vh;
+  }
+
+  .chat-input input,
+  .tool-section input,
+  .tool-section textarea,
+  .tool-section button {
+    font-size: 16px;
+  }
+  ul li {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+  ul li code {
+      margin-right: 0;
+      margin-bottom: 5px;
+  }
+  .copy-btn {
+      margin-left: 0;
+      width: 100%;
+  }
+
+  .item-input {
+      flex-direction: column;
+      align-items: stretch;
+  }
+  .item-input input, .item-input button {
+      width: 100%;
+      margin-right: 0;
+  }
+}
+</style>
+<body>
+  <div class="container">
+    <header>🤖 Chucky AI - Business Assistant</header>
+    <div class="chat-window" id="chatWindow"></div>
+
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Type your message..." />
+      <button class="send-btn">Send</button>
+    </div>
+
+    <div class="tool-section" id="invoiceTool">
+        <h2>📄 Invoice Generator</h2>
+        <input type="text" id="companyName" placeholder="Your Company Name" value="Chucky AI Solutions" /><br>
+        <input type="text" id="companyAddress" placeholder="Your Company Address" value="123 AI Street, Lagos, Nigeria" /><br>
+        <input type="text" id="clientName" placeholder="Client Name" /><br>
+        <input type="text" id="clientAddress" placeholder="Client Address" /><br>
+        <input type="date" id="invoiceIssueDate" /><br>
+        <input type="date" id="invoiceDueDate" /><br>
+
+        <h3>Items</h3>
+        <div id="invoiceItemsInput">
+            <div class="item-input">
+                <input type="text" class="invoice-item-desc" placeholder="Description" />
+                <input type="number" class="invoice-item-qty" placeholder="Qty" min="1" value="1" />
+                <input type="number" class="invoice-item-unitprice" placeholder="Unit Price (₦)" min="0" value="0" />
+                <button onclick="addInvoiceItem()">Add Item</button>
+            </div>
+        </div>
+        <div id="currentInvoiceItems" class="item-list-display"></div>
+        <div class="total-display" id="invoiceSubtotalDisplay">Subtotal: ₦0.00</div>
+        <input type="number" id="invoiceVatRate" placeholder="VAT Rate (%)" value="7.5" min="0" max="100" />
+        <div class="total-display" id="invoiceVatAmountDisplay">VAT (7.5%): ₦0.00</div>
+        <div class="total-display" id="invoiceGrandTotalDisplay">Grand Total: ₦0.00</div>
+        <button onclick="generateInvoice()">Generate & Download Invoice</button>
+        <div id="invoiceOutput" style="margin-top: 10px;"></div>
+        <button onclick="clearInvoice()" style="margin-top: 10px;">Clear Invoice</button>
+    </div>
+
+    <div class="tool-section" id="quotationTool">
+        <h2>📋 Quotation Generator</h2>
+        <input type="text" id="quotationCompanyName" placeholder="Your Company Name" value="Chucky AI Solutions" /><br>
+        <input type="text" id="quotationCompanyAddress" placeholder="Your Company Address" value="123 AI Street, Lagos, Nigeria" /><br>
+        <input type="text" id="quotationClientName" placeholder="Client Name" /><br>
+        <input type="text" id="quotationClientAddress" placeholder="Client Address" /><br>
+        <input type="date" id="quotationIssueDate" /><br>
+        <input type="date" id="quotationValidityDate" placeholder="Valid Until Date" /><br>
+
+        <h3>Items</h3>
+        <div id="quotationItemsInput">
+            <div class="item-input">
+                <input type="text" class="quotation-item-desc" placeholder="Description" />
+                <input type="number" class="quotation-item-qty" placeholder="Qty" min="1" value="1" />
+                <input type="number" class="quotation-item-unitprice" placeholder="Unit Price (₦)" min="0" value="0" />
+                <button onclick="addQuotationItem()">Add Item</button>
+            </div>
+        </div>
+        <div id="currentQuotationItems" class="item-list-display"></div>
+        <div class="total-display" id="quotationSubtotalDisplay">Subtotal: ₦0.00</div>
+        <div class="total-display" id="quotationGrandTotalDisplay">Grand Total: ₦0.00</div>
+        <button onclick="generateQuotation()">Generate & Download Quotation</button>
+        <div id="quotationOutput" style="margin-top: 10px;"></div>
+        <button onclick="clearQuotation()" style="margin-top: 10px;">Clear Quotation</button>
+    </div>
+
+    <div class="tool-section" id="receiptTool">
+        <h2>🧾 Receipt Generator</h2>
+        <input type="text" id="receiptCompanyName" placeholder="Your Company Name" value="Chucky AI Solutions" /><br>
+        <input type="text" id="receiptCustomerName" placeholder="Customer Name" /><br>
+        <input type="date" id="receiptDate" /><br>
+        <input type="text" id="paymentMethod" placeholder="Payment Method (e.g., Cash, Card, Bank Transfer)" /><br>
+
+        <h3>Items</h3>
+        <div id="receiptItemsInput">
+            <div class="item-input">
+                <input type="text" class="receipt-item-desc" placeholder="Description" />
+                <input type="number" class="receipt-item-qty" placeholder="Qty" min="1" value="1" />
+                <input type="number" class="receipt-item-unitprice" placeholder="Unit Price (₦)" min="0" value="0" />
+                <button onclick="addReceiptItem()">Add Item</button>
+            </div>
+        </div>
+        <div id="currentReceiptItems" class="item-list-display"></div>
+        <div class="total-display" id="receiptSubtotalDisplay">Subtotal: ₦0.00</div>
+        <div class="total-display" id="receiptGrandTotalDisplay">Grand Total: ₦0.00</div>
+        <button onclick="generateReceipt()">Generate & Download Receipt</button>
+        <div id="receiptOutput" style="margin-top: 10px;"></div>
+        <button onclick="clearReceipt()" style="margin-top: 10px;">Clear Receipt</button>
+    </div>
+
+    <div class="tool-section" id="taskTool">
+      <h2>📋 Task Manager</h2>
+      <input type="text" id="taskInput" placeholder="New Task" />
+      <button onclick="addTask()">Add Task</button>
+      <ul id="taskList"></ul>
+    </div>
+
+    <div class="tool-section" id="scheduleTool">
+      <h2>📅 Schedule Manager</h2>
+      <input type="text" id="scheduleTitle" placeholder="Meeting/Appointment" /><br><br>
+      <input type="datetime-local" id="scheduleTime" />
+      <button onclick="addSchedule()">Add Schedule</button>
+      <ul id="scheduleList"></ul>
+    </div>
+
+    <div class="tool-section" id="reminderTool">
+      <h2>⏰ Reminder Setup</h2>
+      <input type="text" id="reminderText" placeholder="Reminder Note" />
+      <input type="datetime-local" id="reminderTime" />
+      <button onclick="setReminder()">Set Reminder</button>
+      <ul id="reminderList"></ul>
+    </div>
+
+    <div class="tool-section" id="noteTool">
+      <h2>📝 Note Taker</h2>
+      <textarea id="noteInput" placeholder="Write a note..."></textarea><br>
+      <button onclick="saveNote()">Save Note</button>
+      <div id="noteDisplay" style="margin-top: 10px;"></div>
+      <button onclick="clearNote()" style="margin-top: 10px;">Clear Note</button>
+    </div>
+
+    <div class="tool-section" id="donationTool">
+      <h2>💸 Wallet Donations</h2>
+      <p style="margin-bottom: 10px;">Support Chucky AI's development!</p>
+      <div id="donationWalletList">
+        <ul>
+            <li>
+                Pi Wallet: <code id="piWalletAddress">GCXFGCRN5TLBTBRXOS5NBLWKR77O2TKP6LR6EOU7TFB6MEJSCWGJEL3C</code>
+                <button class="copy-btn" onclick="copyAddress('piWalletAddress', 'Pi Wallet')">Copy</button>
+            </li>
+            <li>
+                BTC: <code id="btcWalletAddress">bc1qqhdmk52xntaapkscxlcph3wv0fxc5kqn6lfaan</code>
+                <button class="copy-btn" onclick="copyAddress('btcWalletAddress', 'BTC Wallet')">Copy</button>
+            </li>
+            <li>
+                Ethereum: <code id="ethWalletAddress">0x54731A1F450d4c253490Ff75Bb98a4795b1162AF</code>
+                <button class="copy-btn" onclick="copyAddress('ethWalletAddress', 'Ethereum Wallet')">Copy</button>
+            </li>
+            <li>
+                BNB Smart Chain: <code id="bnbWalletAddress">0x54731A1F450d4c253490Ff75Bb98a4795b1162AF</code>
+                <button class="copy-btn" onclick="copyAddress('bnbWalletAddress', 'BNB Smart Chain Wallet')">Copy</button>
+            </li>
+            <li>
+                Solana: <code id="solWalletAddress">BrDsLBthev76b5SdyjFJGtuatwn2NzBDHhZfgMFaf8sZ</code>
+                <button class="copy-btn" onclick="copyAddress('solWalletAddress', 'Solana Wallet')">Copy</button>
+            </li>
+        </ul>
+      </div>
+      <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">Thank you for your generosity!</p>
+    </div>
+
+    <div class="tool-section" id="forecastTool">
+      <h2>📈 Revenue Forecast</h2>
+      <input type="number" id="monthlyRevenue" placeholder="Current Monthly Revenue (₦)" />
+      <input type="number" id="optimisticGrowth" placeholder="Optimistic Growth % (e.g., 10)" value="10" />
+      <input type="number" id="conservativeGrowth" placeholder="Conservative Growth % (e.g., 3)" value="3" />
+      <button onclick="calculateForecast()">Generate Scenarios</button>
+      <div id="forecastOutput" style="margin-top: 10px;"></div>
+      <button onclick="clearForecast()" style="margin-top: 10px;">Clear Forecast</button>
+    </div>
+
+    <div class="tool-section" id="expenseTool">
+      <h2>💵 Expense Tracker</h2>
+      <input type="text" id="expenseName" placeholder="Expense Name" />
+      <input type="number" id="expenseAmount" placeholder="Amount (₦)" />
+      <button onclick="addExpense()">Add Expense</button>
+      <ul id="expenseList"></ul>
+      <div id="expenseTotal" style="margin-top: 10px; font-weight: bold;"></div>
+    </div>
+
+    <div class="tool-section" id="inventoryTool">
+      <h2>📦 Inventory Manager</h2>
+      <input type="text" id="productName" placeholder="Product Name" />
+      <input type="number" id="productStock" placeholder="Stock Quantity" />
+      <button onclick="addInventory()">Add Product</button>
+      <ul id="inventoryList"></ul>
+    </div>
+
+    <div class="tool-section" id="profitLossTool">
+        <h2>💰 Profit & Loss Calculator</h2>
+        <input type="number" id="totalRevenuePL" placeholder="Total Revenue (₦)" /><br>
+        <input type="number" id="totalExpensesPL" placeholder="Total Expenses (₦)" /><br>
+        <button onclick="calculateProfitLoss()">Calculate P&L</button>
+        <div id="profitLossOutput" style="margin-top: 10px;"></div>
+    </div>
+
+    <div class="tool-section" id="taxCalculatorTool">
+        <h2>셈 Tax Calculator</h2>
+        <input type="number" id="annualIncomeTax" placeholder="Annual Income (₦)" /><br>
+        <p style="font-size: 0.9em; color: #ccc; margin-bottom: 10px;">
+            *This is a simplified example. Consult a tax professional for accurate calculations.*
+        </p>
+        <button onclick="calculateTax()">Calculate Tax</button>
+        <div id="taxOutput" style="margin-top: 10px;"></div>
+    </div>
+
+    <div class="tool-section" id="vatCalculatorTool">
+        <h2>➕ VAT Calculator</h2>
+        <input type="number" id="vatAmount" placeholder="Amount (₦)" /><br>
+        <select id="vatRateSelect">
+            <option value="5">5% (Standard)</option>
+            <option value="7.5" selected>7.5% (Nigeria)</option>
+            <option value="10">10%</option>
+            <option value="15">15%</option>
+        </select><br>
+        <button onclick="calculateVat()">Calculate VAT</button>
+        <div id="vatOutput" style="margin-top: 10px;"></div>
+    </div>
+
+    <div class="tool-section" id="taxPlannerTool">
+        <h2>🗓️ Tax Planner</h2>
+        <input type="text" id="taxEventName" placeholder="Tax Event (e.g., Income Tax Filing)" />
+        <input type="date" id="taxEventDate" />
+        <button onclick="addTaxEvent()">Add Tax Event</button>
+        <ul id="taxEventList"></ul>
+    </div>
+
+    <div class="tool-section" id="analyticsTool">
+      <h2>📊 Analytics & Insights</h2>
+      <p>Our comprehensive analytics dashboard is still under development, but key insights into your revenue, expenses, and customer interactions are coming soon to help you make informed business decisions!</p>
+      <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">Stay tuned for powerful data visualizations and reporting features.</p>
+    </div>
+  </div>
+
+  <div id="supportUsModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="modal-close-btn" onclick="closeSupportModal()">&times;</button>
+        <h2>Support Chucky AI! 💖</h2>
+        <p>Your generous donation goes a long way in helping us develop and improve Chucky AI, bringing more powerful features to your business operations.</p>
+        <div class="modal-wallet-list">
+            <ul>
+                <li>
+                    Pi Wallet: <code id="modalPiWalletAddress">GCXFGCRN5TLBTBRXOS5NBLWKR77O2TKP6LR6EOU7TFB6MEJSCWGJEL3C</code>
+                    <button class="copy-btn" onclick="copyAddress('modalPiWalletAddress', 'Pi Wallet')">Copy</button>
+                </li>
+                <li>
+                    BTC: <code id="modalBtcWalletAddress">bc1qqhdmk52xntaapkscxlcph3wv0fxc5kqn6lfaan</code>
+                    <button class="copy-btn" onclick="copyAddress('modalBtcWalletAddress', 'BTC Wallet')">Copy</button>
+                </li>
+                <li>
+                    Ethereum: <code id="modalEthWalletAddress">0x54731A1F450d4c253490Ff75Bb98a4795b1162AF</code>
+                    <button class="copy-btn" onclick="copyAddress('modalEthWalletAddress', 'Ethereum Wallet')">Copy</button>
+                </li>
+                <li>
+                    BNB Smart Chain: <code id="modalBnbWalletAddress">0x54731A1F450d4c253490Ff75Bb98a4795b1162AF</code>
+                    <button class="copy-btn" onclick="copyAddress('modalBnbWalletAddress', 'BNB Smart Chain Wallet')">Copy</button>
+                </li>
+                <li>
+                    Solana: <code id="modalSolWalletAddress">BrDsLBthev76b5SdyjFJGtuatwn2NzBDHhZfgMFaf8sZ</code>
+                    <button class="copy-btn" onclick="copyAddress('modalSolWalletAddress', 'Solana Wallet')">Copy</button>
+                </li>
+            </ul>
+        </div>
+        <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">Thank you for your generosity!</p>
+    </div>
+  </div>
+    
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    // === Chucky AI JavaScript Logic ===
+
+    const chatWindow = document.getElementById("chatWindow");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.querySelector(".send-btn");
+    const supportUsModal = document.getElementById("supportUsModal");
+
+    let invoiceItems = [];
+    let quotationItems = [];
+    let receiptItems = [];
+
+    // Auto-generate starting numbers
+    let lastInvoiceNumber = parseInt(localStorage.getItem('lastInvoiceNumber') || '1000');
+    let lastQuotationNumber = parseInt(localStorage.getItem('lastQuotationNumber') || '2000');
+    let lastReceiptNumber = parseInt(localStorage.getItem('lastReceiptNumber') || '3000');
+
+    // Wallet details
+    const walletAddresses = {
+        'piWalletAddress': 'GCXFGCRN5TLBTBRXOS5NBLWKR77O2TKP6LR6EOU7TFB6MEJSCWGJEL3C',
+        'btcWalletAddress': 'bc1qqhdmk52xntaapkscxlcph3wv0fxc5kqn6lfaan',
+        'ethWalletAddress': '0x54731A1F450d4c253490Ff75Bb98a4795b1162AF',
+        'bnbWalletAddress': '0x54731A1F450d4c253490Ff75Bb98a4795b1162AF',
+        'solWalletAddress': 'BrDsLBthev76b5SdyjFJGtuatwn2NzBDHhZfgMFaf8sZ'
+    };
+
+    // Load data from localStorage on startup
+    document.addEventListener("DOMContentLoaded", () => {
+        loadTasks();
+        loadSchedules();
+        loadReminders();
+        loadNote();
+        loadExpenses();
+        loadInventory();
+        loadTaxEvents();
+        // Set today's date for invoice, quotation, receipt
+        const today = new Date().toISOString().slice(0, 10);
+        document.getElementById('invoiceIssueDate').value = today;
+        document.getElementById('quotationIssueDate').value = today;
+        document.getElementById('receiptDate').value = today;
+
+        // Show modal on refresh/load
+        showSupportModal();
+    });
+
+    sendBtn.addEventListener("click", () => {
+      const input = userInput.value.trim();
+      if (input === "") return;
+      appendMessage(input, "user");
+      handleAIResponse(input.toLowerCase());
+      userInput.value = "";
+    });
+
+    function appendMessage(msg, type) {
+      const div = document.createElement("div");
+      div.className = `message ${type}`;
+      div.innerHTML = msg; // Use innerHTML to allow for bold markdown
+      chatWindow.appendChild(div);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function handleAIResponse(input) {
+      if (input === "hi" || input.includes("hello")) {
+        appendMessage(
+          "Hello! I'm Chucky AI, your Business Assistant. Here’s what I can help you with:\n\n" +
+          "- 📄 **Invoice Generation:** Create detailed invoices with multiple items.\n" +
+          "- 📋 **Quotation Generator:** Generate professional sales quotations.\n" +
+          "- 🧾 **Receipt Generator:** Create payment receipts for transactions.\n" +
+          "- 📊 **Profit & Loss Calculator:** Determine your business profitability.\n" +
+          "- 셈 **Tax Calculator:** Estimate your income tax.\n" +
+          "- ➕ **VAT Calculator:** Calculate Value Added Tax.\n" +
+          "- 🗓️ **Tax Planner:** Track important tax deadlines.\n" +
+          "- 📋 **Task Management:** Manage your daily tasks.\n" +
+          "- 📅 **Scheduling:** Organize meetings and appointments.\n" +
+          "- ⏰ **Reminders:** Set timely alerts.\n" +
+          "- 📝 **Notes:** Save important information.\n" +
+          "- 💵 **Expense Tracking:** Monitor your spending.\n" +
+          "- 📈 **Revenue Forecast:** Predict future revenue with scenarios.\n" +
+          "- 📦 **Inventory Management:** Keep track of your products.\n" +
+          "- 💸 **Wallet Donations:** Support Chucky AI.\n\n" +
+          "Type any feature name to begin.",
+          "ai"
+        );
+      } else if (input.includes("invoice")) {
+        toggleTool("invoiceTool");
+        appendMessage("Invoice Generator is now open below. Provide company and client details to create a detailed invoice.", "ai");
+      } else if (input.includes("quotation")) {
+        toggleTool("quotationTool");
+        appendMessage("Quotation Generator is ready! Input your business and client details to generate a sales quote.", "ai");
+      } else if (input.includes("receipt")) {
+        toggleTool("receiptTool");
+        appendMessage("Receipt Generator is open. Create payment receipts with itemized details.", "ai");
+      } else if (input.includes("profit and loss") || input.includes("p&l")) {
+        toggleTool("profitLossTool");
+        appendMessage("Profit & Loss Calculator is available. Enter your revenue and expenses to find your net profit.", "ai");
+      } else if (input.includes("tax calculator")) {
+        toggleTool("taxCalculatorTool");
+        appendMessage("Tax Calculator is here. Enter your annual income for a simplified tax estimation.", "ai");
+      } else if (input.includes("vat calculator")) {
+        toggleTool("vatCalculatorTool");
+        appendMessage("VAT Calculator is open. Input amount and VAT rate to calculate the tax.", "ai");
+      } else if (input.includes("tax planner")) {
+        toggleTool("taxPlannerTool");
+        appendMessage("Tax Planner is ready. Add your important tax events and their due dates.", "ai");
+      } else if (input.includes("task")) {
+        toggleTool("taskTool");
+        appendMessage("Task Manager is now open. Add, complete, or delete your tasks here.", "ai");
+      } else if (input.includes("schedule")) {
+        toggleTool("scheduleTool");
+        appendMessage("Schedule Manager is now available. Organize your meetings and appointments.", "ai");
+      } else if (input.includes("reminder")) {
+        toggleTool("reminderTool");
+        appendMessage("Set your reminders below. I'll alert you when it's time!", "ai");
+      } else if (input.includes("note")) {
+        toggleTool("noteTool");
+        appendMessage("Take and save your notes below. Your thoughts are safe here.", "ai");
+      } else if (input.includes("wallet") || input.includes("donate") || input.includes("donation")) {
+        toggleTool("donationTool");
+        appendMessage("Wallet donations tool opened. Thank you for your generosity!", "ai");
+      } else if (input.includes("revenue") || input.includes("forecast")) {
+        toggleTool("forecastTool");
+        appendMessage("Revenue Forecast Tool loaded. Let's predict your financial future.", "ai");
+      } else if (input.includes("expense")) {
+        toggleTool("expenseTool");
+        appendMessage("Track your expenses below. Keep a close eye on your spending.", "ai");
+      } else if (input.includes("inventory")) {
+        toggleTool("inventoryTool");
+        appendMessage("Inventory Manager opened. Manage your product stock efficiently.", "ai");
+      } else if (input.includes("analytics")) {
+        toggleTool("analyticsTool");
+        appendMessage("Analytics & Insights tool opened. Explore future data analysis capabilities.", "ai");
+      } else {
+        appendMessage("Sorry, I didn't understand that. Try 'hi' to see all features.", "ai");
+      }
+    }
+
+    function toggleTool(id) {
+      document.querySelectorAll(".tool-section").forEach(section => section.style.display = "none");
+      document.getElementById(id).style.display = "block";
+    }
+
+    // New function to copy address to clipboard, now with an optional label
+    function copyAddress(elementId, walletName = "") {
+        const addressElement = document.getElementById(elementId);
+        const addressText = addressElement.textContent;
+
+        navigator.clipboard.writeText(addressText)
+            .then(() => {
+                alert(`Copied ${addressText} to clipboard!`);
+                const message = walletName ? `Copied ${walletName} address: ${addressText}` : `Copied wallet address: ${addressText}`;
+                appendMessage(message, "ai");
+            })
+            .catch(err => {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy address. Please copy it manually.');
+            });
+    }
+
+    // === Modal Functions ===
+    function showSupportModal() {
+        supportUsModal.style.display = 'flex';
+        // Populate modal wallet addresses from the centralized object
+        document.getElementById('modalPiWalletAddress').textContent = walletAddresses['piWalletAddress'];
+        document.getElementById('modalBtcWalletAddress').textContent = walletAddresses['btcWalletAddress'];
+        document.getElementById('modalEthWalletAddress').textContent = walletAddresses['ethWalletAddress'];
+        document.getElementById('modalBnbWalletAddress').textContent = walletAddresses['bnbWalletAddress'];
+        document.getElementById('modalSolWalletAddress').textContent = walletAddresses['solWalletAddress'];
+    }
+
+    function closeSupportModal() {
+        supportUsModal.style.display = 'none';
+    }
+
+    // === Item Management Helpers (Invoice, Quotation, Receipt) ===
+    function calculateItemsTotal(items) {
+        return items.reduce((sum, item) => sum + (item.qty * item.unitPrice), 0);
+    }
+
+    function renderItemsList(items, containerId, type) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        if (items.length === 0) {
+            container.innerHTML = '<div style="text-align: center; color: #aaa;">No items added yet.</div>';
+            return;
+        }
+        items.forEach((item, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.innerHTML = `${item.desc} (x${item.qty}) - ₦${(item.qty * item.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 
+                                <button style="float:right; background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer;" 
+                                onclick="removeSpecificItem('${type}', ${index})">Remove</button>`;
+            container.appendChild(itemDiv);
+        });
+    }
+
+    function removeSpecificItem(type, index) {
+        if (type === 'invoice') {
+            invoiceItems.splice(index, 1);
+            updateInvoiceTotals();
+        } else if (type === 'quotation') {
+            quotationItems.splice(index, 1);
+            updateQuotationTotals();
+        } else if (type === 'receipt') {
+            receiptItems.splice(index, 1);
+            updateReceiptTotals();
+        }
+        appendMessage(`Item removed from ${type}.`, "ai");
+    }
+
+    // === Invoice Generator ===
+    function addInvoiceItem() {
+        const descInput = document.querySelector('#invoiceItemsInput .invoice-item-desc');
+        const qtyInput = document.querySelector('#invoiceItemsInput .invoice-item-qty');
+        const priceInput = document.querySelector('#invoiceItemsInput .invoice-item-unitprice');
+
+        const desc = descInput.value.trim();
+        const qty = parseInt(qtyInput.value);
+        const unitPrice = parseFloat(priceInput.value);
+
+        if (desc && !isNaN(qty) && qty > 0 && !isNaN(unitPrice) && unitPrice >= 0) {
+            invoiceItems.push({ desc, qty, unitPrice });
+            descInput.value = '';
+            qtyInput.value = '1';
+            priceInput.value = '0';
+            updateInvoiceTotals();
+            appendMessage(`Invoice item added: ${desc} x ${qty} at ₦${unitPrice.toLocaleString()}`, "ai");
+        } else {
+            alert('Please enter valid item details (description, quantity > 0, unit price >= 0).');
+        }
+    }
+
+    function updateInvoiceTotals() {
+        const subtotal = calculateItemsTotal(invoiceItems);
+        const vatRate = parseFloat(document.getElementById('invoiceVatRate').value) || 0;
+        const vatAmount = subtotal * (vatRate / 100);
+        const grandTotal = subtotal + vatAmount;
+
+        document.getElementById('invoiceSubtotalDisplay').innerText = `Subtotal: ₦${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('invoiceVatAmountDisplay').innerText = `VAT (${vatRate}%): ₦${vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('invoiceGrandTotalDisplay').innerText = `Grand Total: ₦${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        
+        renderItemsList(invoiceItems, 'currentInvoiceItems', 'invoice');
+    }
+    document.getElementById('invoiceVatRate').addEventListener('input', updateInvoiceTotals);
+
+
+    function generateInvoice() {
+        const companyName = document.getElementById("companyName").value.trim();
+        const companyAddress = document.getElementById("companyAddress").value.trim();
+        const clientName = document.getElementById("clientName").value.trim();
+        const clientAddress = document.getElementById("clientAddress").value.trim();
+        const issueDate = document.getElementById("invoiceIssueDate").value;
+        const dueDate = document.getElementById("invoiceDueDate").value;
+        const vatRate = parseFloat(document.getElementById('invoiceVatRate').value) || 0;
+
+        if (!companyName || !companyAddress || !clientName || !clientAddress || !issueDate || !dueDate || invoiceItems.length === 0) {
+            alert("Please fill in all company/client details, dates, and add at least one item to generate the invoice.");
+            return;
+        }
+
+        lastInvoiceNumber++;
+        localStorage.setItem('lastInvoiceNumber', lastInvoiceNumber);
+        const invoiceNumber = `INV-${lastInvoiceNumber}`;
+
+        let itemsHtml = '';
+        let subtotal = 0;
+        invoiceItems.forEach(item => {
+            const lineTotal = item.qty * item.unitPrice;
+            subtotal += lineTotal;
+            itemsHtml += `
+                <tr>
+                    <td>${item.desc}</td>
+                    <td>${item.qty}</td>
+                    <td>₦${item.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>₦${lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                </tr>
+            `;
+        });
+
+        const vatAmount = subtotal * (vatRate / 100);
+        const grandTotal = subtotal + vatAmount;
+
+        const invoiceContent = `
+            <div class="document-template">
+                <h3>INVOICE</h3>
+                <div class="company-info">
+                    <strong>From:</strong><br>
+                    ${companyName}<br>
+                    ${companyAddress}
+                </div>
+                <div class="header-info">
+                    <strong>Invoice #:</strong> ${invoiceNumber}<br>
+                    <strong>Issue Date:</strong> ${issueDate}<br>
+                    <strong>Due Date:</strong> ${dueDate}
+                </div>
+                <div class="client-info">
+                    <strong>Bill To:</strong><br>
+                    ${clientName}<br>
+                    ${clientAddress}
+                </div>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml}
+                    </tbody>
+                </table>
+                <div class="totals">
+                    <div>Subtotal: ₦${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div>VAT (${vatRate}%): ₦${vatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div><strong>Grand Total: ₦${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></div>
+                </div>
+                <div class="footer-notes">
+                    Thank you for your business! Please make payment by the due date.
+                </div>
+            </div>
+        `;
+
+        document.getElementById("invoiceOutput").innerHTML = invoiceContent;
+
+        // Generate image and download
+        const invoiceDiv = document.querySelector('#invoiceOutput .document-template');
+        html2canvas(invoiceDiv, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = `invoice_${invoiceNumber}.png`;
+            link.textContent = 'Download Invoice Image';
+            link.className = 'download-link';
+            document.getElementById("invoiceOutput").appendChild(link);
+        });
+        appendMessage(`Invoice ${invoiceNumber} generated and ready for download.`, "ai");
+    }
+
+    function clearInvoice() {
+        document.getElementById("companyName").value = "Chucky AI Solutions";
+        document.getElementById("companyAddress").value = "123 AI Street, Lagos, Nigeria";
+        document.getElementById("clientName").value = "";
+        document.getElementById("clientAddress").value = "";
+        document.getElementById("invoiceIssueDate").value = new Date().toISOString().slice(0, 10);
+        document.getElementById("invoiceDueDate").value = "";
+        document.getElementById("invoiceVatRate").value = "7.5";
+        invoiceItems = [];
+        updateInvoiceTotals();
+        document.getElementById("invoiceOutput").innerHTML = "";
+        appendMessage("Invoice fields cleared. Ready for a new invoice.", "ai");
+    }
+
+    // === Quotation Generator ===
+    function addQuotationItem() {
+        const descInput = document.querySelector('#quotationItemsInput .quotation-item-desc');
+        const qtyInput = document.querySelector('#quotationItemsInput .quotation-item-qty');
+        const priceInput = document.querySelector('#quotationItemsInput .quotation-item-unitprice');
+
+        const desc = descInput.value.trim();
+        const qty = parseInt(qtyInput.value);
+        const unitPrice = parseFloat(priceInput.value);
+
+        if (desc && !isNaN(qty) && qty > 0 && !isNaN(unitPrice) && unitPrice >= 0) {
+            quotationItems.push({ desc, qty, unitPrice });
+            descInput.value = '';
+            qtyInput.value = '1';
+            priceInput.value = '0';
+            updateQuotationTotals();
+            appendMessage(`Quotation item added: ${desc} x ${qty} at ₦${unitPrice.toLocaleString()}`, "ai");
+        } else {
+            alert('Please enter valid item details (description, quantity > 0, unit price >= 0).');
+        }
+    }
+
+    function updateQuotationTotals() {
+        const subtotal = calculateItemsTotal(quotationItems);
+        const grandTotal = subtotal; // Quotations typically don't have VAT unless specified
+
+        document.getElementById('quotationSubtotalDisplay').innerText = `Subtotal: ₦${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('quotationGrandTotalDisplay').innerText = `Grand Total: ₦${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        
+        renderItemsList(quotationItems, 'currentQuotationItems', 'quotation');
+    }
+
+    function generateQuotation() {
+        const companyName = document.getElementById("quotationCompanyName").value.trim();
+        const companyAddress = document.getElementById("quotationCompanyAddress").value.trim();
+        const clientName = document.getElementById("quotationClientName").value.trim();
+        const clientAddress = document.getElementById("quotationClientAddress").value.trim();
+        const issueDate = document.getElementById("quotationIssueDate").value;
+        const validityDate = document.getElementById("quotationValidityDate").value;
+
+        if (!companyName || !companyAddress || !clientName || !clientAddress || !issueDate || !validityDate || quotationItems.length === 0) {
+            alert("Please fill in all company/client details, dates, and add at least one item to generate the quotation.");
+            return;
+        }
+
+        lastQuotationNumber++;
+        localStorage.setItem('lastQuotationNumber', lastQuotationNumber);
+        const quotationNumber = `Q-${lastQuotationNumber}`;
+
+        let itemsHtml = '';
+        let subtotal = 0;
+        quotationItems.forEach(item => {
+            const lineTotal = item.qty * item.unitPrice;
+            subtotal += lineTotal;
+            itemsHtml += `
+                <tr>
+                    <td>${item.desc}</td>
+                    <td>${item.qty}</td>
+                    <td>₦${item.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>₦${lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                </tr>
+            `;
+        });
+        const grandTotal = subtotal;
+
+        const quotationContent = `
+            <div class="document-template">
+                <h3>QUOTATION</h3>
+                <div class="company-info">
+                    <strong>From:</strong><br>
+                    ${companyName}<br>
+                    ${companyAddress}
+                </div>
+                <div class="header-info">
+                    <strong>Quotation #:</strong> ${quotationNumber}<br>
+                    <strong>Issue Date:</strong> ${issueDate}<br>
+                    <strong>Valid Until:</strong> ${validityDate}
+                </div>
+                <div class="client-info">
+                    <strong>To:</strong><br>
+                    ${clientName}<br>
+                    ${clientAddress}
+                </div>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml}
+                    </tbody>
+                </table>
+                <div class="totals">
+                    <div>Subtotal: ₦${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div><strong>Grand Total: ₦${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></div>
+                </div>
+                <div class="footer-notes">
+                    Thank you for considering our services. This quotation is valid until ${validityDate}.
+                </div>
+            </div>
+        `;
+
+        document.getElementById("quotationOutput").innerHTML = quotationContent;
+
+        // Generate image and download
+        const quotationDiv = document.querySelector('#quotationOutput .document-template');
+        html2canvas(quotationDiv, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = `quotation_${quotationNumber}.png`;
+            link.textContent = 'Download Quotation Image';
+            link.className = 'download-link';
+            document.getElementById("quotationOutput").appendChild(link);
+        });
+        appendMessage(`Quotation ${quotationNumber} generated and ready for download.`, "ai");
+    }
+
+    function clearQuotation() {
+        document.getElementById("quotationCompanyName").value = "Chucky AI Solutions";
+        document.getElementById("quotationCompanyAddress").value = "123 AI Street, Lagos, Nigeria";
+        document.getElementById("quotationClientName").value = "";
+        document.getElementById("quotationClientAddress").value = "";
+        document.getElementById("quotationIssueDate").value = new Date().toISOString().slice(0, 10);
+        document.getElementById("quotationValidityDate").value = "";
+        quotationItems = [];
+        updateQuotationTotals();
+        document.getElementById("quotationOutput").innerHTML = "";
+        appendMessage("Quotation fields cleared. Ready for a new quotation.", "ai");
+    }
+
+    // === Receipt Generator ===
+    function addReceiptItem() {
+        const descInput = document.querySelector('#receiptItemsInput .receipt-item-desc');
+        const qtyInput = document.querySelector('#receiptItemsInput .receipt-item-qty');
+        const priceInput = document.querySelector('#receiptItemsInput .receipt-item-unitprice');
+
+        const desc = descInput.value.trim();
+        const qty = parseInt(qtyInput.value);
+        const unitPrice = parseFloat(priceInput.value);
+
+        if (desc && !isNaN(qty) && qty > 0 && !isNaN(unitPrice) && unitPrice >= 0) {
+            receiptItems.push({ desc, qty, unitPrice });
+            descInput.value = '';
+            qtyInput.value = '1';
+            priceInput.value = '0';
+            updateReceiptTotals();
+            appendMessage(`Receipt item added: ${desc} x ${qty} at ₦${unitPrice.toLocaleString()}`, "ai");
+        } else {
+            alert('Please enter valid item details (description, quantity > 0, unit price >= 0).');
+        }
+    }
+
+    function updateReceiptTotals() {
+        const subtotal = calculateItemsTotal(receiptItems);
+        const grandTotal = subtotal;
+
+        document.getElementById('receiptSubtotalDisplay').innerText = `Subtotal: ₦${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('receiptGrandTotalDisplay').innerText = `Grand Total: ₦${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        
+        renderItemsList(receiptItems, 'currentReceiptItems', 'receipt');
+    }
+
+    function generateReceipt() {
+        const companyName = document.getElementById("receiptCompanyName").value.trim();
+        const customerName = document.getElementById("receiptCustomerName").value.trim();
+        const receiptDate = document.getElementById("receiptDate").value;
+        const paymentMethod = document.getElementById("paymentMethod").value.trim();
+
+        if (!companyName || !customerName || !receiptDate || !paymentMethod || receiptItems.length === 0) {
+            alert("Please fill in all company/customer details, date, payment method, and add at least one item to generate the receipt.");
+            return;
+        }
+
+        lastReceiptNumber++;
+        localStorage.setItem('lastReceiptNumber', lastReceiptNumber);
+        const receiptNumber = `REC-${lastReceiptNumber}`;
+
+        let itemsHtml = '';
+        let subtotal = 0;
+        receiptItems.forEach(item => {
+            const lineTotal = item.qty * item.unitPrice;
+            subtotal += lineTotal;
+            itemsHtml += `
+                <tr>
+                    <td>${item.desc}</td>
+                    <td>${item.qty}</td>
+                    <td>₦${item.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                    <td>₦${lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                </tr>
+            `;
+        });
+        const grandTotal = subtotal;
+
+        const receiptContent = `
+            <div class="document-template">
+                <h3>RECEIPT</h3>
+                <div class="company-info">
+                    <strong>From:</strong><br>
+                    ${companyName}
+                </div>
+                <div class="header-info">
+                    <strong>Receipt #:</strong> ${receiptNumber}<br>
+                    <strong>Date:</strong> ${receiptDate}<br>
+                    <strong>Payment Method:</strong> ${paymentMethod}
+                </div>
+                <div class="client-info">
+                    <strong>Received From:</strong><br>
+                    ${customerName}
+                </div>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml}
+                    </tbody>
+                </table>
+                <div class="totals">
+                    <div>Subtotal: ₦${subtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    <div><strong>Grand Total: ₦${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></div>
+                </div>
+                <div class="footer-notes">
+                    Thank you for your payment!
+                </div>
+            </div>
+        `;
+
+        document.getElementById("receiptOutput").innerHTML = receiptContent;
+
+        // Generate image and download
+        const receiptDiv = document.querySelector('#receiptOutput .document-template');
+        html2canvas(receiptDiv, { scale: 2 }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = `receipt_${receiptNumber}.png`;
+            link.textContent = 'Download Receipt Image';
+            link.className = 'download-link';
+            document.getElementById("receiptOutput").appendChild(link);
+        });
+        appendMessage(`Receipt ${receiptNumber} generated and ready for download.`, "ai");
+    }
+
+    function clearReceipt() {
+        document.getElementById("receiptCompanyName").value = "Chucky AI Solutions";
+        document.getElementById("receiptCustomerName").value = "";
+        document.getElementById("receiptDate").value = new Date().toISOString().slice(0, 10);
+        document.getElementById("paymentMethod").value = "";
+        receiptItems = [];
+        updateReceiptTotals();
+        document.getElementById("receiptOutput").innerHTML = "";
+        appendMessage("Receipt fields cleared. Ready for a new receipt.", "ai");
+    }
+
+    // === Task Manager ===
+    function saveTasks(tasks) {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function loadTasks() {
+        const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const taskList = document.getElementById("taskList");
+        taskList.innerHTML = ""; // Clear existing list
+        tasks.forEach(task => {
+            appendTaskToList(task.text, task.completed);
+        });
+    }
+
+    function appendTaskToList(taskText, isCompleted) {
+        const li = document.createElement("li");
+        li.textContent = taskText;
+        if (isCompleted) {
+            li.classList.add("completed");
+        }
+        li.addEventListener("click", () => {
+            li.classList.toggle("completed");
+            updateTasksInStorage();
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = (event) => {
+            event.stopPropagation(); // Prevent li click when deleting
+            li.remove();
+            updateTasksInStorage();
+            appendMessage(`Task deleted: "${taskText}"`, "ai");
+        };
+        li.appendChild(deleteBtn);
+        document.getElementById("taskList").appendChild(li);
+    }
+
+    function addTask() {
+      const taskInput = document.getElementById("taskInput");
+      const task = taskInput.value.trim();
+      if (task) {
+        appendTaskToList(task, false);
+        updateTasksInStorage();
+        taskInput.value = "";
+        appendMessage(`Task added: "${task}"`, "ai");
+      } else {
+        alert("Please enter a task.");
+      }
+    }
+
+    function updateTasksInStorage() {
+        const tasks = [];
+        document.querySelectorAll("#taskList li").forEach(li => {
+            tasks.push({
+                text: li.firstChild.textContent.trim(), // Get text before button
+                completed: li.classList.contains("completed")
+            });
+        });
+        saveTasks(tasks);
+    }
+
+    // === Schedule Manager ===
+    function saveSchedules(schedules) {
+        localStorage.setItem("schedules", JSON.stringify(schedules));
+    }
+
+    function loadSchedules() {
+        const schedules = JSON.parse(localStorage.getItem("schedules")) || [];
+        const scheduleList = document.getElementById("scheduleList");
+        scheduleList.innerHTML = "";
+        schedules.forEach(schedule => {
+            appendScheduleToList(schedule.title, schedule.time);
+        });
+    }
+
+    function appendScheduleToList(title, time) {
+        const li = document.createElement("li");
+        li.textContent = `${title} at ${new Date(time).toLocaleString()}`;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = () => {
+            li.remove();
+            updateSchedulesInStorage();
+            appendMessage(`Schedule deleted: "${title}"`, "ai");
+        };
+        li.appendChild(deleteBtn);
+        document.getElementById("scheduleList").appendChild(li);
+    }
+
+    function addSchedule() {
+      const title = document.getElementById("scheduleTitle").value.trim();
+      const time = document.getElementById("scheduleTime").value;
+      if (title && time) {
+        appendScheduleToList(title, time);
+        updateSchedulesInStorage();
+        document.getElementById("scheduleTitle").value = "";
+        document.getElementById("scheduleTime").value = "";
+        appendMessage(`Schedule added: "${title}" for ${new Date(time).toLocaleString()}`, "ai");
+      } else {
+        alert("Please enter both a title and time for the schedule.");
+      }
+    }
+
+    function updateSchedulesInStorage() {
+        const schedules = [];
+        document.querySelectorAll("#scheduleList li").forEach(li => {
+            const fullText = li.firstChild.textContent.trim();
+            const match = fullText.match(/(.*) at (.*)/); // Adjusted regex to capture title and time
+            if (match) {
+                const title = match[1];
+                const dateString = match[2];
+                // Attempt to reconstruct original datetime-local format for storage consistency
+                const dateObj = new Date(dateString);
+                const originalTime = dateObj.toISOString().slice(0, 16);
+                schedules.push({ title: title, time: originalTime });
+            }
+        });
+        saveSchedules(schedules);
+    }
+
+
+    // === Reminder Setup ===
+    function saveReminders(reminders) {
+        localStorage.setItem("reminders", JSON.stringify(reminders));
+    }
+
+    function loadReminders() {
+        const reminders = JSON.parse(localStorage.getItem("reminders")) || [];
+        const reminderList = document.getElementById("reminderList");
+        reminderList.innerHTML = "";
+        reminders.forEach(reminder => {
+            appendReminderToList(reminder.text, reminder.time);
+            // Re-set timeout for future reminders
+            const now = new Date().getTime();
+            const reminderTime = new Date(reminder.time).getTime();
+            const delay = reminderTime - now;
+            if (delay > 0) {
+                setTimeout(() => alert(`⏰ Chucky AI Reminder: ${reminder.text}`), delay);
+            }
+        });
+    }
+
+    function appendReminderToList(text, time) {
+        const li = document.createElement("li");
+        li.textContent = `${text} - ${new Date(time).toLocaleString()}`;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = () => {
+            li.remove();
+            updateRemindersInStorage();
+            appendMessage(`Reminder deleted: "${text}"`, "ai");
+        };
+        li.appendChild(deleteBtn);
+        document.getElementById("reminderList").appendChild(li);
+    }
+
+    function setReminder() {
+      const text = document.getElementById("reminderText").value.trim();
+      const timeValue = document.getElementById("reminderTime").value;
+      const time = new Date(timeValue);
+
+      if (text && timeValue && !isNaN(time.getTime())) {
+        appendReminderToList(text, timeValue);
+        updateRemindersInStorage();
+        document.getElementById("reminderText").value = "";
+        document.getElementById("reminderTime").value = "";
+
+        const now = new Date().getTime();
+        const delay = time.getTime() - now;
+        if (delay > 0) {
+          setTimeout(() => alert(`⏰ Chucky AI Reminder: ${text}`), delay);
+          appendMessage(`Reminder set for "${text}" at ${time.toLocaleString()}`, "ai");
+        } else {
+          appendMessage(`Reminder for "${text}" set for ${time.toLocaleString()} (Note: Time is in the past).`, "ai");
+        }
+      } else {
+        alert("Please enter both a reminder note and a valid time.");
+      }
+    }
+
+    function updateRemindersInStorage() {
+        const reminders = [];
+        document.querySelectorAll("#reminderList li").forEach(li => {
+            const fullText = li.firstChild.textContent.trim();
+            const match = fullText.match(/(.*) - (.*)/); // Adjusted regex for text and time
+            if (match) {
+                const reminderText = match[1];
+                const dateString = match[2];
+                // Attempt to reconstruct original datetime-local format for storage consistency
+                const dateObj = new Date(dateString);
+                const originalTime = dateObj.toISOString().slice(0, 16);
+                reminders.push({ text: reminderText, time: originalTime });
+            }
+        });
+        saveReminders(reminders);
+    }
+
+
+    // === Note Taker ===
+    function saveNoteToStorage(note) {
+        localStorage.setItem("savedNote", note);
+    }
+
+    function loadNote() {
+        const savedNote = localStorage.getItem("savedNote") || "";
+        document.getElementById("noteInput").value = savedNote;
+        document.getElementById("noteDisplay").innerText = savedNote || "No note saved yet.";
+    }
+
+    function saveNote() {
+      const note = document.getElementById("noteInput").value.trim();
+      document.getElementById("noteDisplay").innerText = note || "No note saved yet.";
+      saveNoteToStorage(note);
+      appendMessage("Note saved successfully.", "ai");
+    }
+
+    function clearNote() {
+        document.getElementById("noteInput").value = "";
+        document.getElementById("noteDisplay").innerText = "No note saved yet.";
+        saveNoteToStorage("");
+        appendMessage("Note cleared.", "ai");
+    }
+
+
+    // === Revenue Forecast ===
+    function calculateForecast() {
+      const monthlyRevenue = parseFloat(document.getElementById("monthlyRevenue").value);
+      const optimisticGrowth = parseFloat(document.getElementById("optimisticGrowth").value) / 100;
+      const conservativeGrowth = parseFloat(document.getElementById("conservativeGrowth").value) / 100;
+
+      if (isNaN(monthlyRevenue) || monthlyRevenue < 0) {
+        alert("Please enter a valid current monthly revenue.");
+        return;
+      }
+      if (isNaN(optimisticGrowth) || isNaN(conservativeGrowth)) {
+        alert("Please enter valid growth percentages.");
+        return;
+      }
+
+      const optimisticMonthly = monthlyRevenue * (1 + optimisticGrowth);
+      const optimisticYearly = optimisticMonthly * 12;
+
+      const conservativeMonthly = monthlyRevenue * (1 + conservativeGrowth);
+      const conservativeYearly = conservativeMonthly * 12;
+
+      let outputHtml = `
+        <p><strong>Current Monthly Revenue:</strong> ₦${monthlyRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+        <h3>Forecast Scenarios (Next 12 Months)</h3>
+        <p><strong>Optimistic Scenario (${(optimisticGrowth * 100).toFixed(1)}% Growth):</strong></p>
+        <ul>
+            <li>Monthly: ₦${optimisticMonthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</li>
+            <li>Yearly: ₦${optimisticYearly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</li>
+        </ul>
+        <p><strong>Conservative Scenario (${(conservativeGrowth * 100).toFixed(1)}% Growth):</strong></p>
+        <ul>
+            <li>Monthly: ₦${conservativeMonthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</li>
+            <li>Yearly: ₦${conservativeYearly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</li>
+        </ul>
+      `;
+      document.getElementById("forecastOutput").innerHTML = outputHtml;
+
+      // AI Scenario (displayed in chat)
+      const aiGrowth = (optimisticGrowth + conservativeGrowth) / 2; // Average growth for AI
+      const aiMonthly = monthlyRevenue * (1 + aiGrowth);
+      const aiYearly = aiMonthly * 12;
+
+      appendMessage(
+        `Revenue Forecast Generated:\n\n` +
+        `- **Optimistic Yearly Forecast:** ₦${optimisticYearly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (assuming ${(optimisticGrowth * 100).toFixed(1)}% monthly growth).\n` +
+        `- **Conservative Yearly Forecast:** ₦${conservativeYearly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (assuming ${(conservativeGrowth * 100).toFixed(1)}% monthly growth).\n` +
+        `- **Chucky AI's Suggestion (Based on average growth):** We project a yearly revenue of approximately ₦${aiYearly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}. Remember, consistent effort and market adaptation are key to achieving your goals!`,
+        "ai"
+      );
+    }
+
+    function clearForecast() {
+        document.getElementById("monthlyRevenue").value = "";
+        document.getElementById("optimisticGrowth").value = "10";
+        document.getElementById("conservativeGrowth").value = "3";
+        document.getElementById("forecastOutput").innerHTML = "";
+        appendMessage("Revenue forecast cleared.", "ai");
+    }
+
+    // === Expense Tracker ===
+    function saveExpenses(expenses) {
+        localStorage.setItem("expenses", JSON.stringify(expenses));
+    }
+
+    function loadExpenses() {
+        const expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+        const expenseList = document.getElementById("expenseList");
+        expenseList.innerHTML = "";
+        let total = 0;
+        expenses.forEach(expense => {
+            appendExpenseToList(expense.name, expense.amount);
+            total += parseFloat(expense.amount);
+        });
+        document.getElementById("expenseTotal").innerText = `Total Expenses: ₦${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function appendExpenseToList(name, amount) {
+        const li = document.createElement("li");
+        li.textContent = `${name} - ₦${parseFloat(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = () => {
+            li.remove();
+            updateExpensesInStorage();
+            appendMessage(`Expense deleted: "${name}" - ₦${parseFloat(amount).toLocaleString()}`, "ai");
+        };
+        li.appendChild(deleteBtn);
+        document.getElementById("expenseList").appendChild(li);
+    }
+
+    function addExpense() {
+      const name = document.getElementById("expenseName").value.trim();
+      const amt = document.getElementById("expenseAmount").value.trim();
+      if (name && amt && !isNaN(parseFloat(amt))) {
+        appendExpenseToList(name, amt);
+        updateExpensesInStorage();
+        document.getElementById("expenseName").value = "";
+        document.getElementById("expenseAmount").value = "";
+        appendMessage(`Expense added: "${name}" - ₦${parseFloat(amt).toLocaleString()}`, "ai");
+      } else {
+        alert("Please enter both an expense name and a valid amount.");
+      }
+    }
+
+    function updateExpensesInStorage() {
+        const expenses = [];
+        let total = 0;
+        document.querySelectorAll("#expenseList li").forEach(li => {
+            const parts = li.firstChild.textContent.trim().split(" - ₦");
+            if (parts.length === 2) {
+                const name = parts[0];
+                const amount = parseFloat(parts[1].replace(/,/g, '')); // Remove commas for parsing
+                expenses.push({ name: name, amount: amount });
+                total += amount;
+            }
+        });
+        saveExpenses(expenses);
+        document.getElementById("expenseTotal").innerText = `Total Expenses: ₦${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+
+    // === Inventory System ===
+    function saveInventory(inventory) {
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+    }
+
+    function loadInventory() {
+        const inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+        const inventoryList = document.getElementById("inventoryList");
+        inventoryList.innerHTML = "";
+        inventory.forEach(item => {
+            appendInventoryToList(item.name, item.quantity);
+        });
+    }
+
+    function appendInventoryToList(name, quantity) {
+        const li = document.createElement("li");
+        li.textContent = `${name}: ${parseInt(quantity)} pcs`;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = () => {
+            li.remove();
+            updateInventoryInStorage();
+            appendMessage(`Inventory item deleted: "${name}"`, "ai");
+        };
+        li.appendChild(deleteBtn);
+        document.getElementById("inventoryList").appendChild(li);
+    }
+
+    function addInventory() {
+      const name = document.getElementById("productName").value.trim();
+      const qty = document.getElementById("productStock").value.trim();
+      if (name && qty && !isNaN(parseInt(qty))) {
+        appendInventoryToList(name, qty);
+        updateInventoryInStorage();
+        document.getElementById("productName").value = "";
+        document.getElementById("productStock").value = "";
+        appendMessage(`Inventory updated: ${name}, Quantity: ${parseInt(qty)}`, "ai");
+      } else {
+        alert("Please enter both a product name and a valid stock quantity.");
+      }
+    }
+
+    function updateInventoryInStorage() {
+        const inventory = [];
+        document.querySelectorAll("#inventoryList li").forEach(li => {
+            const parts = li.firstChild.textContent.trim().split(": ");
+            if (parts.length === 2) {
+                const name = parts[0];
+                const quantity = parseInt(parts[1].replace(" pcs", ""));
+                inventory.push({ name: name, quantity: quantity });
+            }
+        });
+        saveInventory(inventory);
+    }
+
+    // === Profit & Loss Calculator ===
+    function calculateProfitLoss() {
+        const totalRevenue = parseFloat(document.getElementById('totalRevenuePL').value);
+        const totalExpenses = parseFloat(document.getElementById('totalExpensesPL').value);
+        const outputDiv = document.getElementById('profitLossOutput');
+
+        if (isNaN(totalRevenue) || isNaN(totalExpenses)) {
+            alert('Please enter valid numbers for total revenue and total expenses.');
+            outputDiv.innerHTML = '';
+            return;
+        }
+
+        const netProfit = totalRevenue - totalExpenses;
+        let resultText = '';
+        let messageText = '';
+
+        if (netProfit > 0) {
+            resultText = `<p style="color: #28a745;"><strong>Net Profit: ₦${netProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></p>`;
+            messageText = `Calculated Net Profit: ₦${netProfit.toLocaleString()}. Great job!`;
+        } else if (netProfit < 0) {
+            resultText = `<p style="color: #dc3545;"><strong>Net Loss: ₦${Math.abs(netProfit).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></p>`;
+            messageText = `Calculated Net Loss: ₦${Math.abs(netProfit).toLocaleString()}. Let's review your financial strategy.`;
+        } else {
+            resultText = `<p><strong>Break-even: ₦0.00</strong></p>`;
+            messageText = `Calculated Break-even. You're neither in profit nor loss.`;
+        }
+        outputDiv.innerHTML = resultText;
+        appendMessage(messageText, "ai");
+    }
+
+    // === Tax Calculator ===
+    function calculateTax() {
+        const annualIncome = parseFloat(document.getElementById('annualIncomeTax').value);
+        const outputDiv = document.getElementById('taxOutput');
+
+        if (isNaN(annualIncome) || annualIncome < 0) {
+            alert('Please enter a valid annual income.');
+            outputDiv.innerHTML = '';
+            return;
+        }
+
+        let taxAmount = 0;
+        let messageText = '';
+        // Simplified tax brackets (example, adjust as per real tax laws)
+        if (annualIncome <= 300000) { // ₦300k
+            taxAmount = annualIncome * 0.07; // 7%
+        } else if (annualIncome <= 600000) { // ₦600k
+            taxAmount = (300000 * 0.07) + ((annualIncome - 300000) * 0.11); // 7% on first 300k, 11% on next 300k
+        } else if (annualIncome <= 1100000) { // ₦1.1m
+            taxAmount = (300000 * 0.07) + (300000 * 0.11) + ((annualIncome - 600000) * 0.15); // 15%
+        } else if (annualIncome <= 1600000) { // ₦1.6m
+            taxAmount = (300000 * 0.07) + (300000 * 0.11) + (500000 * 0.15) + ((annualIncome - 1100000) * 0.19); // 19%
+        } else if (annualIncome <= 3200000) { // ₦3.2m
+            taxAmount = (300000 * 0.07) + (300000 * 0.11) + (500000 * 0.15) + (500000 * 0.19) + ((annualIncome - 1600000) * 0.21); // 21%
+        } else {
+            taxAmount = (300000 * 0.07) + (300000 * 0.11) + (500000 * 0.15) + (500000 * 0.19) + (1600000 * 0.21) + ((annualIncome - 3200000) * 0.24); // 24%
+        }
+        
+        outputDiv.innerHTML = `<p>Estimated Tax: ₦${taxAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>`;
+        messageText = `Estimated tax on ₦${annualIncome.toLocaleString()} income is ₦${taxAmount.toLocaleString()}. This is an estimate, please consult a tax expert.`;
+        appendMessage(messageText, "ai");
+    }
+
+    // === VAT Calculator ===
+    function calculateVat() {
+        const amount = parseFloat(document.getElementById('vatAmount').value);
+        const vatRate = parseFloat(document.getElementById('vatRateSelect').value);
+        const outputDiv = document.getElementById('vatOutput');
+
+        if (isNaN(amount) || amount < 0 || isNaN(vatRate) || vatRate < 0) {
+            alert('Please enter a valid amount and select a VAT rate.');
+            outputDiv.innerHTML = '';
+            return;
+        }
+
+        const vatCalculated = amount * (vatRate / 100);
+        const totalWithVat = amount + vatCalculated;
+
+        outputDiv.innerHTML = `
+            <p>Amount: ₦${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p>VAT (${vatRate}%): ₦${vatCalculated.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p><strong>Total (with VAT): ₦${totalWithVat.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></p>
+        `;
+        appendMessage(`Calculated VAT: ₦${vatCalculated.toLocaleString()} at ${vatRate}%. Total with VAT: ₦${totalWithVat.toLocaleString()}.`, "ai");
+    }
+
+    // === Tax Planner ===
+    function saveTaxEvents(events) {
+        localStorage.setItem("taxEvents", JSON.stringify(events));
+    }
+
+    function loadTaxEvents() {
+        const taxEvents = JSON.parse(localStorage.getItem("taxEvents")) || [];
+        const taxEventList = document.getElementById("taxEventList");
+        taxEventList.innerHTML = "";
+        taxEvents.sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date
+        taxEvents.forEach(event => {
+            appendTaxEventToList(event.name, event.date);
+        });
+    }
+
+    function appendTaxEventToList(eventName, eventDate) {
+        const li = document.createElement("li");
+        li.textContent = `${eventName} - ${new Date(eventDate).toLocaleDateString()}`;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = () => {
+            li.remove();
+            updateTaxEventsInStorage();
+            appendMessage(`Tax event deleted: "${eventName}"`, "ai");
+        };
+        li.appendChild(deleteBtn);
+        document.getElementById("taxEventList").appendChild(li);
+    }
+
+    function addTaxEvent() {
+      const name = document.getElementById("taxEventName").value.trim();
+      const date = document.getElementById("taxEventDate").value;
+
+      if (name && date) {
+        appendTaxEventToList(name, date);
+        updateTaxEventsInStorage();
+        document.getElementById("taxEventName").value = "";
+        document.getElementById("taxEventDate").value = "";
+        appendMessage(`Tax event added: "${name}" due on ${new Date(date).toLocaleDateString()}`, "ai");
+      } else {
+        alert("Please enter both a tax event name and a due date.");
+      }
+    }
+
+    function updateTaxEventsInStorage() {
+        const taxEvents = [];
+        document.querySelectorAll("#taxEventList li").forEach(li => {
+            const fullText = li.firstChild.textContent.trim();
+            const match = fullText.match(/(.*) - (.*)/);
+            if (match) {
+                const eventName = match[1];
+                const dateString = match[2];
+                // Store in YYYY-MM-DD format for consistency
+                const dateObj = new Date(dateString);
+                const originalDate = dateObj.toISOString().slice(0, 10);
+                taxEvents.push({ name: eventName, date: originalDate });
+            }
+        });
+        saveTaxEvents(taxEvents);
+    }
+
+  </script>
+</body>
+</html>

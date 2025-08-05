@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobGenie.AI – Your AI Job Assistant</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: #121212; color: #eee; }
+    .chat-container { max-width: 700px; margin: auto; padding: 20px; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h1 { color: #00ffc8; }
+    .chat-box { background: #1e1e1e; border-radius: 10px; padding: 20px; min-height: 300px; }
+    .chat-msg { background: #2c2c2c; margin: 10px 0; padding: 10px; border-radius: 8px; }
+    .user-msg { background: #00ffc866; }
+    .bot-msg { background: #444; }
+    button { padding: 10px 20px; margin: 5px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .btn-main { background: #00ffc8; color: #000; }
+    select, input[type="date"] { padding: 8px; margin: 5px 0; border-radius: 6px; border: none; }
+    .section-output { margin: 15px 0; background: #1a1a1a; border-radius: 10px; padding: 10px; }
+    .premium { border-left: 5px solid gold; }
+    .pay-box { margin-top: 30px; background: #222; padding: 15px; border-radius: 10px; }
+  </style>
+</head>
+<body>
+<div class="chat-container">
+  <div class="header">
+    <h1>💬 JobGenie.AI</h1>
+    <p>Your AI-powered assistant to fight unemployment</p>
+    <button class="btn-main" onclick="loadJobs()">Find Jobs</button>
+    <button class="btn-main" onclick="loadTips()">Get Tips</button>
+    <button class="btn-main" onclick="loadSuggestions()">Explore Horizons</button>
+  </div>  <div>
+    <label>Filter by Occupation:</label>
+    <select id="filterOccupation">
+      <option value="">All</option>
+    </select><label>Filter by Date:</label>
+<input type="date" id="filterDate" />
+
+  </div>  <div id="output" class="section-output"></div>  <div class="pay-box">
+    <h3>🔓 Unlock Premium Access</h3>
+    <p>Pay to unlock exclusive jobs, advanced tips & opportunities.</p>
+    <button onclick="makePayment()">Pay with Flutterwave</button>
+  </div>
+</div><script>
+  const jobs = JSON.parse(localStorage.getItem("jobs") || "[]");
+  const tips = JSON.parse(localStorage.getItem("tips") || "[]");
+  const suggestions = JSON.parse(localStorage.getItem("suggestions") || "[]");
+
+  let isPremium = false; // Change to true after payment
+
+  const filterOccupation = document.getElementById("filterOccupation");
+  const filterDate = document.getElementById("filterDate");
+  const output = document.getElementById("output");
+
+  const allData = [...jobs, ...tips, ...suggestions];
+  const occupations = [...new Set(allData.map(item => item.occupation).filter(Boolean))];
+  occupations.forEach(occ => {
+    const opt = document.createElement("option");
+    opt.value = occ;
+    opt.textContent = occ;
+    filterOccupation.appendChild(opt);
+  });
+
+  function filterItems(items) {
+    const occ = filterOccupation.value;
+    const date = filterDate.value;
+    return items.filter(item => {
+      const matchOcc = occ ? item.occupation === occ : true;
+      const matchDate = date ? item.date === new Date(date).toLocaleDateString() : true;
+      const matchType = isPremium || item.type === "free";
+      return matchOcc && matchDate && matchType;
+    });
+  }
+
+  function loadJobs() {
+    const list = filterItems(jobs);
+    output.innerHTML = list.length ? list.map(job => `
+      <div class="chat-msg ${job.type === 'premium' ? 'premium' : ''}">
+        <b>${job.title}</b> <small>(${job.occupation})</small><br>
+        ${job.description}<br><i>${job.date}</i> <span>Type: ${job.type}</span>
+      </div>
+    `).join('') : "<p>No jobs found.</p>";
+  }
+
+  function loadTips() {
+    const list = filterItems(tips);
+    output.innerHTML = list.length ? list.map(tip => `
+      <div class="chat-msg ${tip.type === 'premium' ? 'premium' : ''}">
+        💡 ${tip.content}<br><i>${tip.date}</i> <span>${tip.occupation || ''}</span>
+      </div>
+    `).join('') : "<p>No tips found.</p>";
+  }
+
+  function loadSuggestions() {
+    const list = filterItems(suggestions);
+    output.innerHTML = list.length ? list.map(s => `
+      <div class="chat-msg ${s.type === 'premium' ? 'premium' : ''}">
+        🌍 ${s.content}<br><i>${s.date}</i> <span>${s.occupation || ''}</span>
+      </div>
+    `).join('') : "<p>No suggestions found.</p>";
+  }
+
+  function makePayment() {
+    // Placeholder for Flutterwave Integration
+    alert("[🔐 Payment Flow] Premium unlock feature triggered. Add Flutterwave here.");
+    isPremium = true;
+    alert("✅ Premium access activated!");
+  }
+</script></body>
+</html>

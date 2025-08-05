@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reviews Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+   :root {
+  --bg: #212121;
+  --sidebar: #1A1D23;
+  --card: #1A1D23;
+  
+  --accent: #667eea;
+  --accent-secondary: #764ba2;
+  
+  --text: #ffffff;
+  --light-text: #000000;
+  --light-bg: #f8f9fa;
+  
+  --success: #2ecc71;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --info: #3498db;
+  
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --review-card-bg: #2a2a2a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  background: var(--card);
+  color: var(--text);
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  max-width: 800px;
+  margin: 20px auto;
+  background: var(--bg);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: var(--card-shadow);
+  position: relative;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+
+form {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+input,
+textarea,
+select {
+  padding: 12px;
+  background: var(--review-card-bg);
+  color: var(--text);
+  border: none;
+  border-radius: 10px;
+  resize: vertical;
+}
+
+button {
+  background: var(--accent);
+  color: var(--light-text);
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: var(--accent-secondary);
+}
+
+.reviews {
+  display: grid;
+  gap: 20px;
+}
+
+.review-card {
+  background: var(--review-card-bg);
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+.review-card h3 {
+  margin-bottom: 5px;
+  color: var(--accent);
+}
+
+.stars {
+  color: gold;
+  margin: 5px 0;
+}
+
+.review-card p {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.review-card .delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  color: var(--danger);
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.review-card .delete-btn:hover {
+  color: #cc3b3b;
+}
+
+.review-card .download-review-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: var(--info);
+  color: white;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  transition: background 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.review-card .download-review-btn:hover {
+  background: #1d6fb8;
+}
+
+#reviewImageOutput {
+  background: var(--light-bg);
+  color: var(--light-text);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  display: none;
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  z-index: -1;
+  box-sizing: content-box;
+}
+
+#reviewImageOutput .review-card-for-image {
+  background: var(--light-bg);
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#reviewImageOutput h3 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 1.8em;
+}
+
+#reviewImageOutput .stars-for-image {
+  color: gold;
+  font-size: 2.5em;
+  margin-bottom: 15px;
+}
+
+#reviewImageOutput p {
+  color: #555;
+  font-size: 1.4em;
+  line-height: 1.6;
+}
+
+canvas {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  input,
+  textarea,
+  button {
+    font-size: 14px;
+  }
+
+  .review-card {
+    font-size: 15px;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <div class="container" id="appContainer">
+    <h1>⭐ Reviews Generator</h1>
+    <form id="reviewForm">
+      <input type="text" id="name" placeholder="Your Name" required />
+      <select id="rating" required>
+        <option value="">Rating (1-5)</option>
+        <option value="1">★☆☆☆☆</option>
+        <option value="2">★★☆☆☆</option>
+        <option value="3">★★★☆☆</option>
+        <option value="4">★★★★☆</option>
+        <option value="5">★★★★★</option>
+      </select>
+      <textarea id="comment" rows="3" placeholder="Write your review..." required></textarea>
+      <button type="submit">Add Review</button>
+    </form>
+
+    <div class="reviews" id="reviewsList">
+      </div>
+  </div>
+
+  <div id="reviewImageOutput">
+    </div>
+  <canvas id="hiddenCanvas"></canvas>
+
+
+  <script>
+    // DOM elements
+    const appContainer = document.getElementById('appContainer'); // No longer hidden by default
+    const form = document.getElementById('reviewForm');
+    const reviewsList = document.getElementById('reviewsList');
+    const reviewImageOutput = document.getElementById('reviewImageOutput');
+    const hiddenCanvas = document.getElementById('hiddenCanvas');
+
+    let reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+
+    // No need for auth.onAuthStateChanged as login is removed
+    // Directly render reviews on load
+    document.addEventListener('DOMContentLoaded', renderReviews);
+
+    // Add review
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const rating = parseInt(document.getElementById('rating').value);
+      const comment = document.getElementById('comment').value.trim();
+      if(!name || !rating || !comment) {
+          alert('Please fill in all fields (Name, Rating, Comment).');
+          return;
+      }
+
+      reviews.push({ name, rating, comment });
+      localStorage.setItem('reviews', JSON.stringify(reviews));
+      form.reset();
+      renderReviews();
+    });
+
+    // Removed filter event listeners
+
+    // Render reviews function
+    function renderReviews() {
+      reviewsList.innerHTML = '';
+      // No search/filter logic needed now
+
+      reviews.forEach((r, index) => {
+        const card = document.createElement('div');
+        card.className = 'review-card';
+        card.innerHTML = `
+          <button class="delete-btn" onclick="deleteReview(${index})">✖</button>
+          <h3>${r.name}</h3>
+          <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+          <p>${r.comment}</p>
+          <button class="download-review-btn" onclick="downloadReviewAsImage(${index})">Download Image</button>
+        `;
+        reviewsList.appendChild(card);
+      });
+    }
+
+    // Delete review
+    function deleteReview(index) {
+      if (confirm("Are you sure you want to delete this review?")) {
+        reviews.splice(index, 1);
+        localStorage.setItem('reviews', JSON.stringify(reviews));
+        renderReviews();
+      }
+    }
+
+    // Function to download a specific review as an image
+    function downloadReviewAsImage(index) {
+        const review = reviews[index];
+        if (!review) return;
+
+        // Populate the hidden reviewImageOutput div with content for capture
+        reviewImageOutput.innerHTML = `
+            <div class="review-card-for-image">
+                <h3>${review.name}</h3>
+                <div class="stars-for-image">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+                <p>${review.comment}</p>
+            </div>
+        `;
+
+        // Make the reviewImageOutput visible for html2canvas, but keep it off-screen
+        reviewImageOutput.style.display = 'block';
+
+        const targetWidthPx = 1080; // Standard width for social media images
+        
+        html2canvas(reviewImageOutput, {
+            scale: 2, // Capture at 2x resolution for sharpness
+            backgroundColor: "#ffffff", // White background for the image
+            useCORS: true 
+        }).then(canvas => {
+            const ctx = hiddenCanvas.getContext('2d');
+
+            // Calculate final dimensions for the hiddenCanvas
+            const outputAspectRatio = canvas.width / canvas.height;
+            let finalWidth = targetWidthPx;
+            let finalHeight = targetWidthPx / outputAspectRatio; 
+
+            // Optional: Constrain height for common social media ratios (e.g., Instagram portrait 4:5 ratio)
+            const maxHeight = 1350; 
+            if (finalHeight > maxHeight) {
+                finalHeight = maxHeight;
+                finalWidth = maxHeight * outputAspectRatio; 
+            }
+
+            hiddenCanvas.width = finalWidth;
+            hiddenCanvas.height = finalHeight;
+            ctx.drawImage(canvas, 0, 0, finalWidth, finalHeight);
+
+            // Create a download link
+            const link = document.createElement("a");
+            link.download = `review_${review.name.replace(/\s+/g, '_')}_${review.rating}_stars.png`;
+            link.href = hiddenCanvas.toDataURL("image/png");
+            link.click();
+
+            // Hide the reviewImageOutput div again
+            reviewImageOutput.style.display = 'none';
+            reviewImageOutput.innerHTML = ''; // Clear its content
+        });
+    }
+
+    // Make functions globally accessible
+    window.deleteReview = deleteReview;
+    window.downloadReviewAsImage = downloadReviewAsImage;
+  </script>
+</body>
+</html>

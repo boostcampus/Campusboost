@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Settings</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .settings-container {
+      background-color: var(--card);
+      padding: 30px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: var(--card-shadow);
+      animation: pop 0.5s ease;
+    }
+
+    .settings-container h2 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #cccccc;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background-color: var(--bg);
+      color: var(--text);
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border: 1px solid var(--accent);
+    }
+
+    button {
+      background-color: var(--accent);
+      color: var(--light-text);
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      background-color: var(--accent-secondary);
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #aaa;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-container">
+    <h2>Edit Profile</h2>
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="Enter username" />
+    </div>
+    <div class="form-group">
+      <label for="email">Email (read-only)</label>
+      <input type="email" id="email" readonly />
+    </div>
+    <button onclick="saveChanges()">Save Changes</button>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    let currentUser = null;
+
+    auth.onAuthStateChanged(async user => {
+      if (!user) {
+        alert("You must be logged in to access this page.");
+        return window.location.href = 'index.html';
+      }
+      currentUser = user;
+
+      try {
+        const docRef = db.collection("users").doc(user.uid);
+        const doc = await docRef.get();
+        if (doc.exists) {
+          const data = doc.data();
+          document.getElementById("username").value = data.username || "";
+        }
+        document.getElementById("email").value = user.email;
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        alert("Failed to load user data.");
+      }
+    });
+
+    async function saveChanges() {
+      const username = document.getElementById("username").value.trim();
+      if (!username) {
+        return alert("Username cannot be empty.");
+      }
+
+      try {
+        await db.collection("users").doc(currentUser.uid).update({ username });
+        alert("Profile updated successfully!");
+      } catch (error) {
+        console.error("Update error:", error);
+        alert("Failed to update profile.");
+      }
+    }
+  </script>
+</body>
+</html>

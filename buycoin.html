@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buy Coins</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
+  <style>
+    :root {
+      --bg-dark: #212121;
+      --bg-light: #1A1D23;
+      --accent: #34C759;
+      --text: #ffffff;
+    }body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text);
+}
+
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  background: var(--bg-light);
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  animation: fadeIn 0.6s ease;
+}
+
+h2 {
+  text-align: center;
+  color: var(--accent);
+}
+
+label, input, select {
+  display: block;
+  width: 100%;
+  margin-top: 15px;
+  font-size: 15px;
+}
+
+input, select {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #2e2e2e;
+  color: var(--text);
+}
+
+button {
+  margin-top: 25px;
+  width: 100%;
+  background: var(--accent);
+  color: var(--bg-dark);
+  padding: 12px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Buy Coins</h2>
+    <label for="coinAmount">Select Coins:</label>
+    <select id="coinAmount">
+      <option value="100">100 Coins (₦100)</option>
+      <option value="200">200 Coins (₦200)</option>
+      <option value="500">500 Coins (₦500)</option>
+      <option value="1000">1000 Coins (₦1000)</option>
+    </select>
+    <button onclick="makePayment()">Proceed to Pay</button>
+  </div>  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) return location.href = "login.html";
+      currentUser = user;
+    });
+
+    window.makePayment = () => {
+      const amount = parseInt(document.getElementById("coinAmount").value);
+
+      FlutterwaveCheckout({
+        public_key: "FLWPUBK_TEST-XXXXXXXXX-X", // Replace with your real public key
+        tx_ref: "TXR_" + Date.now(),
+        amount: amount,
+        currency: "NGN",
+        payment_options: "card,ussd,transfer",
+        customer: {
+          email: currentUser.email,
+        },
+        callback: async (response) => {
+          if (response.status === "successful") {
+            const userRef = doc(db, "users", currentUser.uid);
+            const snap = await getDoc(userRef);
+            const current = snap.data().coins || 0;
+            await updateDoc(userRef, { coins: current + amount });
+            alert("Coins added: " + amount);
+          }
+        },
+        onclose: () => {},
+        customizations: {
+          title: "Tool Coins Purchase",
+          description: "Buy coins to unlock premium tools",
+          logo: "https://conectcamp.com.ng/favicon.ico"
+        }
+      });
+    }
+  </script></body>
+</html>

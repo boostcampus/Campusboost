@@ -1,0 +1,207 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JobGenie.AI - Smart Hustle Chat</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #101010;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      background: #202020;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #00ffcc;
+    }
+    #chat {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #181818;
+      display: flex;
+      flex-direction: column;
+    }
+    .msg {
+      max-width: 80%;
+      padding: 12px 18px;
+      border-radius: 20px;
+      margin: 6px 0;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+    .user {
+      background: #007bff;
+      align-self: flex-end;
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+    }
+    .bot {
+      background: #303030;
+      align-self: flex-start;
+      margin-right: auto;
+      border-bottom-left-radius: 4px;
+    }
+    #inputArea {
+      background: #202020;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #inputRow {
+      display: flex;
+      gap: 10px;
+    }
+    #userInput {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+    }
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #00ffcc;
+      color: #000;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tools button {
+      background: #2f2f2f;
+      color: #fff;
+      font-size: 0.85rem;
+    }
+    .tools button:hover {
+      background: #00ffcc;
+      color: #000;
+    }
+    #downloadBtn {
+      background: #444;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body><header>🤖 JobGenie.AI — Nigeria's Smart Hustle Assistant</header>
+<div id="chat"></div><div id="inputArea">
+  <div id="inputRow">
+    <input type="text" id="userInput" placeholder="Type something like: I have a phone" />
+    <button onclick="handleUserInput()">Send</button>
+    <button id="downloadBtn" onclick="downloadChat()"><i class="fas fa-download"></i></button>
+  </div>
+  <div class="tools">
+    <button onclick="suggestHustles()">Suggest Hustles</button>
+    <button onclick="generateCV()">Make CV</button>
+    <button onclick="dailyTips()">Daily Tip</button>
+    <button onclick="findJobs()">Find Jobs</button>
+  </div>
+</div><script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script><script>
+  const chatBox = document.getElementById("chat");
+
+  function addMessage(content, type = "bot") {
+    const msg = document.createElement("div");
+    msg.classList.add("msg", type);
+    msg.innerHTML = content;
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  function handleUserInput() {
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text) return;
+    addMessage(text, "user");
+    input.value = "";
+    respondToUser(text.toLowerCase());
+  }
+
+  function respondToUser(text) {
+    if (text.includes("canva")) {
+      addMessage("🎨 You can start designing flyers for businesses. Start with WhatsApp promotion and offer simple packages.");
+    } else if (text.includes("no job")) {
+      addMessage("🚀 3 ₦0-start hustles:
+1. Sell airtime/data online
+2. WhatsApp TV ads
+3. Social media page management");
+    } else if (text.includes("cv")) {
+      generateCV();
+    } else if (text.includes("laptop")) {
+      addMessage("💻 With a laptop, you can:
+- Start freelance writing
+- Edit videos
+- Build websites
+- Become a virtual assistant");
+    } else {
+      addMessage("🤔 Try things like: 'I have a phone', 'Suggest Hustles', or use the buttons below.");
+    }
+  }
+
+  function suggestHustles() {
+    addMessage("📌 2025 Hustles:
+- Design flyers on Canva
+- Manage WhatsApp groups
+- Write CVs for students
+- Sell mini-importation guides");
+  }
+
+  function dailyTips() {
+    const tips = [
+      "✅ Master one niche before jumping to another.",
+      "📱 Use your phone to start, your skill will upgrade your gear.",
+      "🎯 Focus on value first — money follows value.",
+      "📤 Post your work online to get noticed.",
+      "💸 Don’t wait for capital, start where you are."
+    ];
+    const random = tips[Math.floor(Math.random() * tips.length)];
+    addMessage("💡 Daily Tip: " + random);
+  }
+
+  function findJobs() {
+    addMessage("🧰 Jobs you can do now:
+- Help people type or design CVs
+- Promote small business on WhatsApp
+- Design logos for ₦1000
+- Edit simple TikTok videos");
+  }
+
+  function generateCV() {
+    const name = prompt("Your Full Name:");
+    const role = prompt("Job Title You're Applying For:");
+    const skills = prompt("List 3 key skills:");
+    const cv = `
+📄 CV Sample:
+<b>Name:</b> ${name}<br>
+<b>Role:</b> ${role}<br>
+<b>Skills:</b> ${skills}<br>
+<b>Objective:</b> Motivated to deliver excellence as a ${role}.`;
+    addMessage(cv);
+  }
+
+  function downloadChat() {
+    html2canvas(chatBox).then(canvas => {
+      const link = document.createElement("a");
+      link.download = "jobgenie-chat.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  }
+</script></body>
+</html>

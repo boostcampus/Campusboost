@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Revenue Forecasting</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: var(--card);
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: var(--card-shadow);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--accent);
+      margin-bottom: 25px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    label, input {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    input {
+      padding: 12px;
+      background: #2b2b2b;
+      color: var(--text);
+      border: 2px solid #333;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    button {
+      background: var(--accent);
+      color: var(--text);
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      width: 100%;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      background: var(--accent-secondary);
+      transform: translateY(-2px);
+    }
+
+    .forecast {
+      margin-top: 40px;
+    }
+
+    canvas {
+      background: #2b2b2b;
+      border-radius: 10px;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 AI Revenue Forecast (₦)</h1>
+
+    <label for="rev1">Scenario 1 Revenue (₦)</label>
+    <input type="number" id="rev1" placeholder="e.g. 100000">
+
+    <label for="rev2">Scenario 2 Revenue (₦)</label>
+    <input type="number" id="rev2" placeholder="e.g. 120000">
+
+    <label for="growthRate">Expected Monthly Growth Rate (%)</label>
+    <input type="number" id="growthRate" placeholder="e.g. 5">
+
+    <label for="months">Forecast Period (Months)</label>
+    <input type="number" id="months" placeholder="e.g. 6">
+
+    <button onclick="generateForecast()">Generate Forecast</button>
+
+    <div class="forecast">
+      <canvas id="forecastChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    function generateForecast() {
+      const rev1 = parseFloat(document.getElementById('rev1').value);
+      const rev2 = parseFloat(document.getElementById('rev2').value);
+      const growth = parseFloat(document.getElementById('growthRate').value) / 100;
+      const months = parseInt(document.getElementById('months').value);
+
+      if (isNaN(rev1) || isNaN(rev2) || isNaN(growth) || isNaN(months)) {
+        alert('Please fill all fields with valid numbers.');
+        return;
+      }
+
+      let labels = [], data1 = [], data2 = [], aiPrediction = [];
+      let curr1 = rev1, curr2 = rev2;
+
+      for (let i = 1; i <= months; i++) {
+        curr1 += curr1 * growth;
+        curr2 += curr2 * (growth * 1.15); // AI adjusts scenario 2 dynamically
+        labels.push("Month " + i);
+        data1.push(curr1.toFixed(2));
+        data2.push(curr2.toFixed(2));
+        aiPrediction.push(((curr1 + curr2) / 2 + 5000).toFixed(2)); // AI adds external influence
+      }
+
+      renderChart(labels, data1, data2, aiPrediction);
+    }
+
+    let chart;
+    function renderChart(labels, s1, s2, ai) {
+      const ctx = document.getElementById('forecastChart').getContext('2d');
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Scenario 1',
+              data: s1,
+              borderColor: 'var(--success)',
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+            },
+            {
+              label: 'Scenario 2',
+              data: s2,
+              borderColor: 'var(--warning)',
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+            },
+            {
+              label: 'AI Predicted Revenue',
+              data: ai,
+              borderColor: 'var(--info)',
+              borderDash: [5, 5],
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: 'white'
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: 'white' },
+              grid: { color: '#333' }
+            },
+            y: {
+              ticks: { color: 'white' },
+              grid: { color: '#333' }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

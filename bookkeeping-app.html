@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📚 Bookkeeping App</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00ff7f;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input, select, button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    input, select {
+      background: #2a2a2a;
+      color: #fff;
+    }
+
+    button {
+      background: #00ff7f;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #00e66c;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      background: #2b2b2b;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .records {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .record {
+      background: #2a2a2a;
+      padding: 10px;
+      border-left: 5px solid #00ff7f;
+      border-radius: 8px;
+    }
+
+    .record.expense {
+      border-left-color: red;
+    }
+
+    .record .top {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+
+    .record .bottom {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #ccc;
+      margin-top: 5px;
+    }
+
+    .download-btn {
+      margin-top: 10px;
+    }
+
+    #captureArea {
+      background: #1e1e1e;
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .summary {
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📚 Bookkeeping</h1>
+
+    <form id="entryForm">
+      <input type="text" id="desc" placeholder="Description" required />
+      <input type="number" id="amount" placeholder="Amount (₦)" required />
+      <input type="date" id="date" required />
+      <select id="category">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      <button type="submit">Add Entry</button>
+    </form>
+
+    <!-- Area to capture -->
+    <div id="captureArea">
+      <div class="summary">
+        <div>Income: ₦<span id="inc">0</span></div>
+        <div>Expense: ₦<span id="exp">0</span></div>
+        <div>Balance: ₦<span id="bal">0</span></div>
+      </div>
+
+      <div id="recordSection" class="records"></div>
+    </div>
+
+    <button class="download-btn" onclick="downloadRecordImage()">📸 Download as Image</button>
+  </div>
+
+  <script>
+    const form = document.getElementById("entryForm");
+    const desc = document.getElementById("desc");
+    const amount = document.getElementById("amount");
+    const date = document.getElementById("date");
+    const category = document.getElementById("category");
+    const recordSection = document.getElementById("recordSection");
+    const inc = document.getElementById("inc");
+    const exp = document.getElementById("exp");
+    const bal = document.getElementById("bal");
+
+    let data = [];
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      const entry = {
+        desc: desc.value.trim(),
+        amount: parseFloat(amount.value),
+        date: date.value,
+        category: category.value
+      };
+      if (!entry.desc || !entry.amount || !entry.date) return;
+      data.push(entry);
+      form.reset();
+      render();
+    });
+
+    function render() {
+      recordSection.innerHTML = "";
+      let totalInc = 0;
+      let totalExp = 0;
+
+      data.forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "record " + (entry.category === "expense" ? "expense" : "");
+        div.innerHTML = `
+          <div class="top">
+            <span>${entry.desc}</span>
+            <span>₦${entry.amount.toLocaleString()}</span>
+          </div>
+          <div class="bottom">
+            <span>${entry.category.toUpperCase()}</span>
+            <span>${new Date(entry.date).toLocaleDateString()}</span>
+          </div>
+        `;
+        recordSection.appendChild(div);
+
+        if (entry.category === "income") totalInc += entry.amount;
+        else totalExp += entry.amount;
+      });
+
+      inc.textContent = totalInc.toLocaleString();
+      exp.textContent = totalExp.toLocaleString();
+      bal.textContent = (totalInc - totalExp).toLocaleString();
+    }
+
+    function downloadRecordImage() {
+      const element = document.getElementById("captureArea");
+      if (data.length === 0) {
+        alert("No records to download!");
+        return;
+      }
+
+      html2canvas(element).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "bookkeeping-record.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>

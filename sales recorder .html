@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sales Recorder App</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <style>
+   :root {
+  --bg: #212121; /* Dark background */
+  --sidebar: #1A1D23; /* Sidebar / card background */
+  --card: #1A1D23; /* Card background */
+  
+  --accent: #667eea; /* Primary accent */
+  --accent-secondary: #764ba2; /* Secondary accent */
+  
+  --text: #ffffff; /* Default light text */
+  --light-text: #000000;
+  --light-bg: #f8f9fa;
+  
+  --success: #2ecc71;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --info: #3498db;
+
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  background: var(--card);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+h1 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+form, .filters {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+input, select {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  background: #2c2c2c;
+  color: var(--text);
+}
+
+button {
+  background: var(--accent);
+  color: var(--light-text);
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button:hover {
+  background: var(--accent-secondary);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  color: var(--text);
+}
+
+th {
+  background: #2b2b2b;
+}
+
+tr:nth-child(even) {
+  background: #262626;
+}
+
+.actions button {
+  background: transparent;
+  color: var(--accent);
+  border: none;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.summary {
+  margin-top: 20px;
+  font-weight: bold;
+  color: var(--accent);
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 15px;
+  }
+
+  input, button {
+    font-size: 14px;
+  }
+
+  th, td {
+    font-size: 13px;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+     <p style="color:red; text-align:center;">use your initial login details and click login</p>
+    <h1>📋 Sales Recorder</h1>
+    <div id="authSection">
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <button onclick="signup()">Sign Up</button>
+      <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <div id="appSection" style="display:none">
+      <button style="background:#ff3b30;margin-bottom:10px;" onclick="logout()">Logout</button>
+      <form id="saleForm">
+        <input type="text" id="product" placeholder="Product Name" required />
+        <input type="number" id="quantity" placeholder="Quantity" required />
+        <input type="number" id="price" placeholder="Price per Unit (₦)" required />
+        <input type="date" id="date" required />
+        <button type="submit">Add Sale</button>
+      </form>
+
+      <div class="filters">
+        <input type="month" id="filterMonth" />
+        <input type="date" id="filterDate" />
+        <button onclick="clearFilters()">Clear Filters</button>
+      </div>
+
+      <table id="salesTable">
+        <thead>
+          <tr><th>Product</th><th>Qty</th><th>Price</th><th>Total (₦)</th><th>Date</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="salesBody"></tbody>
+      </table>
+      <div class="summary" id="totalSales">Total Sales: ₦0</div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCu09APwiLAjUp6ZITHarv1gJFk7eWRgtg",
+      authDomain: "conectcamp-db2c2.firebaseapp.com",
+      projectId: "conectcamp-db2c2",
+      storageBucket: "conectcamp-db2c2.appspot.com",
+      messagingSenderId: "648442230919",
+      appId: "1:648442230919:web:28b61283dbb72f8f966022",
+      measurementId: "G-3Q2ZS872YC"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let sales = [];
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('authSection').style.display = 'none';
+        document.getElementById('appSection').style.display = 'block';
+        loadSales();
+      } else {
+        currentUser = null;
+        document.getElementById('authSection').style.display = 'block';
+        document.getElementById('appSection').style.display = 'none';
+      }
+    });
+
+    function signup() {
+      const e = document.getElementById('email').value;
+      const p = document.getElementById('password').value;
+      auth.createUserWithEmailAndPassword(e, p)
+        .then(() => alert('Signed up!'))
+        .catch(err => alert(err.message));
+    }
+
+    function login() {
+      const e = document.getElementById('email').value;
+      const p = document.getElementById('password').value;
+      auth.signInWithEmailAndPassword(e, p)
+        .catch(err => alert(err.message));
+    }
+
+    function logout() {
+      auth.signOut();
+    }
+
+    async function loadSales() {
+      const snap = await db.collection('users')
+        .doc(currentUser.uid)
+        .collection('sales')
+        .orderBy('date','desc')
+        .get();
+      sales = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderSales();
+    }
+
+    document.getElementById('saleForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const data = {
+        product: document.getElementById('product').value,
+        quantity: parseInt(document.getElementById('quantity').value),
+        price: parseFloat(document.getElementById('price').value),
+        date: document.getElementById('date').value
+      };
+      const ref = await db.collection('users')
+        .doc(currentUser.uid)
+        .collection('sales')
+        .add(data);
+      sales.unshift({ id: ref.id, ...data });
+      e.target.reset();
+      renderSales();
+    });
+
+    function renderSales() {
+      const tb = document.getElementById('salesBody');
+      tb.innerHTML = '';
+      let filtered = sales;
+      const fm = document.getElementById('filterMonth').value;
+      const fd = document.getElementById('filterDate').value;
+      if (fm) filtered = filtered.filter(s => s.date.startsWith(fm));
+      if (fd) filtered = filtered.filter(s => s.date===fd);
+      let total = 0;
+      filtered.forEach((sale,i) => {
+        const tot = sale.quantity * sale.price;
+        total += tot;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${sale.product}</td>
+          <td>${sale.quantity}</td>
+          <td>₦${sale.price}</td>
+          <td>₦${tot.toFixed(2)}</td>
+          <td>${sale.date}</td>
+          <td>
+            <button onclick="editSale(${i})">✏️</button>
+            <button onclick="deleteSale(${i})">🗑️</button>
+          </td>`;
+        tb.appendChild(row);
+      });
+      document.getElementById('totalSales').textContent = `Total Sales: ₦${total.toFixed(2)}`;
+    }
+
+    async function deleteSale(i) {
+      const ok = confirm('Delete this sale?');
+      if (!ok) return;
+      const sale = sales[i];
+      await db.collection('users')
+        .doc(currentUser.uid)
+        .collection('sales')
+        .doc(sale.id).delete();
+      sales.splice(i,1);
+      renderSales();
+    }
+
+    function editSale(i) {
+      const s = sales[i];
+      document.getElementById('product').value = s.product;
+      document.getElementById('quantity').value = s.quantity;
+      document.getElementById('price').value = s.price;
+      document.getElementById('date').value = s.date;
+      deleteSale(i);
+    }
+
+    document.getElementById('filterMonth').addEventListener('change', renderSales);
+    document.getElementById('filterDate').addEventListener('change', renderSales);
+  </script>
+</body>
+</html>

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>BoostCamp Blog</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3B82F6;
+            --accent-color: #9333EA;
+            --background-color: #F9FAFB;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+
+            /* Updated variables */
+            --bg: var(--background-color);
+            --sidebar: #E5E7EB; /* Lighter sidebar for light mode */
+            --card: #FFFFFF; /* White card background */
+            
+            --accent: var(--primary-color); 
+            --accent-secondary: var(--accent-color);
+            
+            --text: var(--text-dark); 
+            --light-text: #FFFFFF; /* For dark elements on light background */
+            --light-bg: #E5E7EB; /* Lighter background for elements */
+            
+            --success: #22C55E;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            
+            --gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --glass-border: 1px solid rgba(0, 0, 0, 0.05);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; /* Changed from Segoe UI */
+            transition: all 0.3s ease;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(240, 147, 251, 0.04) 0%, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--card); /* Changed from primary */
+            color: var(--text-dark); /* Changed from white */
+            padding: 1.5rem 3rem; /* Adjusted padding */
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            border-bottom: var(--glass-border); /* Added border */
+            box-shadow: var(--glass-shadow); /* Added shadow */
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex; /* Added for logo alignment */
+            justify-content: space-between; /* Added for logo alignment */
+            align-items: center; /* Added for logo alignment */
+        }
+
+        .logo { /* Added for logo styling */
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon { /* Added for logo styling */
+            width: 45px;
+            height: 45px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo h1 { /* Adjusted for logo styling */
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            margin: 0; /* Remove default margin */
+        }
+
+        .container {
+            max-width: 960px;
+            margin: auto;
+            padding: 20px;
+            flex-grow: 1; /* Allow container to grow */
+        }
+
+        .section {
+            margin-bottom: 25px;
+            background: var(--card); /* Changed from white */
+            padding: 2.5rem; /* Adjusted padding */
+            border-radius: 16px; /* Adjusted border-radius */
+            box-shadow: var(--card-shadow); /* Adjusted shadow */
+            border: var(--glass-border); /* Added border */
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary-color); /* Changed from primary */
+            font-size: 2rem; /* Adjusted font size */
+            font-weight: 800; /* Adjusted font weight */
+            margin-bottom: 2rem; /* Adjusted margin */
+            text-align: center; /* Centered text */
+        }
+
+        input, textarea { /* Combined input and textarea styles */
+            width: 100%;
+            padding: 0.8rem 1rem; /* Adjusted padding */
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px; /* Adjusted border-radius */
+            border: 1px solid var(--light-bg); /* Adjusted border color */
+            font-size: 1rem; /* Adjusted font size */
+            color: var(--text-dark); /* Adjusted text color */
+            background-color: var(--background-color); /* Adjusted background color */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input:focus, textarea:focus { /* Adjusted focus styles */
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem 2rem; /* Adjusted padding */
+            margin-top: 10px;
+            margin-bottom: 15px;
+            background: var(--gradient); /* Changed from primary */
+            color: white;
+            cursor: pointer;
+            border: none;
+            border-radius: 12px; /* Adjusted border-radius */
+            font-weight: 700; /* Adjusted font weight */
+            font-size: 1.1rem; /* Adjusted font size */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Added shadow */
+            display: flex; /* Added for icon alignment */
+            align-items: center; /* Added for icon alignment */
+            justify-content: center; /* Added for icon alignment */
+            gap: 0.75rem; /* Added for icon spacing */
+        }
+
+        button:hover {
+            background: var(--accent-secondary); /* Adjusted hover background */
+            transform: translateY(-3px); /* Added transform */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); /* Adjusted shadow on hover */
+        }
+
+        button:disabled { /* Added disabled state */
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .admin-panel {
+            border-left: 5px solid var(--success);
+        }
+
+        .blog {
+            background: var(--card); /* Changed from #fff */
+            border-left: 4px solid var(--primary-color); /* Changed from primary */
+            margin-bottom: 20px;
+            padding: 1.5rem; /* Adjusted padding */
+            border-radius: 12px; /* Adjusted border-radius */
+            box-shadow: var(--card-shadow); /* Adjusted shadow */
+            animation: fadeIn 0.5s ease-in-out;
+            border: var(--glass-border); /* Added border */
+        }
+
+        .blog h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .blog p {
+            font-size: 1rem;
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .blog small {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .likes-comments {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: var(--text-muted); /* Changed from #555 */
+            margin-top: 1rem;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 0.75rem; /* Spacing between items */
+        }
+
+        .like-btn, .comment-toggle-btn { /* Combined comment toggle button */
+            color: var(--primary-color); /* Changed from primary */
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .like-btn:hover, .comment-toggle-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .comment-section {
+            margin-top: 15px; /* Adjusted margin */
+            display: none;
+            background: var(--light-bg); /* Changed from #f1f1f1 */
+            padding: 15px; /* Adjusted padding */
+            border-radius: 8px; /* Adjusted border-radius */
+        }
+
+        .comment {
+            background: var(--card); /* Changed from #fff */
+            padding: 10px; /* Adjusted padding */
+            border-radius: 8px; /* Adjusted border-radius */
+            margin: 10px 0; /* Adjusted margin */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Added shadow */
+        }
+
+        .comment div strong {
+            color: var(--text-dark);
+        }
+
+        .comment div {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .comment-actions {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            margin-top: 8px; /* Adjusted margin */
+            color: var(--text-muted);
+        }
+
+        .comment-like-btn { /* New class for comment like button */
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .comment-like-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .delete-btn {
+            color: var(--danger);
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            color: #c0392b;
+        }
+
+        /* Filter and Search Section */
+        .filter-search-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 25px;
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            border: var(--glass-border);
+            align-items: center;
+        }
+
+        .filter-search-section label {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .filter-search-section input[type="text"],
+        .filter-search-section input[type="date"],
+        .filter-search-section input[type="time"] {
+            flex: 1;
+            min-width: 150px;
+            margin-bottom: 0; /* Override default margin */
+        }
+
+        .filter-search-section button {
+            width: auto;
+            padding: 0.7rem 1.2rem;
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            box-shadow: none;
+        }
+
+        /* Message Box Styling */
+        .message-box {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            font-weight: 500;
+        }
+
+        .message-box.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .message-box.error {
+            background-color: var(--danger);
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem 1.5rem;
+                gap: 1rem;
+            }
+
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+                margin-bottom: 1.5rem;
+            }
+
+            input, textarea, button {
+                padding: 0.7rem 1rem;
+                font-size: 0.95em;
+            }
+
+            .filter-search-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-search-section input,
+            .filter-search-section button {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .likes-comments {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .section {
+                padding: 1.2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .blog h3 {
+                font-size: 1.3rem;
+            }
+
+            .blog p {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-newspaper"></i></div>
+            <h1>BoostCamp Blog</h1>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="section" id="loginBox">
+            <h2>Login / Register</h2>
+            <input type="text" id="username" placeholder="Username" />
+            <input type="email" id="email" placeholder="Email" />
+            <input type="password" id="password" placeholder="Password" />
+            <button onclick="login()"><i class="fas fa-sign-in-alt"></i> Login / Register</button>
+        </div>
+
+        <div class="section admin-panel" id="adminBlogForm" style="display:none;">
+            <h2>🛠️ Admin Blog Panel</h2>
+            <input type="text" id="blogTitle" placeholder="Blog Title" />
+            <textarea id="blogContent" placeholder="Blog Content..."></textarea>
+            <button onclick="addBlog()"><i class="fas fa-plus-circle"></i> Post Blog</button>
+        </div>
+
+        <div class="section filter-search-section">
+            <h2>Filter & Search Blogs</h2>
+            <label for="searchBlog">Search:</label>
+            <input type="text" id="searchBlog" placeholder="Search by title, content, or author..." />
+            
+            <label for="filterDate">Date:</label>
+            <input type="date" id="filterDate" />
+
+            <label for="filterTime">Time (from):</label>
+            <input type="time" id="filterTime" />
+
+            <button onclick="renderBlogs()"><i class="fas fa-filter"></i> Apply Filters</button>
+            <button id="resetFilters"><i class="fas fa-redo-alt"></i> Reset Filters</button>
+        </div>
+
+        <div class="section" id="blogContainer">
+            <!-- Blogs will render here -->
+        </div>
+
+    </div>
+
+    <!-- Message Box -->
+    <div id="messageBox" class="message-box"></div>
+
+    <script>
+        let currentUser = null;
+        const ADMIN = { email: "boostcamp@gmail.com", password: "Fawizzy" };
+
+        const getData = key => JSON.parse(localStorage.getItem(key)) || [];
+        const saveData = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+
+        /**
+         * Displays a temporary message box.
+         * @param {string} message - The message to display.
+         * @param {boolean} isError - True if it's an error message, false otherwise.
+         */
+        function showMessageBox(message, isError = false) {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.classList.remove('error');
+            if (isError) {
+                messageBox.classList.add('error');
+            }
+            messageBox.classList.add('show');
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000); // Message disappears after 3 seconds
+        }
+
+
+        function login() {
+            const name = document.getElementById("username").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const pass = document.getElementById("password").value;
+
+            if (!name || !email || !pass) {
+                showMessageBox("Please fill in all fields", true);
+                return;
+            }
+
+            if (email === ADMIN.email && pass === ADMIN.password) {
+                // Set admin username to their email as requested
+                currentUser = { name: email, email, isAdmin: true }; 
+                document.getElementById("adminBlogForm").style.display = "block";
+                showMessageBox("Logged in as Admin!");
+            } else {
+                currentUser = { name, email, isAdmin: false }; 
+                showMessageBox(`Welcome, ${name}!`);
+            }
+
+            document.getElementById("loginBox").style.display = "none";
+            renderBlogs();
+        }
+
+        function addBlog() {
+            const title = document.getElementById("blogTitle").value.trim();
+            const content = document.getElementById("blogContent").value.trim();
+            if (!title || !content) {
+                showMessageBox("Both title and content are required", true);
+                return;
+            }
+
+            const blogs = getData("blogs");
+            blogs.unshift({
+                id: Date.now(),
+                title,
+                content,
+                author: currentUser.name,
+                likes: 0,
+                comments: [],
+                timestamp: new Date().toISOString() // Add timestamp
+            });
+
+            saveData("blogs", blogs);
+            document.getElementById("blogTitle").value = "";
+            document.getElementById("blogContent").value = "";
+            showMessageBox("Blog post added successfully!");
+            renderBlogs();
+        }
+
+        function renderBlogs() {
+            const blogs = getData("blogs");
+            const container = document.getElementById("blogContainer");
+            container.innerHTML = "<h2>📚 All Blogs</h2>";
+
+            const searchTerm = document.getElementById('searchBlog').value.toLowerCase();
+            const filterDate = document.getElementById('filterDate').value;
+            const filterTime = document.getElementById('filterTime').value;
+
+            let filteredBlogs = blogs.filter(blog => {
+                const matchesSearch = searchTerm === '' || 
+                                      blog.title.toLowerCase().includes(searchTerm) || 
+                                      blog.content.toLowerCase().includes(searchTerm) ||
+                                      blog.author.toLowerCase().includes(searchTerm);
+
+                let matchesDate = true;
+                if (filterDate) {
+                    const blogDate = new Date(blog.timestamp).toISOString().split('T')[0];
+                    matchesDate = (blogDate === filterDate);
+                }
+
+                let matchesTime = true;
+                if (filterTime) {
+                    const blogTime = new Date(blog.timestamp).toTimeString().substring(0, 5); // HH:MM
+                    matchesTime = (blogTime >= filterTime);
+                }
+                
+                return matchesSearch && matchesDate && matchesTime;
+            });
+
+            // Sort blogs by timestamp (most recent first)
+            filteredBlogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+
+            filteredBlogs.forEach((blog) => {
+                const blogEl = document.createElement("div");
+                blogEl.className = "blog";
+
+                const postDate = new Date(blog.timestamp).toLocaleString(); // Format date and time
+
+                blogEl.innerHTML = `
+                    <h3>${blog.title}</h3>
+                    <p>${blog.content}</p>
+                    <small>By: <strong>${blog.author}</strong> on ${postDate}</small>
+                    <div class="likes-comments">
+                        <span class="like-btn" onclick="likeBlog(${blog.id})">👍 ${blog.likes} Likes</span>
+                        <span class="comment-toggle-btn" onclick="toggleComments(${blog.id})">💬 ${blog.comments.length} Comments</span>
+                        ${currentUser?.isAdmin ? `<span class="delete-btn" onclick="deleteBlog(${blog.id})">🗑️ Delete Blog</span>` : ""}
+                    </div>
+
+                    <div class="comment-section" id="comments-${blog.id}">
+                        <input type="text" id="comment-input-${blog.id}" placeholder="Write a comment..." />
+                        <button onclick="addComment(${blog.id})"><i class="fas fa-comment"></i> Comment</button>
+                        <div id="comment-list-${blog.id}">
+                            ${blog.comments.map((c, index) => {
+                                const commentDate = new Date(c.timestamp).toLocaleString();
+                                return `
+                                    <div class="comment">
+                                        <div><strong>${c.user}</strong>: ${c.text}</div>
+                                        <div class="comment-actions">
+                                            <small>${commentDate}</small>
+                                            <span class="comment-like-btn" onclick="likeComment(${blog.id}, ${index})">❤️ ${c.likes}</span>
+                                            ${currentUser?.isAdmin || c.user === currentUser?.name ? `<span class="delete-btn" onclick="deleteComment(${blog.id}, ${index})">🗑️</span>` : ""}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join("")}
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(blogEl);
+            });
+
+            if (filteredBlogs.length === 0) {
+                container.innerHTML += `<p style="text-align: center; color: var(--text-muted);">No blogs found matching your criteria.</p>`;
+            }
+        }
+
+        function toggleComments(id) {
+            const section = document.getElementById(`comments-${id}`);
+            section.style.display = section.style.display === "none" ? "block" : "none";
+        }
+
+        function likeBlog(id) {
+            const blogs = getData("blogs");
+            const blog = blogs.find(b => b.id === id);
+            if (blog) {
+                blog.likes++;
+                saveData("blogs", blogs);
+                renderBlogs();
+            }
+        }
+
+        function addComment(blogId) {
+            if (!currentUser) {
+                showMessageBox("Please log in to add a comment.", true);
+                return;
+            }
+            const input = document.getElementById(`comment-input-${blogId}`);
+            const text = input.value.trim();
+            if (!text) {
+                showMessageBox("Comment cannot be empty.", true);
+                return;
+            }
+
+            const blogs = getData("blogs");
+            const blog = blogs.find(b => b.id === blogId);
+            if (blog) {
+                blog.comments.push({ user: currentUser.name, text, likes: 0, timestamp: new Date().toISOString() });
+                saveData("blogs", blogs);
+                input.value = "";
+                showMessageBox("Comment added successfully!");
+                renderBlogs();
+                toggleComments(blogId); // Re-open comments section after adding
+            }
+        }
+
+        function likeComment(blogId, index) {
+            const blogs = getData("blogs");
+            const blog = blogs.find(b => b.id === blogId);
+            if (blog && blog.comments[index]) {
+                blog.comments[index].likes++;
+                saveData("blogs", blogs);
+                renderBlogs();
+                toggleComments(blogId); // Re-open comments section after liking
+            }
+        }
+
+        function deleteComment(blogId, index) {
+            const blogs = getData("blogs");
+            const blog = blogs.find(b => b.id === blogId);
+            if (blog && blog.comments[index]) {
+                if (currentUser.isAdmin || blog.comments[index].user === currentUser.name) {
+                    blog.comments.splice(index, 1);
+                    saveData("blogs", blogs);
+                    showMessageBox("Comment deleted successfully!");
+                    renderBlogs();
+                    toggleComments(blogId); // Re-open comments section after deleting
+                } else {
+                    showMessageBox("You can only delete your own comments.", true);
+                }
+            }
+        }
+
+        function deleteBlog(id) {
+            if (!currentUser || !currentUser.isAdmin) {
+                showMessageBox("Only admins can delete blogs.", true);
+                return;
+            }
+
+            const blogs = getData("blogs");
+            const updatedBlogs = blogs.filter(blog => blog.id !== id);
+            saveData("blogs", updatedBlogs);
+            showMessageBox("Blog deleted successfully!");
+            renderBlogs();
+        }
+
+        // Event listeners for filter and search
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('searchBlog').addEventListener('input', renderBlogs);
+            document.getElementById('filterDate').addEventListener('change', renderBlogs);
+            document.getElementById('filterTime').addEventListener('change', renderBlogs);
+            document.getElementById('resetFilters').addEventListener('click', () => {
+                document.getElementById('searchBlog').value = '';
+                document.getElementById('filterDate').value = '';
+                document.getElementById('filterTime').value = '';
+                renderBlogs();
+            });
+
+            renderBlogs(); // Initial render on load
+        });
+    </script>
+
+</body>
+</html>

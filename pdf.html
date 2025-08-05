@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Book</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3B82F6;
+            --accent-color: #9333EA;
+            --background-color: #F9FAFB;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+
+            /* Updated variables */
+            --bg: var(--background-color);
+            --sidebar: #E5E7EB; /* Lighter sidebar for light mode */
+            --card: #FFFFFF; /* White card background */
+            
+            --accent: var(--primary-color); 
+            --accent-secondary: var(--accent-color);
+            
+            --text: var(--text-dark); 
+            --light-text: #FFFFFF; /* For dark elements on light background */
+            --light-bg: #E5E7EB; /* Lighter background for elements */
+            
+            --success: #22C55E;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            
+            --gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --glass-border: 1px solid rgba(0, 0, 0, 0.05);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(240, 147, 251, 0.04) 0%, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styling */
+        header {
+            background: var(--card);
+            border-bottom: var(--glass-border);
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--glass-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .back-btn {
+            background: var(--accent-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            background: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Main Content - Form */
+        .container {
+            flex-grow: 1;
+            padding: 2rem 3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-card {
+            background: var(--card);
+            border: var(--glass-border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .form-card h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--light-bg);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--text-dark);
+            background-color: var(--background-color);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="file"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-group input[type="file"] {
+            padding: 0.7rem 1rem; /* Adjust padding for file input */
+        }
+
+        .submit-btn {
+            background: var(--gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Message Box Styling */
+        .message-box {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            font-weight: 500;
+        }
+
+        .message-box.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .message-box.error {
+            background-color: var(--danger);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem 1.5rem;
+                gap: 1rem;
+            }
+
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+
+            .back-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 0.7rem 1rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .form-card h2 {
+                font-size: 1.8rem;
+            }
+
+            .submit-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .form-card {
+                padding: 1.2rem;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gradient);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-book-open"></i></div>
+            <h1>Add New Book</h1>
+        </div>
+        <a href="bookshop.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Bookshop
+        </a>
+    </header>
+
+    <main class="container">
+        <div class="form-card">
+            <h2>Upload Your Book</h2>
+            <form id="addBookForm">
+                <div class="form-group">
+                    <label for="bookTitle">Book Title</label>
+                    <input type="text" id="bookTitle" placeholder="e.g., The Great Adventure" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookAuthor">Author Name</label>
+                    <input type="text" id="bookAuthor" placeholder="e.g., Jane Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="pdfFile">Upload PDF</label>
+                    <input type="file" id="pdfFile" accept="application/pdf" required>
+                </div>
+                <div class="form-group">
+                    <label for="thumbnailFile">Upload Thumbnail (Optional)</label>
+                    <input type="file" id="thumbnailFile" accept="image/*">
+                </div>
+                <button type="submit" class="submit-btn"><i class="fas fa-upload"></i> Add Book</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Message Box -->
+    <div id="messageBox" class="message-box"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const addBookForm = document.getElementById('addBookForm');
+            const bookTitleInput = document.getElementById('bookTitle');
+            const bookAuthorInput = document.getElementById('bookAuthor');
+            const pdfFileInput = document.getElementById('pdfFile');
+            const thumbnailFileInput = document.getElementById('thumbnailFile');
+            const messageBox = document.getElementById('messageBox');
+
+            /**
+             * Displays a temporary message box.
+             * @param {string} message - The message to display.
+             * @param {boolean} isError - True if it's an error message, false otherwise.
+             */
+            function showMessageBox(message, isError = false) {
+                messageBox.textContent = message;
+                messageBox.classList.remove('error');
+                if (isError) {
+                    messageBox.classList.add('error');
+                }
+                messageBox.classList.add('show');
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 3000); // Message disappears after 3 seconds
+            }
+
+            /**
+             * Reads a file as a Data URL.
+             * @param {File} file - The file to read.
+             * @returns {Promise<string>} A promise that resolves with the Data URL.
+             */
+            function readFileAsDataURL(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            addBookForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                const title = bookTitleInput.value.trim();
+                const author = bookAuthorInput.value.trim();
+                const pdfFile = pdfFileInput.files[0];
+                const thumbnailFile = thumbnailFileInput.files[0];
+
+                if (!title || !author || !pdfFile) {
+                    showMessageBox('Please fill in all required fields and select a PDF file.', true);
+                    return;
+                }
+
+                try {
+                    // Read PDF file
+                    const pdfDataUrl = await readFileAsDataURL(pdfFile);
+
+                    // Read thumbnail file (if provided)
+                    let thumbnailDataUrl = '';
+                    if (thumbnailFile) {
+                        thumbnailDataUrl = await readFileAsDataURL(thumbnailFile);
+                    }
+
+                    // Get existing books or initialize an empty array
+                    const existingBooks = JSON.parse(localStorage.getItem('books')) || [];
+
+                    // Create a unique ID for the new book
+                    const newBookId = Date.now().toString();
+
+                    // Create the new book object
+                    const newBook = {
+                        id: newBookId,
+                        title: title,
+                        author: author,
+                        pdfDataUrl: pdfDataUrl,
+                        thumbnailDataUrl: thumbnailDataUrl
+                    };
+
+                    // Add the new book to the array
+                    existingBooks.push(newBook);
+
+                    // Save the updated array back to local storage
+                    localStorage.setItem('books', JSON.stringify(existingBooks));
+
+                    showMessageBox('Book added successfully!');
+                    addBookForm.reset(); // Clear the form
+
+                    // Dispatch a custom event to notify bookshop.html to reload books
+                    window.opener.dispatchEvent(new Event('bookAdded'));
+
+                    // Optional: Redirect back to bookshop.html after a short delay
+                    setTimeout(() => {
+                        window.location.href = 'bookshop.html';
+                    }, 1500);
+
+                } catch (error) {
+                    console.error('Error adding book:', error);
+                    showMessageBox('Failed to add book. Please try again.', true);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

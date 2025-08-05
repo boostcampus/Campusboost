@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profit & Loss Calculator</title>
+  <style>
+   :root {
+  --bg: #212121;
+  --sidebar: #1A1D23;
+  --card: #1A1D23;
+  --accent: #667eea;
+  --accent-secondary: #764ba2;
+  --text: #ffffff;
+  --light-text: #000000;
+  --light-bg: #f8f9fa;
+  --success: #2ecc71;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --info: #3498db;
+  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+}
+
+.calculator {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 30px;
+}
+
+h2 {
+  text-align: center;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+label {
+  margin-top: 10px;
+  font-size: 14px;
+  display: block;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  background: #2a2d33;
+  color: var(--text);
+  border: none;
+  border-radius: 8px;
+  margin-top: 5px;
+}
+
+button {
+  background: var(--accent);
+  color: var(--light-text);
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  width: 100%;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button:hover {
+  background: var(--accent-secondary);
+}
+
+.result,
+.history {
+  background: var(--card);
+  padding: 20px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+}
+
+.result p {
+  margin: 5px 0;
+}
+
+.profit {
+  color: var(--success);
+  font-weight: bold;
+}
+
+.loss {
+  color: var(--danger);
+  font-weight: bold;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  background: #2a2d33;
+}
+
+th {
+  background: var(--accent);
+  color: var(--light-text);
+}
+
+tr:nth-child(even) td {
+  background: #26292f;
+}
+
+@media (max-width: 600px) {
+  h2 {
+    font-size: 20px;
+  }
+  input,
+  button {
+    font-size: 14px;
+  }
+  table,
+  th,
+  td {
+    font-size: 12px;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <div class="calculator">
+    <h2>Profit & Loss Calculator</h2>
+    <label>Cost Price per Unit (₦)</label>
+    <input type="number" id="costPrice" placeholder="Enter cost price" />
+
+    <label>Selling Price per Unit (₦)</label>
+    <input type="number" id="sellingPrice" placeholder="Enter selling price" />
+
+    <label>Quantity</label>
+    <input type="number" id="quantity" placeholder="Enter quantity" />
+
+    <button onclick="calculate()">Calculate</button>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <div class="result" id="receiptBox" style="display:none;">
+    <h3 style="color:#34C759;">🧾 Receipt</h3>
+    <p id="receiptDate"></p>
+    <p id="totalCost"></p>
+    <p id="totalSelling"></p>
+    <p id="profitOrLoss"></p>
+    <p id="percentage"></p>
+  </div>
+
+  <div class="history" id="historyBox">
+    <h3 style="color:#34C759;">📜 History</h3>
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Total Cost</th>
+          <th>Total Sell</th>
+          <th>Result</th>
+          <th>%</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const historyTable = document.getElementById("historyTable").querySelector("tbody");
+    const receiptBox = document.getElementById("receiptBox");
+
+    let history = JSON.parse(localStorage.getItem("plHistory")) || [];
+
+    function formatDate() {
+      const now = new Date();
+      return now.toLocaleDateString() + " " + now.toLocaleTimeString();
+    }
+
+    function updateHistory() {
+      historyTable.innerHTML = "";
+      history.slice().reverse().forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.date}</td>
+          <td>₦${item.totalCost.toLocaleString()}</td>
+          <td>₦${item.totalSell.toLocaleString()}</td>
+          <td style="color:${item.type === 'Profit' ? '#34C759' : 'red'}">${item.type}: ₦${item.amount.toLocaleString()}</td>
+          <td>${item.percent}%</td>
+        `;
+        historyTable.appendChild(tr);
+      });
+    }
+
+    function calculate() {
+      const cost = parseFloat(document.getElementById("costPrice").value);
+      const sell = parseFloat(document.getElementById("sellingPrice").value);
+      const qty = parseFloat(document.getElementById("quantity").value);
+
+      if (isNaN(cost) || isNaN(sell) || isNaN(qty) || cost < 0 || sell < 0 || qty <= 0) {
+        alert("Please enter valid values.");
+        return;
+      }
+
+      const totalCost = cost * qty;
+      const totalSell = sell * qty;
+      const diff = totalSell - totalCost;
+      const percent = Math.abs((diff / totalCost) * 100).toFixed(2);
+      const type = diff > 0 ? "Profit" : diff < 0 ? "Loss" : "Neutral";
+      const date = formatDate();
+
+      document.getElementById("receiptBox").style.display = "block";
+      document.getElementById("receiptDate").textContent = `Date: ${date}`;
+      document.getElementById("totalCost").textContent = `Total Cost: ₦${totalCost.toLocaleString()}`;
+      document.getElementById("totalSelling").textContent = `Total Selling: ₦${totalSell.toLocaleString()}`;
+      
+      const resultText = document.getElementById("profitOrLoss");
+      const percentage = document.getElementById("percentage");
+
+      if (type === "Profit") {
+        resultText.innerHTML = `Profit: ₦${diff.toLocaleString()}`;
+        resultText.className = "profit";
+        percentage.textContent = `Profit Margin: ${percent}%`;
+      } else if (type === "Loss") {
+        resultText.innerHTML = `Loss: ₦${Math.abs(diff).toLocaleString()}`;
+        resultText.className = "loss";
+        percentage.textContent = `Loss Margin: ${percent}%`;
+      } else {
+        resultText.innerHTML = `No Profit, No Loss`;
+        resultText.className = "";
+        percentage.textContent = ``;
+      }
+
+      history.push({
+        date, totalCost, totalSell,
+        amount: Math.abs(diff),
+        percent, type
+      });
+
+      localStorage.setItem("plHistory", JSON.stringify(history));
+      updateHistory();
+    }
+
+    // Load history on page load
+    updateHistory();
+  </script>
+</body>
+</html>

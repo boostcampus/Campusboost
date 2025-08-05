@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nigeria Annual Tax Planner</title>
+  <style>
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .planner {
+      background-color: var(--card);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: var(--card-shadow);
+      width: 100%;
+      max-width: 500px;
+      transition: var(--transition);
+    }
+
+    h2 {
+      color: var(--accent);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    label {
+      margin-top: 15px;
+      display: block;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2a2d33;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 25px;
+      background-color: var(--accent);
+      color: var(--light-text);
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    button:hover {
+      transform: scale(1.02);
+      background-color: var(--accent-secondary);
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 10px;
+      background-color: #2a2d33;
+      box-shadow: inset 0 0 5px rgba(52,199,89,0.3);
+    }
+
+    .result p {
+      margin-bottom: 10px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    a.back-link {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      color: var(--info);
+      text-decoration: none;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    a.back-link:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 600px) {
+      input, button, label, .result p {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="planner">
+    <h2>🇳🇬 Annual Tax Planner</h2>
+
+    <label for="income">Monthly Income (₦)</label>
+    <input type="number" id="income" placeholder="e.g. 300000" />
+
+    <label for="expenses">Monthly Expenses (₦)</label>
+    <input type="number" id="expenses" placeholder="e.g. 80000" />
+
+    <button onclick="calculateTax()">Calculate Annual Tax</button>
+
+    <div class="result" id="output" style="display: none;"></div>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    function calculateTax() {
+      const income = parseFloat(document.getElementById("income").value);
+      const expenses = parseFloat(document.getElementById("expenses").value);
+      const output = document.getElementById("output");
+
+      if (isNaN(income) || isNaN(expenses)) {
+        alert("Please enter valid income and expenses.");
+        return;
+      }
+
+      const annualIncome = income * 12;
+      const annualExpenses = expenses * 12;
+      const gross = annualIncome - annualExpenses;
+
+      const cra = Math.max(200000, 0.01 * gross) + (0.2 * gross);
+      const taxableIncome = Math.max(0, gross - cra);
+
+      let remaining = taxableIncome;
+      let tax = 0;
+
+      const brackets = [
+        { limit: 300000, rate: 0.07 },
+        { limit: 300000, rate: 0.11 },
+        { limit: 500000, rate: 0.15 },
+        { limit: 500000, rate: 0.19 },
+        { limit: 1600000, rate: 0.21 },
+        { limit: Infinity, rate: 0.24 }
+      ];
+
+      for (let b of brackets) {
+        const applyAmount = Math.min(remaining, b.limit);
+        tax += applyAmount * b.rate;
+        remaining -= applyAmount;
+        if (remaining <= 0) break;
+      }
+
+      const netIncome = gross - tax;
+
+      output.innerHTML = `
+        <p><strong>Annual Income:</strong> ₦${annualIncome.toLocaleString()}</p>
+        <p><strong>Annual Expenses:</strong> ₦${annualExpenses.toLocaleString()}</p>
+        <p><strong>Gross Income:</strong> ₦${gross.toLocaleString()}</p>
+        <p><strong>CRA Relief:</strong> ₦${cra.toLocaleString()}</p>
+        <p><strong>Taxable Income:</strong> ₦${taxableIncome.toLocaleString()}</p>
+        <p><strong>Estimated Annual Tax:</strong> <span style="color: var(--success);">₦${tax.toLocaleString()}</span></p>
+        <p><strong>Net Take-Home (After Tax):</strong> ₦${netIncome.toLocaleString()}</p>
+      `;
+      output.style.display = "block";
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My E-Commerce Store</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* BASIC RESET & GLOBAL STYLES */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 15px 0;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #007bff;
+        }
+
+        main {
+            padding: 20px 0;
+        }
+
+        .page-section {
+            display: none; /* All sections hidden by default, JS will show the active one */
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px; /* Space between sections if multiple are visible for debugging */
+        }
+
+        .page-section.active {
+            display: block; /* Show the active section */
+        }
+
+        h2 {
+            color: #007bff;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Forms */
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.05);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"],
+        form input[type="number"],
+        form textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        form button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Products Grid (Home Page) */
+        #product-display-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            height: 180px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .product-card h3 {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .product-card p.price {
+            font-size: 1.2em;
+            color: #007bff;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .product-card button.add-to-cart-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .product-card button.add-to-cart-btn:hover {
+            background-color: #218838;
+        }
+
+        /* Cart Page */
+        #cart-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #cart-items-table th, #cart-items-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        #cart-items-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .cart-total {
+            text-align: right;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #eee;
+        }
+
+        .checkout-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto 0;
+            background-color: #ffc107;
+            color: #333;
+            padding: 15px 0;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background-color: #e0a800;
+        }
+
+        /* Settings Page */
+        .settings-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .settings-buttons button {
+            background-color: #17a2b8;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+        }
+
+        .settings-buttons button:hover {
+            background-color: #138496;
+        }
+
+        /* Modals */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; /* 15% from the top and centered */
+            padding: 30px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more responsive */
+            max-width: 600px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Admin Page */
+        #add-product-form {
+            margin-bottom: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        #admin-products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #admin-products-table th, #admin-products-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        #admin-products-table th {
+            background-color: #f2f2f2;
+        }
+
+        #admin-products-table img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        #admin-products-table button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-size: 0.9em;
+        }
+
+        #admin-products-table .edit-btn { background-color: #007bff; color: white; }
+        #admin-products-table .edit-btn:hover { background-color: #0056b3; }
+        #admin-products-table .delete-btn { background-color: #dc3545; color: white; }
+        #admin-products-table .delete-btn:hover { background-color: #c82333; }
+
+        /* Admin Transactions */
+        #admin-transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #admin-transactions-table th, #admin-transactions-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #admin-transactions-table th {
+            background-color: #f2f2f2;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        .social-media-icons a {
+            color: #fff;
+            font-size: 1.5em;
+            margin: 0 10px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .social-media-icons a:hover {
+            color: #007bff;
+        }
+
+        /* Map Section */
+        #map-container {
+            width: 100%;
+            height: 400px;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 30px;
+        }
+        #map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Hidden Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>My E-Commerce Store</h1>
+        <nav>
+            <ul id="main-menu">
+                <li id="nav-home"><a href="#" onclick="showPage('home-page')">Home</a></li>
+                <li id="nav-cart"><a href="#" onclick="showPage('cart-page')">Cart</a></li>
+                <li id="nav-profile" class="hidden"><a href="#" onclick="showPage('settings-page')">Profile</a></li>
+                <li id="nav-admin" class="hidden"><a href="#" onclick="showPage('admin-page')">Admin</a></li>
+                <li id="nav-welcome" class="hidden"><span></span></li>
+                <li id="nav-register" class=""><a href="#" onclick="showPage('register-page')">Register</a></li>
+                <li id="nav-login" class=""><a href="#" onclick="showPage('register-page')">Login</a></li> <li id="nav-logout" class="hidden"><a href="#" onclick="handleLogout()">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <section id="register-page" class="page-section active">
+            <h2>Register / Login</h2>
+            <div id="auth-forms">
+                <h3>Register</h3>
+                <form id="register-form">
+                    <label for="reg-username">Username:</label>
+                    <input type="text" id="reg-username" required>
+
+                    <label for="reg-email">Email:</label>
+                    <input type="email" id="reg-email" required>
+
+                    <label for="reg-password">Password:</label>
+                    <input type="password" id="reg-password" required>
+                    <button type="submit">Register</button>
+                </form>
+
+                <h3 style="margin-top: 30px;">Login</h3>
+                <form id="login-form">
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" required>
+
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <p id="auth-error-message" style="color: red; margin-top: 15px;"></p>
+            </div>
+        </section>
+
+        <section id="home-page" class="page-section hidden">
+            <h2>Our Products</h2>
+            <div id="product-display-area">
+                </div>
+
+            <h2 style="margin-top: 50px;">Contact Us</h2>
+            <div class="contact-section">
+                <p>Have questions or need assistance? Reach out to us!</p>
+                <form id="contact-form">
+                    <label for="contact-name">Name:</label>
+                    <input type="text" id="contact-name" name="name" required>
+
+                    <label for="contact-email">Email:</label>
+                    <input type="email" id="contact-email" name="email" required>
+
+                    <label for="contact-message">Message:</label>
+                    <textarea id="contact-message" name="message" rows="5" required></textarea>
+
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+
+            <h2 style="margin-top: 50px;">Find Us</h2>
+            <div id="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15854.67056637153!2d3.37568565!3d6.52437935!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8b2ae68b8137%3A0x63773133334641d4!2sLagos!5e0!3m2!1sen!2sng!4v1719946555543!5m2!1sen!2sng" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </section>
+
+        <section id="cart-page" class="page-section hidden">
+            <h2>Your Shopping Cart</h2>
+            <table id="cart-items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="cart-items-body">
+                    <tr><td colspan="5" style="text-align: center;">Your cart is empty.</td></tr>
+                </tbody>
+            </table>
+            <div class="cart-total">
+                Total: <span id="cart-total-amount">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="handleCheckout()">Proceed to Checkout</button>
+        </section>
+
+        <section id="settings-page" class="page-section hidden">
+            <h2>Account Settings</h2>
+            <div class="settings-buttons">
+                <button onclick="openModal('profile-modal')">Edit Profile Information</button>
+                <button onclick="openModal('delivery-modal')">Edit Delivery Location</button>
+            </div>
+
+            <div id="profile-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button" onclick="closeModal('profile-modal')">&times;</span>
+                    <h3>Edit Profile</h3>
+                    <form id="edit-profile-form">
+                        <label for="profile-username">Username:</label>
+                        <input type="text" id="profile-username" required>
+
+                        <label for="profile-email">Email:</label>
+                        <input type="email" id="profile-email" disabled> <button type="submit">Save Profile</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="delivery-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button" onclick="closeModal('delivery-modal')">&times;</span>
+                    <h3>Edit Delivery Details</h3>
+                    <form id="edit-delivery-form">
+                        <label for="delivery-address">Address:</label>
+                        <input type="text" id="delivery-address" required>
+
+                        <label for="delivery-city">City:</label>
+                        <input type="text" id="delivery-city" required>
+
+                        <label for="delivery-postal-code">Postal Code:</label>
+                        <input type="text" id="delivery-postal-code">
+
+                        <button type="submit">Save Delivery Details</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin-page" class="page-section hidden">
+            <h2>Admin Dashboard</h2>
+
+            <h3>Add New Product</h3>
+            <form id="add-product-form">
+                <label for="add-product-name">Product Name:</label>
+                <input type="text" id="add-product-name" required>
+
+                <label for="add-product-description">Description:</label>
+                <textarea id="add-product-description" rows="3"></textarea>
+
+                <label for="add-product-price">Price:</label>
+                <input type="number" id="add-product-price" step="0.01" min="0" required>
+
+                <label for="add-product-image">Image URL:</label>
+                <input type="text" id="add-product-image" placeholder="e.g., https://example.com/image.jpg">
+
+                <label for="add-product-quantity">Quantity Available:</label>
+                <input type="number" id="add-product-quantity" min="0" required>
+
+                <button type="submit">Add Product</button>
+            </form>
+
+            <h3>Manage Products</h3>
+            <table id="admin-products-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-products-body">
+                    <tr><td colspan="5" style="text-align: center;">No products added yet.</td></tr>
+                </tbody>
+            </table>
+
+            <h3 style="margin-top: 50px;">Transaction Tracking</h3>
+            <table id="admin-transactions-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>User Email</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Items</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-transactions-body">
+                    <tr><td colspan="6" style="text-align: center;">No transactions recorded.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 My E-Commerce Store. All rights reserved.</p>
+        <div class="social-media-icons">
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Your Firebase configuration (REPLACE WITH YOUR ACTUAL CONFIG)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // --- GLOBAL VARIABLES & UTILITIES ---
+        let currentUser = null; // Stores the current logged-in user object
+        const ADMIN_EMAIL = "admin2025@gmail.com"; // Hardcoded admin email (INSECURE for production)
+        const ADMIN_PASSWORD = "2025admin"; // Hardcoded admin password (INSECURE for production)
+
+        // Function to show a specific page section and hide others
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            // Scroll to top of the page when changing sections
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Function to open a modal
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        // Function to close a modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // --- AUTHENTICATION LOGIC ---
+
+        // Handle user authentication state changes
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            updateNavigationMenu();
+            if (user) {
+                if (user.email === ADMIN_EMAIL) {
+                    showPage('admin-page'); // Admin goes to admin page
+                    loadAdminProducts(); // Load products for admin
+                    loadAdminTransactions(); // Load transactions for admin
+                } else {
+                    showPage('home-page'); // Regular user goes to home page
+                    loadProducts(); // Load products for regular user
+                }
+            } else {
+                showPage('register-page'); // No user, go to register/login page
+            }
+        });
+
+        // Update navigation menu based on login state
+        function updateNavigationMenu() {
+            const navProfile = document.getElementById('nav-profile');
+            const navWelcome = document.getElementById('nav-welcome');
+            const navLogout = document.getElementById('nav-logout');
+            const navRegister = document.getElementById('nav-register');
+            const navLogin = document.getElementById('nav-login');
+            const navAdmin = document.getElementById('nav-admin');
+
+            if (currentUser) {
+                navRegister.classList.add('hidden');
+                navLogin.classList.add('hidden');
+                navProfile.classList.remove('hidden');
+                navWelcome.classList.remove('hidden');
+                navLogout.classList.remove('hidden');
+                navWelcome.querySelector('span').textContent = `Welcome, ${currentUser.displayName || currentUser.email}`;
+
+                if (currentUser.email === ADMIN_EMAIL) {
+                    navAdmin.classList.remove('hidden');
+                } else {
+                    navAdmin.classList.add('hidden');
+                }
+            } else {
+                navRegister.classList.remove('hidden');
+                navLogin.classList.remove('hidden');
+                navProfile.classList.add('hidden');
+                navWelcome.classList.add('hidden');
+                navLogout.classList.add('hidden');
+                navAdmin.classList.add('hidden');
+            }
+        }
+
+        // Register User
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const username = document.getElementById('reg-username').value;
+            const errorMessage = document.getElementById('auth-error-message');
+            errorMessage.textContent = '';
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.updateProfile({ displayName: username });
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    username: username,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert('Registration successful! You are now logged in.');
+                // auth.onAuthStateChanged will handle redirection
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+            }
+        });
+
+        // Login User
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorMessage = document.getElementById('auth-error-message');
+            errorMessage.textContent = '';
+
+            // Handle hardcoded admin login (VERY INSECURE)
+            if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                // Simulate admin login without Firebase Auth for demonstration of admin panel
+                // In a real app, this would be handled by Firebase Auth custom claims or similar
+                // For this example, we'll just log them in via Firebase Auth if possible, then check the email
+                try {
+                     await auth.signInWithEmailAndPassword(email, password);
+                     // auth.onAuthStateChanged will handle redirection
+                } catch (error) {
+                    errorMessage.textContent = `Admin login error: ${error.message}`;
+                }
+                return;
+            }
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                // auth.onAuthStateChanged will handle redirection
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+            }
+        });
+
+        // Logout User
+        async function handleLogout() {
+            try {
+                await auth.signOut();
+                alert('You have been logged out.');
+                // auth.onAuthStateChanged will handle redirection
+            } catch (error) {
+                alert('Error logging out: ' + error.message);
+            }
+        }
+
+        // --- HOME PAGE LOGIC ---
+
+        // Load products for display
+        async function loadProducts() {
+            const productDisplayArea = document.getElementById('product-display-area');
+            productDisplayArea.innerHTML = ''; // Clear previous products
+
+            try {
+                const snapshot = await db.collection('products').get();
+                if (snapshot.empty) {
+                    productDisplayArea.innerHTML = '<p style="text-align: center;">No products available yet.</p>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    const productId = doc.id;
+                    const productCard = `
+                        <div class="product-card">
+                            <img src="${product.imageUrl || 'https://via.placeholder.com/180x180?text=No+Image'}" alt="${product.name}">
+                            <h3>${product.name}</h3>
+                            <p>${product.description || ''}</p>
+                            <p class="price">$${product.price.toFixed(2)}</p>
+                            <button class="add-to-cart-btn" data-id="${productId}" data-name="${product.name}" data-price="${product.price}">Add to Cart</button>
+                        </div>
+                    `;
+                    productDisplayArea.innerHTML += productCard;
+                });
+
+                // Add event listeners for "Add to Cart" buttons
+                document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const productId = e.target.dataset.id;
+                        const productName = e.target.dataset.name;
+                        const productPrice = parseFloat(e.target.dataset.price);
+                        addToCart(productId, productName, productPrice);
+                    });
+                });
+
+            } catch (error) {
+                console.error("Error loading products: ", error);
+                productDisplayArea.innerHTML = '<p style="color: red; text-align: center;">Error loading products.</p>';
+            }
+        }
+
+        // --- CART LOGIC ---
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || []; // Load cart from localStorage
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            displayCartItems(); // Re-render cart display after saving
+        }
+
+        function addToCart(productId, productName, productPrice, quantity = 1) {
+            const existingItemIndex = cart.findIndex(item => item.id === productId);
+
+            if (existingItemIndex > -1) {
+                // Item already in cart, increment quantity
+                cart[existingItemIndex].quantity += quantity;
+            } else {
+                // Add new item to cart
+                cart.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    quantity: quantity
+                });
+            }
+            alert(`${productName} added to cart!`);
+            saveCart();
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCart();
+        }
+
+        function updateCartQuantity(productId, newQuantity) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity = parseInt(newQuantity);
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    saveCart();
+                }
+            }
+        }
+
+        function displayCartItems() {
+            const cartItemsBody = document.getElementById('cart-items-body');
+            const cartTotalAmount = document.getElementById('cart-total-amount');
+            cartItemsBody.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartItemsBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Your cart is empty.</td></tr>';
+            } else {
+                cart.forEach(item => {
+                    const subtotal = item.price * item.quantity;
+                    total += subtotal;
+                    const row = `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>$${item.price.toFixed(2)}</td>
+                            <td>
+                                <input type="number" value="${item.quantity}" min="1" style="width: 60px;"
+                                    onchange="updateCartQuantity('${item.id}', this.value)">
+                            </td>
+                            <td>$${subtotal.toFixed(2)}</td>
+                            <td><button class="delete-btn" onclick="removeFromCart('${item.id}')">Remove</button></td>
+                        </tr>
+                    `;
+                    cartItemsBody.innerHTML += row;
+                });
+            }
+            cartTotalAmount.textContent = `$${total.toFixed(2)}`;
+        }
+
+        // Call displayCartItems when the cart page is shown
+        document.getElementById('nav-cart').addEventListener('click', displayCartItems);
+
+        // Handle Checkout (Client-side only - INSECURE)
+        async function handleCheckout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+
+            const confirmCheckout = confirm('Proceed to checkout? (This is a simulated checkout)');
+            if (confirmCheckout) {
+                const totalAmount = parseFloat(document.getElementById('cart-total-amount').textContent.replace('$', ''));
+                const orderId = 'ORDER_' + Date.now(); // Simple unique ID
+                const transaction = {
+                    orderId: orderId,
+                    userId: currentUser ? currentUser.uid : 'guest',
+                    userEmail: currentUser ? currentUser.email : 'guest@example.com',
+                    date: firebase.firestore.FieldValue.serverTimestamp(),
+                    amount: totalAmount,
+                    status: 'Pending', // In a real app, this would be 'Completed' after payment gateway callback
+                    items: cart.map(item => ({ id: item.id, name: item.name, price: item.price, quantity: item.quantity }))
+                };
+
+                try {
+                    await db.collection('transactions').add(transaction);
+                    alert('Order placed successfully! (Simulated payment)');
+
+                    // Decrease product quantities in Firestore (Client-side - Insecure)
+                    for (const item of cart) {
+                        const productRef = db.collection('products').doc(item.id);
+                        await db.runTransaction(async (transaction) => {
+                            const productDoc = await transaction.get(productRef);
+                            if (!productDoc.exists) {
+                                throw "Product does not exist!";
+                            }
+                            const newQuantity = productDoc.data().quantity - item.quantity;
+                            if (newQuantity < 0) {
+                                throw `Not enough ${item.name} in stock!`; // Rollback transaction
+                            }
+                            transaction.update(productRef, { quantity: newQuantity });
+                        });
+                    }
+
+                    cart = []; // Clear cart after successful "checkout"
+                    saveCart();
+                    showPage('home-page'); // Redirect to home or a success page
+                } catch (error) {
+                    console.error("Error during checkout:", error);
+                    alert('Checkout failed: ' + error.message);
+                }
+            }
+        }
+
+        // --- SETTINGS PAGE LOGIC ---
+
+        // Populate profile form when modal opens
+        document.getElementById('profile-modal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) { // Clicked outside content
+                closeModal('profile-modal');
+            }
+        });
+        document.getElementById('delivery-modal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) { // Clicked outside content
+                closeModal('delivery-modal');
+            }
+        });
+
+
+        // Handle Edit Profile Form Submission
+        document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                alert('You must be logged in to edit your profile.');
+                return;
+            }
+
+            const newUsername = document.getElementById('profile-username').value;
+            // For security, email changes typically require re-authentication or a separate flow
+
+            try {
+                // Update Firebase Auth profile
+                await currentUser.updateProfile({ displayName: newUsername });
+
+                // Update Firestore user document
+                await db.collection('users').doc(currentUser.uid).update({
+                    username: newUsername
+                });
+                alert('Profile updated successfully!');
+                closeModal('profile-modal');
+                updateNavigationMenu(); // Update welcome message
+            } catch (error) {
+                console.error("Error updating profile:", error);
+                alert('Failed to update profile: ' + error.message);
+            }
+        });
+
+        // Populate Delivery Form and Handle Submission
+        document.getElementById('edit-delivery-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                alert('You must be logged in to edit delivery details.');
+                return;
+            }
+
+            const address = document.getElementById('delivery-address').value;
+            const city = document.getElementById('delivery-city').value;
+            const postalCode = document.getElementById('delivery-postal-code').value;
+
+            try {
+                await db.collection('users').doc(currentUser.uid).update({
+                    deliveryAddress: {
+                        address: address,
+                        city: city,
+                        postalCode: postalCode
+                    }
+                }, { merge: true }); // Use merge to avoid overwriting other fields
+                alert('Delivery details updated successfully!');
+                closeModal('delivery-modal');
+            } catch (error) {
+                console.error("Error updating delivery details:", error);
+                alert('Failed to update delivery details: ' + error.message);
+            }
+        });
+
+        // Function to populate modals when opened
+        function populateProfileModal() {
+            if (currentUser) {
+                document.getElementById('profile-username').value = currentUser.displayName || '';
+                document.getElementById('profile-email').value = currentUser.email || '';
+            }
+        }
+
+        async function populateDeliveryModal() {
+            if (currentUser) {
+                try {
+                    const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                    if (userDoc.exists && userDoc.data().deliveryAddress) {
+                        const delivery = userDoc.data().deliveryAddress;
+                        document.getElementById('delivery-address').value = delivery.address || '';
+                        document.getElementById('delivery-city').value = delivery.city || '';
+                        document.getElementById('delivery-postal-code').value = delivery.postalCode || '';
+                    } else {
+                        // Clear fields if no existing data
+                        document.getElementById('delivery-address').value = '';
+                        document.getElementById('delivery-city').value = '';
+                        document.getElementById('delivery-postal-code').value = '';
+                    }
+                } catch (error) {
+                    console.error("Error fetching delivery details:", error);
+                }
+            }
+        }
+
+        // Add event listeners to populate modals when they are opened
+        document.querySelector('.settings-buttons button:nth-child(1)').addEventListener('click', populateProfileModal);
+        document.querySelector('.settings-buttons button:nth-child(2)').addEventListener('click', populateDeliveryModal);
+
+
+        // --- ADMIN PAGE LOGIC ---
+
+        // Check if current user is admin (INSECURE CLIENT-SIDE CHECK)
+        function isAdmin() {
+            return currentUser && currentUser.email === ADMIN_EMAIL;
+        }
+
+        // Add Product Form Submission
+        document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!isAdmin()) {
+                alert('Access Denied: Only administrators can add products.');
+                return;
+            }
+
+            const name = document.getElementById('add-product-name').value;
+            const description = document.getElementById('add-product-description').value;
+            const price = parseFloat(document.getElementById('add-product-price').value);
+            const imageUrl = document.getElementById('add-product-image').value;
+            const quantity = parseInt(document.getElementById('add-product-quantity').value);
+
+            if (isNaN(price) || isNaN(quantity)) {
+                alert('Please enter valid numbers for Price and Quantity.');
+                return;
+            }
+
+            try {
+                await db.collection('products').add({
+                    name,
+                    description,
+                    price,
+                    imageUrl,
+                    quantity,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert('Product added successfully!');
+                document.getElementById('add-product-form').reset(); // Clear form
+                loadAdminProducts(); // Reload admin products table
+                loadProducts(); // Also update home page products
+            } catch (error) {
+                console.error("Error adding product:", error);
+                alert('Failed to add product: ' + error.message);
+            }
+        });
+
+        // Load Products for Admin Management
+        async function loadAdminProducts() {
+            const adminProductsBody = document.getElementById('admin-products-body');
+            adminProductsBody.innerHTML = ''; // Clear previous products
+
+            if (!isAdmin()) {
+                adminProductsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Admin privileges required to view products.</td></tr>';
+                return;
+            }
+
+            try {
+                const snapshot = await db.collection('products').get();
+                if (snapshot.empty) {
+                    adminProductsBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No products added yet.</td></tr>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    const productId = doc.id;
+                    const row = `
+                        <tr>
+                            <td><img src="${product.imageUrl || 'https://via.placeholder.com/60'}" alt="${product.name}"></td>
+                            <td>${product.name}</td>
+                            <td>$${product.price.toFixed(2)}</td>
+                            <td><input type="number" id="qty-${productId}" value="${product.quantity}" min="0" style="width: 70px;"></td>
+                            <td>
+                                <button class="edit-btn" data-id="${productId}" onclick="editProduct('${productId}')">Edit</button>
+                                <button class="delete-btn" data-id="${productId}" onclick="deleteProduct('${productId}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                    adminProductsBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Error loading admin products:", error);
+                adminProductsBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading products for admin.</td></tr>';
+            }
+        }
+
+        // Edit Product (Simulated for simplicity, in reality would open a modal)
+        async function editProduct(productId) {
+            if (!isAdmin()) {
+                alert('Access Denied: Only administrators can edit products.');
+                return;
+            }
+
+            const newQuantity = document.getElementById(`qty-${productId}`).value;
+            // You would normally open a form/modal here to edit all fields
+            // For now, let's just update the quantity directly
+            try {
+                await db.collection('products').doc(productId).update({
+                    quantity: parseInt(newQuantity)
+                });
+                alert('Product quantity updated!');
+                loadProducts(); // Update home page display
+            } catch (error) {
+                console.error("Error updating product:", error);
+                alert('Failed to update product: ' + error.message);
+            }
+        }
+
+        // Delete Product
+        async function deleteProduct(productId) {
+            if (!isAdmin()) {
+                alert('Access Denied: Only administrators can delete products.');
+                return;
+            }
+            if (confirm('Are you sure you want to delete this product?')) {
+                try {
+                    await db.collection('products').doc(productId).delete();
+                    alert('Product deleted successfully!');
+                    loadAdminProducts(); // Reload admin products table
+                    loadProducts(); // Reload home page products
+                } catch (error) {
+                    console.error("Error deleting product:", error);
+                    alert('Failed to delete product: ' + error.message);
+                }
+            }
+        }
+
+        // Load Transactions for Admin Tracking
+        async function loadAdminTransactions() {
+            const adminTransactionsBody = document.getElementById('admin-transactions-body');
+            adminTransactionsBody.innerHTML = '';
+
+            if (!isAdmin()) {
+                adminTransactionsBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Admin privileges required to view transactions.</td></tr>';
+                return;
+            }
+
+            try {
+                const snapshot = await db.collection('transactions').orderBy('date', 'desc').get();
+                if (snapshot.empty) {
+                    adminTransactionsBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No transactions recorded yet.</td></tr>';
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    const transaction = doc.data();
+                    const transactionId = doc.id;
+                    const date = transaction.date ? new Date(transaction.date.toDate()).toLocaleString() : 'N/A';
+                    const itemsList = transaction.items ? transaction.items.map(item => `${item.name} (x${item.quantity})`).join(', ') : 'N/A';
+
+                    const row = `
+                        <tr>
+                            <td>${transaction.orderId || transactionId}</td>
+                            <td>${transaction.userEmail}</td>
+                            <td>${date}</td>
+                            <td>$${transaction.amount.toFixed(2)}</td>
+                            <td>${transaction.status}</td>
+                            <td>${itemsList}</td>
+                        </tr>
+                    `;
+                    adminTransactionsBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Error loading transactions:", error);
+                adminTransactionsBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Error loading transactions for admin.</td></tr>';
+            }
+        }
+
+        // --- Initial Load ---
+        // auth.onAuthStateChanged will handle which page to show initially
+        // You might want to pre-load some data depending on the initial state or
+        // ensure functions like loadProducts are called when the home page becomes active.
+
+        // Initial call to update navigation in case auth state is already known
+        updateNavigationMenu();
+
+        // Note: For contact form, you'd need a backend service (e.g., Formspree, Netlify Forms, EmailJS)
+        // as client-side JS cannot send emails directly.
+        document.getElementById('contact-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Contact form submitted! (No actual email sent without a backend service)');
+            e.target.reset(); // Clear the form
+        });
+
+    </script>
+</body>
+</html>

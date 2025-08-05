@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI + Market Forecast App</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #1A1D23;
+      --fg: #212121;
+      --green: #34C759;
+      --text: #fff;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: var(--fg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h1 { text-align: center; color: var(--green); margin-bottom: 20px; }
+    label, input { display: block; width: 100%; margin-bottom: 15px; }
+    input {
+      padding: 10px;
+      background: #2a2a2a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+    button {
+      background: var(--green);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .forecast { margin-top: 30px; }
+    canvas { background: #2a2a2a; border-radius: 10px; padding: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 AI & Market‑Aware Revenue Forecast</h1>
+    <!-- Forecast inputs -->
+    <input id="symbol" placeholder="Market symbol (e.g. AAPL or EURUSD)" />
+    <input id="rev1" placeholder="Scenario 1 Revenue (₦)" type="number" />
+    <input id="rev2" placeholder="Scenario 2 Revenue (₦)" type="number" />
+    <input id="growthRate" placeholder="User Growth % per month" type="number" />
+    <input id="months" placeholder="Forecast Period (months)" type="number" />
+    <input id="avKey" placeholder="Your Alpha Vantage API Key" />
+    <button onclick="generateForecast()">📊 Generate Forecast</button>
+
+    <div class="forecast" id="forecastOutput"></div>
+    <canvas id="forecastChart" height="200"></canvas>
+  </div>
+
+  <script>
+    async function fetchMarketGrowth(symbol, apiKey) {
+      const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=compact&apikey=${apiKey}`;
+      const resp = await fetch(url);
+      const json = await resp.json();
+      const ts = json['Time Series (Daily)'];
+      if (!ts) throw new Error('Invalid symbol or API key');
+      const dates = Object.keys(ts).slice(0, 31).reverse();
+      let pct = 0;
+      for (let i = 1; i < dates.length; i++) {
+        const prev = +ts[dates[i - 1]]['4. close'];
+        const curr = +ts[dates[i]]['4. close'];
+        pct += (curr - prev) / prev;
+      }
+      return pct / (dates.length - 1); // avg daily change
+    }
+
+    function formatNaira(v) {
+      return '₦' + (+v).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+
+    async function generateForecast() {
+      const [sym, rev1, rev2, gr, mo, key] = [
+        document.getElementById('symbol').value.trim(),
+        +document.getElementById('rev1').value,
+        +document.getElementById('rev2').value,
+        +document.getElementById('growthRate').value / 100,
+        +document.getElementById('months').value,
+        document.getElementById('avKey').value.trim(),
+      ];
+      const out = document.getElementById('forecastOutput');
+      if (!sym || isNaN(rev1) || isNaN(rev2) || isNaN(gr) || isNaN(mo) || !key) {
+        out.innerHTML = '<p>Please fill all fields correctly.</p>';
+        return;
+      }
+
+      let marketGr;
+      try {
+        marketGr = await fetchMarketGrowth(sym, key) * 20; // scale daily→monthly
+      } catch (e) {
+        out.innerHTML = `<p style="color:red">Market data error: ${e.message}</p>`;
+        return;
+      }
+
+      const labels = [], s1 = [], s2 = [], ai = [], mk = [];
+      let c1 = rev1, c2 = rev2;
+      for (let i = 1; i <= mo; i++) {
+        c1 *= (1 + gr);
+        c2 *= (1 + gr * 1.15);
+        labels.push('M' + i);
+        s1.push(+c1.toFixed(2));
+        s2.push(+c2.toFixed(2));
+        ai.push(+(((c1 + c2) / 2 + 5000).toFixed(2)));
+        c1 *= (1 + marketGr);
+        mk.push(+c1.toFixed(2)); // market-based scenario
+      }
+
+      let html = `<h2>Forecast Summary</h2><ul>`;
+      html += `<li>Market Avg Growth ≈ ${(marketGr*100).toFixed(2)} %/mo</li>`;
+      html += `</ul>`;
+      out.innerHTML = html;
+      renderChart(labels, s1, s2, ai, mk);
+    }
+
+    let chart = null;
+    function renderChart(labels, a, b, ai, m) {
+      const ctx = document.getElementById('forecastChart').getContext('2d');
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Scenario 1', data: a, borderColor: '#34C759' },
+            { label: 'Scenario 2', data: b, borderColor: '#FF9500' },
+            { label: 'AI Prediction', data: ai, borderColor: '#007AFF', borderDash: [5,5] },
+            { label: 'Market Trend', data: m, borderColor: '#FFF700', borderDash: [2,2] },
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: { x:{ticks:{color:'#fff'}}, y:{ticks:{color:'#fff'}, beginAtZero:true} },
+          plugins: { legend:{labels:{color:'#fff'}} }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Revenue Forecasting Chat</title>
+  <style>
+    /* CSS Variables for easy theme changes */
+    :root {
+      --bg-dark: #1A1D23;
+      --bg-light: #212121;
+      --green: #34C759;
+      --text: #ffffff;
+      --red: #FF3B30;
+      --yellow: #FFCC00;
+      --ai-bubble: #333333; /* Darker grey for AI messages */
+      --user-bubble: #007bff; /* Blue for user messages */
+    }
+
+    /* Global Reset and Font */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Body Styling */
+    body {
+      background: var(--bg-dark);
+      color: var(--text);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Main Container for the Chat App */
+    .container {
+      max-width: 600px; /* Reduced width for a chat-like feel */
+      width: 100%;
+      height: 70vh; /* Fixed height to create a scrollable chat window */
+      margin: auto;
+      background: var(--bg-light);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header Styling */
+    h1 {
+      text-align: center;
+      color: var(--green);
+      margin-bottom: 20px;
+      font-size: 1.8em;
+    }
+
+    /* Chat Window Area */
+    .chat-window {
+      flex-grow: 1; /* Allows it to take up available space */
+      overflow-y: auto; /* Enables scrolling for messages */
+      padding: 10px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      background: #2a2a2a; /* Slightly lighter than body background */
+      display: flex;
+      flex-direction: column; /* Messages stack vertically */
+    }
+
+    /* Individual Message Bubbles */
+    .message {
+      max-width: 80%; /* Messages don't span full width */
+      padding: 10px 15px;
+      border-radius: 18px; /* Rounded corners for bubbles */
+      margin-bottom: 10px;
+      line-height: 1.4;
+      word-wrap: break-word; /* Ensure long words wrap */
+    }
+
+    .message.ai {
+      background: var(--ai-bubble);
+      align-self: flex-start; /* AI messages align left */
+      border-bottom-left-radius: 2px; /* Slight corner for visual appeal */
+    }
+
+    .message.user {
+      background: var(--user-bubble);
+      align-self: flex-end; /* User messages align right */
+      color: white;
+      border-bottom-right-radius: 2px; /* Slight corner for visual appeal */
+    }
+
+    /* Input Area (Text input + Send button) */
+    .input-area {
+      display: flex;
+      gap: 10px; /* Space between input and button */
+    }
+
+    .input-area input {
+      flex-grow: 1; /* Input takes up most of the space */
+      padding: 12px;
+      background: #3a3a3a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .input-area button {
+      padding: 12px 20px;
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      min-width: 80px; /* Ensure button has a minimum width */
+    }
+
+    .input-area button:hover {
+      background: #28a745; /* Darker green on hover */
+    }
+
+    /* Forecast Output Styling (appears within AI message) */
+    .forecast {
+      margin-top: 15px;
+      padding: 15px;
+      background: #2a2a2a;
+      border-radius: 10px;
+      color: var(--text);
+    }
+
+    .forecast h2 {
+      color: var(--green);
+      margin-bottom: 10px;
+      font-size: 1.3em;
+    }
+
+    .forecast ul {
+      list-style-type: none; /* Remove bullet points */
+      padding-left: 0;
+      margin-bottom: 10px;
+    }
+
+    .forecast li {
+      margin-bottom: 5px;
+    }
+
+    /* AI Sentiment Indicator */
+    .sentiment-indicator {
+      font-weight: bold;
+      margin-top: 5px;
+      display: block; /* Ensures it starts on a new line within the message */
+    }
+
+    .sentiment-positive { color: var(--green); }
+    .sentiment-negative { color: var(--red); }
+    .sentiment-neutral { color: var(--yellow); }
+
+    /* Back to Dashboard Link */
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9em;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+        height: 85vh; /* Taller on smaller screens */
+      }
+      .input-area input, .input-area button {
+        font-size: 14px;
+        padding: 10px;
+      }
+      h1 {
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📈 AI Revenue Forecasting Chat (₦)</h1>
+    <div class="chat-window" id="chatWindow">
+      </div>
+    <div class="input-area">
+      <input type="text" id="chatInput" placeholder="Type your answer here..." onkeydown="handleKeyPress(event)">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+    <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  <script>
+    const chatWindow = document.getElementById('chatWindow');
+    const chatInput = document.getElementById('chatInput');
+
+    let conversationStep = 0; // Tracks current step: 0: Initial, 1: Revenue, 2: Months, 3: Scenario, 4: Growth Rate (if not AI), 5: Done
+    let forecastData = {}; // Stores collected data: currentRevenue, months, scenarioType, growthRate
+
+    /**
+     * Formats a number into Nigerian Naira currency.
+     * @param {number} value - The number to format.
+     * @returns {string} The formatted Naira string.
+     */
+    function formatNaira(value) {
+      if (isNaN(value)) return '₦0.00';
+      return '₦' + value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    /**
+     * Adds a message to the chat window.
+     * @param {string} text - The content of the message (can include HTML).
+     * @param {string} sender - 'ai' or 'user'.
+     */
+    function addMessage(text, sender) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', sender);
+      messageDiv.innerHTML = text; // Using innerHTML to allow for formatted text (like strong tags or lists)
+      chatWindow.appendChild(messageDiv);
+      chatWindow.scrollTop = chatWindow.scrollHeight; // Auto-scroll to the bottom
+    }
+
+    /**
+     * Advances the conversation by asking the next question based on the current step.
+     */
+    function askQuestion() {
+      switch (conversationStep) {
+        case 0: // Initial state, ask for revenue
+          addMessage("Hello! Let's forecast your revenue. What's your **Current Monthly Revenue** in Naira (₦)?", 'ai');
+          conversationStep = 1;
+          break;
+        case 1: // Revenue received, ask for months
+          addMessage("Great! For how many **months** do you want to forecast?", 'ai');
+          conversationStep = 2;
+          break;
+        case 2: // Months received, ask for scenario type
+          addMessage("Now, let's determine the growth. You can choose from:<br>" +
+                      "1. Type **'standard'** to provide your own **Expected Monthly Growth Rate**.<br>" +
+                      "2. Type **'optimistic'** for a more positive forecast (your rate adjusted upwards).<br>" +
+                      "3. Type **'conservative'** for a more cautious forecast (your rate adjusted downwards).<br>" +
+                      "4. Type **'ai'** to let our **AI Suggest a Growth Rate** for an **AI-Driven Forecast**.", 'ai');
+          conversationStep = 3;
+          break;
+        case 3: // Scenario received, decide whether to ask for growth rate or calculate
+          if (forecastData.scenarioType === 'standard' || forecastData.scenarioType === 'optimistic' || forecastData.scenarioType === 'conservative') {
+            addMessage("Please enter your **Expected Monthly Growth Rate** in percentage (e.g., 5 for 5%).", 'ai');
+            conversationStep = 4;
+          } else if (forecastData.scenarioType === 'ai') {
+            addMessage("Understood. Our AI will suggest a dynamic growth rate for the forecast.", 'ai');
+            calculateForecast(); // Directly calculate for AI scenario
+            conversationStep = 5; // Move to end state
+          } else {
+            addMessage("I didn't understand that scenario. Please type 'standard', 'optimistic', 'conservative', or 'ai'.", 'ai');
+            // Stay on step 3 to re-ask the same question
+          }
+          break;
+        case 4: // Growth rate received (for non-AI scenarios), calculate forecast
+          calculateForecast();
+          conversationStep = 5; // Move to end state
+          break;
+        case 5: // Conversation ended
+          addMessage("Forecast complete. If you'd like to do another forecast, just refresh the page!", 'ai');
+          break;
+      }
+    }
+
+    /**
+     * Provides basic sentiment analysis for a given growth rate.
+     * This is a simplified "AI" feature.
+     * @param {number} growthRate - The monthly growth rate percentage.
+     * @returns {string} HTML string with sentiment text and class.
+     */
+    function analyzeSentiment(growthRate) {
+      let sentimentText = '';
+      let sentimentClass = 'sentiment-neutral'; // Default to neutral
+
+      if (isNaN(growthRate)) {
+        return ''; // No sentiment for invalid numbers
+      }
+
+      if (growthRate > 7) {
+        sentimentText = '🚀 Very Positive';
+        sentimentClass = 'sentiment-positive';
+      } else if (growthRate >= 3 && growthRate <= 7) {
+        sentimentText = '👍 Positive';
+        sentimentClass = 'sentiment-positive';
+      } else if (growthRate >= 0 && growthRate < 3) {
+        sentimentText = '😐 Neutral';
+        sentimentClass = 'sentiment-neutral';
+      } else if (growthRate < 0) {
+        sentimentText = '👎 Negative';
+        sentimentClass = 'sentiment-negative';
+      }
+      return `<span class="sentiment-indicator ${sentimentClass}">${sentimentText}</span>`;
+    }
+
+    /**
+     * Calculates and displays the revenue forecast based on collected data and chosen scenario.
+     */
+    function calculateForecast() {
+      const revenue = forecastData.currentRevenue;
+      let growth = 0; // This will be the base growth rate from user or AI
+      const months = forecastData.months;
+      const scenario = forecastData.scenarioType;
+
+      // Determine the base growth rate
+      if (scenario === 'ai') {
+        // Our "AI-driven" growth rate - a fixed value for this demonstration
+        growth = 0.065; // Example: AI suggests a 6.5% monthly growth
+        addMessage(`Our AI suggests a monthly growth rate of **${(growth * 100).toFixed(1)}%** for this forecast.`, 'ai');
+      } else {
+        growth = forecastData.growthRate / 100; // Use user's provided growth rate (converted to decimal)
+      }
+
+      // Initialize forecast HTML output
+      let forecastHTML = `<h2>Forecast Summary (${scenario.charAt(0).toUpperCase() + scenario.slice(1)} Scenario)</h2>`;
+
+      // Apply scenario-specific adjustments to the effective growth rate
+      let effectiveGrowth = growth; // Start with the base growth
+      if (scenario === 'optimistic') {
+        effectiveGrowth *= 1.15; // Increase growth by 15% for optimistic
+        forecastHTML += `<p><em>(Your growth rate adjusted by +15%)</em></p>`;
+      } else if (scenario === 'conservative') {
+        effectiveGrowth *= 0.90; // Decrease growth by 10% for conservative
+        forecastHTML += `<p><em>(Your growth rate adjusted by -10%)</em></p>`;
+      } else if (scenario === 'standard' && forecastData.growthRate !== undefined) {
+         forecastHTML += `<p><em>(Based on your ${forecastData.growthRate}% growth rate)</em></p>`;
+      }
+
+      forecastHTML += `<ul>`;
+      let totalProjectedRevenue = 0;
+      let currentMonthRevenue = revenue;
+
+      // Calculate revenue for each month
+      for (let i = 1; i <= months; i++) {
+        currentMonthRevenue += currentMonthRevenue * effectiveGrowth;
+        totalProjectedRevenue += currentMonthRevenue;
+        forecastHTML += `<li>Month ${i}: ${formatNaira(currentMonthRevenue)}</li>`;
+      }
+
+      forecastHTML += `</ul><p><strong>Total Projected Revenue: ${formatNaira(totalProjectedRevenue)}</strong></p>`;
+
+      // Create a div for the forecast and add it as an AI message
+      const forecastDiv = document.createElement('div');
+      forecastDiv.classList.add('forecast');
+      forecastDiv.innerHTML = forecastHTML;
+      addMessage(forecastDiv.outerHTML, 'ai'); // Add the forecast output as an AI message
+    }
+
+    /**
+     * Sends the user's message and processes it based on the current conversation step.
+     */
+    function sendMessage() {
+      const input = chatInput.value.trim();
+      if (!input) return; // Don't send empty messages
+
+      addMessage(input, 'user'); // Display user's message
+      chatInput.value = ''; // Clear input field
+
+      processInput(input); // Process the input
+    }
+
+    /**
+     * Handles key presses in the input field, specifically for 'Enter' key.
+     * @param {KeyboardEvent} event - The keyboard event.
+     */
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    }
+
+    /**
+     * Processes the user's input based on the current conversation step.
+     * @param {string} input - The user's message.
+     */
+    function processInput(input) {
+      switch (conversationStep) {
+        case 1: // Expecting Current Monthly Revenue
+          const revenue = parseFloat(input);
+          if (isNaN(revenue) || revenue <= 0) {
+            addMessage("That doesn't seem like a valid revenue amount. Please enter a positive number for your current monthly revenue.", 'ai');
+          } else {
+            forecastData.currentRevenue = revenue;
+            askQuestion(); // Move to next step
+          }
+          break;
+        case 2: // Expecting Forecast Period (Months)
+          const months = parseInt(input);
+          if (isNaN(months) || months <= 0 || months > 60) { // Added a max limit for practicality
+            addMessage("Please enter a valid number of months for the forecast period (e.g., 12), not exceeding 60 months.", 'ai');
+          } else {
+            forecastData.months = months;
+            askQuestion(); // Move to next step
+          }
+          break;
+        case 3: // Expecting Scenario Type
+          const lowerInput = input.toLowerCase();
+          if (['standard', 'optimistic', 'conservative', 'ai'].includes(lowerInput)) {
+            forecastData.scenarioType = lowerInput;
+            askQuestion(); // Move to next step (either ask for growth or calculate)
+          } else {
+            addMessage("Invalid scenario. Please type 'standard', 'optimistic', 'conservative', or 'ai'.", 'ai');
+          }
+          break;
+        case 4: // Expecting Growth Rate (for Standard, Optimistic, Conservative scenarios)
+          const growth = parseFloat(input);
+          if (isNaN(growth)) {
+            addMessage("Please enter a valid number for the growth rate (e.g., 5 for 5%).", 'ai');
+          } else {
+            forecastData.growthRate = growth;
+            const sentimentHtml = analyzeSentiment(growth); // Get AI sentiment
+            addMessage(`You entered a growth rate of **${growth}%**. ${sentimentHtml}`, 'ai');
+            askQuestion(); // This will now trigger calculateForecast
+          }
+          break;
+        case 5: // Conversation finished, user might be typing but we ignore
+          addMessage("My calculations are done! If you have more questions or want a new forecast, please refresh the page.", 'ai');
+          break;
+      }
+    }
+
+    // Start the conversation when the page loads
+    window.onload = askQuestion;
+  </script>
+</body>
+</html>
