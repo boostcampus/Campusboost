@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Costing App</title>
+</head>
+<style>
+    /* Global Styles */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.container {
+    width: 320px; /* Fit 32px screen */
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styles */
+
+#costing-form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 10px;
+}
+
+input[type="number"] {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    width: 100%;
+    height: 40px;
+    background-color: #4CAF50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #3e8e41;
+}
+
+/* Results Styles */
+
+#results {
+    margin-top: 20px;
+}
+
+#results ul {
+    list-style: none;
+}
+
+#results li {
+    margin-bottom: 10px;
+}
+
+#results span:first-child {
+    font-weight: bold;
+}
+
+#results span:last-child {
+    font-size: 18px;
+    color: #008000;
+}
+</style>
+<body>
+    <div class="container">
+        <h1>Costing App</h1>
+        <form id="costing-form">
+            <label for="price">Price of Goods:</label>
+            <input type="number" id="price" required>
+
+            <label for="transportation">Transportation Cost:</label>
+            <input type="number" id="transportation" required>
+
+            <label for="quantity">Total Number of Goods:</label>
+            <input type="number" id="quantity" required>
+
+            <label for="other-cost">Other Costs (Optional):</label>
+            <input type="number" id="other-cost">
+
+            <button id="calculate-btn">Calculate</button>
+        </form>
+        
+        <div id="results">
+            <h2>Selling Prices with Different Margins</h2>
+            <ul>
+                <li id="margin-10"></li>
+                <li id="margin-20"></li>
+                <li id="margin-40"></li>
+                <li id="margin-50"></li>
+                <li id="margin-80"></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Get elements
+const form = document.getElementById('costing-form');
+const priceInput = document.getElementById('price');
+const transportationInput = document.getElementById('transportation');
+const quantityInput = document.getElementById('quantity');
+const otherCostInput = document.getElementById('other-cost');
+const calculateBtn = document.getElementById('calculate-btn');
+const results = document.getElementById('results');
+const margin10 = document.getElementById('margin-10');
+const margin20 = document.getElementById('margin-20');
+const margin40 = document.getElementById('margin-40');
+const margin50 = document.getElementById('margin-50');
+const margin80 = document.getElementById('margin-80');
+
+// Add event listener to calculate button
+calculateBtn.addEventListener('click', calculate);
+
+// Function to calculate selling prices
+function calculate(e) {
+    e.preventDefault();
+
+    // Get input values
+    const price = parseFloat(priceInput.value);
+    const transportation = parseFloat(transportationInput.value);
+    const quantity = parseFloat(quantityInput.value);
+    const otherCost = parseFloat(otherCostInput.value) || 0;
+
+    // Calculate item price
+    const itemPrice = (price + transportation + otherCost) / quantity;
+
+    // Calculate selling prices with different margins
+    const margin10Price = (itemPrice * 1.10); // 10% profit
+    const margin20Price = (itemPrice * 1.20); // 20% profit
+    const margin40Price = (itemPrice * 1.40); // 40% profit
+    const margin50Price = (itemPrice * 1.50); // 50% profit
+    const margin80Price = (itemPrice * 1.80); // 80% profit
+
+    // Display results
+    margin10.innerText = `10% Profit: ₦${margin10Price.toFixed(2)}`;
+    margin20.innerText = `20% Profit: ₦${margin20Price.toFixed(2)}`;
+    margin40.innerText = `40% Profit: ₦${margin40Price.toFixed(2)}`;
+    margin50.innerText = `50% Profit: ₦${margin50Price.toFixed(2)}`;
+    margin80.innerText = `80% Profit: ₦${margin80Price.toFixed(2)}`;
+
+    // Show results section
+    results.style.display = 'block';
+}
+    </script>
+</body>
+</html>

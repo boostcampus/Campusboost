@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Table</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #000;
+        color: #fff;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 10px;
+        background-color: #fff;
+        color: #000;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    #product-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    #product-table th,
+    #product-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    #product-table th {
+        background-color: #f0f0f0;
+    }
+
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .pagination button {
+        background-color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .pagination button:hover {
+        background-color: #f0f0f0;
+    }
+
+    @media only screen and (max-width: 320px) {
+        .container {
+            margin: 10px auto;
+            padding: 10px;
+        }
+
+        #product-table {
+            font-size: 12px;
+        }
+    }
+</style>
+
+<body>
+
+    <div class="container">
+        <div class="pagination">
+            <button id="prev" onclick="paginate(-1)">DRINK PRICE</button>
+            <span id="page-num">Page 1 of 1</span>
+            <button id="next" onclick="paginate(1)">FOOD PRICE</button>
+        </div>
+        <h1 style="text-align: center;">ELECTRIFIED TUESDAY PRICE LIST</h1>
+        <div class="table-responsive">
+            <table id="product-table">
+                <thead>
+                    <tr>
+                        <th>S/N</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td style="text-align: center; font-weight: 900; font-size: 24px;">DRINKS</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Hennessy VS</td>
+                        <td> 130,000</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Hennessy VSOP</td>
+                        <td> 200,000</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Hennessy XO</td>
+                        <td> 550,000</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Martel Blu Swift</td>
+                        <td> 190,000</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Martel VS</td>
+                        <td> 130,000</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>martel XO</td>
+                        <td> 450,000</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Ciroc</td>
+                        <td> 100,000</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Ciroc Red Berry</td>
+                        <td> 100,000</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Ciroc Pineapple</td>
+                        <td> 100,000</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>Glenffindich 12 Years</td>
+                        <td> 120,000</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>Glenffindich 15 Years</td>
+                        <td> 140,000</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>Glenffindich 18 years</td>
+                        <td> 200,000</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>Glenffindich 21 Years</td>
+                        <td> 450,000</td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>Glenmorangie Original</td>
+                        <td> 120,000</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>Jameson Original</td>
+                        <td> 65,000</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>Jameson Black Label</td>
+                        <td> 80,000</td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td>Omelca Tequila Bianco/Gold</td>
+                        <td> 80,000</td>
+                    </tr>
+                    <tr>
+                        <td>17</td>
+                        <td>Sierra Tequila</td>
+                        <td> 70,000</td>
+                    </tr>
+                    <tr>
+                        <td>18</td>
+                        <td>Casamigos</td>
+                        <td> 300,000</td>
+                    </tr>
+                    <tr>
+                        <td>19</td>
+                        <td>Don Juilo 1942</td>
+                        <td> 595,000</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>Veuve Clicquot Rose</td>
+                        <td> 180,000</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>Veuve Clicquot Brut</td>
+                        <td> 150,000</td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td>Meot Nectar Rose</td>
+                        <td> 200,000</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td>Meot & Chandon Brut Imperial</td>
+                        <td> 170,000</td>
+                    </tr>
+                    <tr>
+                        <td>24</td>
+                        <td>Meot & Chandon Nectar Brut</td>
+                        <td> 165,000</td>
+                    </tr>
+                    <tr>
+                        <td>25</td>
+                        <td>Dom Perignon</td>
+                        <td> 680,000</td>
+                    </tr>
+                    <tr>
+                        <td>26</td>
+                        <td>Dom Perignon Rose</td>
+                        <td> 750,000</td>
+                    </tr>
+                    <tr>
+                        <td>27</td>
+                        <td>Louis Roederer Cristal</td>
+                        <td> 500,000</td>
+                    </tr>
+                    <tr>
+                        <td>28</td>
+                        <td>Martini Brut</td>
+                        <td> 45,000</td>
+                    </tr>
+                    <tr>
+                        <td>29</td>
+                        <td>Red Wine</td>
+                        <td> 40,000</td>
+                    </tr>
+                    <tr>
+                        <td>30</td>
+                        <td>Laurent Perrier Brut</td>
+                        <td> 150,000</td>
+                    </tr>
+                    <tr>
+                        <td>31</td>
+                        <td>Laurent Perrier Rose</td>
+                        <td> 170,000</td>
+                    </tr>
+                    <tr>
+                        <td>32</td>
+                        <td>Campari</td>
+                        <td> 60,000</td>
+                    </tr>
+                    <tr>
+                        <td>33</td>
+                        <td>Jaegermeister</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>34</td>
+                        <td>Jaegermeister TOT</td>
+                        <td> 5,000</td>
+                    </tr>
+                    <tr>
+                        <td>35</td>
+                        <td>Martini Bianco/Rossco/Extra Dry</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>36</td>
+                        <td>Baileys Irish Cream</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>37</td>
+                        <td>American Honey</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>38</td>
+                        <td>Cointreau</td>
+                        <td> 70,000</td>
+                    </tr>
+                    <tr>
+                        <td>39</td>
+                        <td>Johnnie Walker Black Label</td>
+                        <td> 75,000</td>
+                    </tr>
+                    <tr>
+                        <td>40</td>
+                        <td>Johnnie Walker Gold Label</td>
+                        <td> 120,000</td>
+                    </tr>
+                    <tr>
+                        <td>41</td>
+                        <td>Johnnie Walker Blue Label</td>
+                        <td> 450,000</td>
+                    </tr>
+                    <tr>
+                        <td>42</td>
+                        <td>Jack Daniels</td>
+                        <td> 60,000</td>
+                    </tr>
+                    <tr>
+                        <td>43</td>
+                        <td>John Bannermans</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>44</td>
+                        <td>Williams Lawson</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>45</td>
+                        <td>Red Label</td>
+                        <td> 55,000</td>
+                    </tr>
+                    <tr>
+                        <td>46</td>
+                        <td>Macallan 12 Years</td>
+                        <td> 160,000</td>
+                    </tr>
+                    <tr>
+                        <td>47</td>
+                        <td>Remy Martins VSOP </td>
+                        <td> 150,000</td>
+                    </tr>
+                    <tr>
+                        <td>48</td>
+                        <td>Remy Martins XO</td>
+                        <td> 450,000</td>
+                    </tr>
+                    <tr>
+                        <td>49</td>
+                        <td>D'usse VXOP</td>
+                        <td> 130,000</td>
+                    </tr>
+                    <tr>
+                        <td>50</td>
+                        <td>Hendricks</td>
+                        <td> 55,000</td>
+                    </tr>
+                    <tr>
+                        <td>51</td>
+                        <td>Gordon's</td>
+                        <td> 45,000</td>
+                    </tr>
+                    <tr>
+                        <td>52</td>
+                        <td>Tanqueray</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>53</td>
+                        <td>Bombay Sapphire</td>
+                        <td> 60,000</td>
+                    </tr>
+                    <tr>
+                        <td>54</td>
+                        <td>Smirnoff Red/Blue</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>55</td>
+                        <td>Absolut Blue/Sky Vodka</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>56</td>
+                        <td>Captain Morgan Dark/Spiced</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>57</td>
+                        <td>Bacardi White/Spiced</td>
+                        <td> 50,000</td>
+                    </tr>
+                    <tr>
+                        <td>58</td>
+                        <td>Coke (Mixer)</td>
+                        <td> 3,000</td>
+                    </tr>
+                    <tr>
+                        <td>59</td>
+                        <td>Juice</td>
+                        <td> 6,500</td>
+                    </tr>
+                    <tr>
+                        <td>60</td>
+                        <td>Energy Drink</td>
+                        <td> 5,000</td>
+                    </tr>
+                    <tr>
+                        <td>61</td>
+                        <td>Cranberry</td>
+                        <td> 8,000</td>
+                    </tr>
+                    <tr>
+                        <td>62</td>
+                        <td>Malta Guinness</td>
+                        <td> 3,000</td>
+                    </tr>
+                    <tr>
+                        <td>63</td>
+                        <td>Bottle Water</td>
+                        <td> 2,000</td>
+                    </tr>
+                    <tr>
+                        <td>64</td>
+                        <td>Cigarette</td>
+                        <td> 3,500</td>
+                    </tr>
+                    <tr>
+                        <td>65</td>
+                        <td>Shisha</td>
+                        <td> 15,000</td>
+                    </tr>
+                    <tr>
+                        <td>66</td>
+                        <td>Wild Turkey</td>
+                        <td> 60,000</td>
+                    </tr>
+                    <!-- food section  -->
+                    <tr>
+                        <td></td>
+                        <td style="text-align: center; font-weight: 900; font-size: 24px;">FOODS</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Catfish (Grilled/Pepper Soup)</td>
+                        <td> 15,000</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Croaker (Grilled/Pepper Soup)</td>
+                        <td> 15,000</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Grilled Chicken</td>
+                        <td> 15,000</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Grilled Jumbo Pawns</td>
+                        <td> 25,000</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Grilled Fish Fillet</td>
+                        <td> 15,000</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Grilled Salmon</td>
+                        <td> 25,000</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Asun</td>
+                        <td> 7,000</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Burger</td>
+                        <td> 15,000</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>Poise Beef/Chicken Burger</td>
+                        <td> 15,000</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>Double Decker Burger</td>
+                        <td> 20,000</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>Farmers Special Platter</td>
+                        <td> 40,000</td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>farmers Mini</td>
+                        <td> 25,000</td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>Shawama</td>
+                        <td> 5,000</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>Ram/Chicken/Beef Suya</td>
+                        <td> 10,000</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>Guniea Fowl</td>
+                        <td> 20,000</td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td>Chicken Suya</td>
+                        <td> 10,000</td>
+                    </tr>
+                    <tr>
+                        <td>17</td>
+                        <td>Poise Deluxe Platter</td>
+                        <td> 60,000</td>
+                    </tr>
+                    <tr>
+                        <td>18</td>
+                        <td>Poise Gold Platter</td>
+                        <td> 70,000</td>
+                    </tr>
+                    <tr>
+                        <td>19</td>
+                        <td>Fikwobi</td>
+                        <td> 15,000</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>Isi Ewu</td>
+                        <td> 15,000</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>Nwkobi</td>
+                        <td> 12,000</td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td>Peppered Snail</td>
+                        <td> 18,000</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td>Spicy Chicken Wings</td>
+                        <td> 10,000</td>
+                    </tr>
+                    <tr>
+                        <td>24</td>
+                        <td>Peppered Turkey/Goat Meat/Gizzard/Chicken</td>
+                        <td> 10,000</td>
+                    </tr>
+                    <tr>
+                        <td>25</td>
+                        <td>Yam/French/Sweet Potatoe Fries</td>
+                        <td> 5,000</td>
+                    </tr>
+                    <tr>
+                        <td>26</td>
+                        <td>Jollof/Fried/White Rice</td>
+                        <td> 5,000</td>
+                    </tr>
+                    <tr>
+                        <td>27</td>
+                        <td>Fried Plantain</td>
+                        <td> 5,000</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination">
+            <button id="prev" onclick="paginate(-1)">DRINK PRICE</button>
+            <span id="page-num">Page 1 of 1</span>
+            <button id="next" onclick="paginate(1)">FOOD PRICE</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const rowsPerPage = 68;
+
+        function paginate(direction) {
+            const tableRows = document.querySelectorAll('#product-table tbody tr');
+            const totalPages = Math.ceil(tableRows.length / rowsPerPage);
+
+            if (direction === -1 && currentPage > 1) {
+                currentPage--;
+            } else if (direction === 1 && currentPage < totalPages) {
+                currentPage++;
+            }
+
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            tableRows.forEach((row, index) => {
+                if (index >= start && index < end) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('page-num').innerText = `Page ${currentPage} of ${totalPages}`;
+        }
+
+        paginate(0);
+    </script>
+</body>
+
+</html>
