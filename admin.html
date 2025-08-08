@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,165 +6,211 @@
     <title>Admin Dashboard - Campus Boost</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: #0d6efd;
+        }
+        .dashboard-card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+        }
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+        .table-responsive table {
+            white-space: nowrap;
+        }
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-primary" href="#">
-                <span class="fs-4">🔧 Campus Boost Admin</span>
-            </a>
-            <div class="navbar-nav ms-auto">
-                <button class="btn btn-outline-danger" onclick="logout()">Logout</button>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container-fluid py-4">
-        <!-- Stats Overview -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card dashboard-card stat-card">
-                    <div class="stat-value" id="totalUsers">0</div>
-                    <div class="text-muted">Total Users</div>
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-container">
+            <h1>Campus Boost Admin Login</h1>
+            <form id="admin-login-form">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" value="admin@campusboost.com" required>
                 </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card dashboard-card stat-card">
-                    <div class="stat-value text-success" id="premiumUsers">0</div>
-                    <div class="text-muted">Premium Users</div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" required>
                 </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card dashboard-card stat-card">
-                    <div class="stat-value text-warning" id="trialUsers">0</div>
-                    <div class="text-muted">Trial Users</div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card dashboard-card stat-card">
-                    <div class="stat-value text-primary" id="totalEarnings">₦0</div>
-                    <div class="text-muted">Est. Earnings</div>
-                </div>
-            </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <div id="error-message" class="text-danger mt-3" style="display: none;"></div>
+            </form>
         </div>
+    </div>
 
-        <!-- User Management -->
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="card dashboard-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">👥 User Management</h5>
-                        <button class="btn btn-primary btn-sm" onclick="loadUsers()">Refresh</button>
+    <div id="dashboardContent" class="d-none">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold text-primary" href="#">
+                    <span class="fs-4">🔧 Campus Boost Admin</span>
+                </a>
+                <div class="navbar-nav ms-auto">
+                    <button class="btn btn-outline-danger" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid py-4">
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card dashboard-card stat-card">
+                        <div class="stat-value" id="totalUsers">0</div>
+                        <div class="text-muted">Total Users</div>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Status</th>
-                                        <th>Premium Expiry</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="usersTableBody">
-                                    <!-- Users will be loaded here -->
-                                </tbody>
-                            </table>
-                        </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card dashboard-card stat-card">
+                        <div class="stat-value text-success" id="premiumUsers">0</div>
+                        <div class="text-muted">Premium Users</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card dashboard-card stat-card">
+                        <div class="stat-value text-warning" id="trialUsers">0</div>
+                        <div class="text-muted">Trial Users</div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card dashboard-card stat-card">
+                        <div class="stat-value text-primary" id="totalEarnings">₦0</div>
+                        <div class="text-muted">Est. Earnings</div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <div class="card dashboard-card">
-                    <div class="card-header">
-                        <h5 class="mb-0">📊 Analytics</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <small class="text-muted">Registration Trend</small>
-                            <div class="progress">
-                                <div class="progress-bar bg-success" style="width: 75%"></div>
-                            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card dashboard-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">👥 User Management</h5>
+                            <button class="btn btn-primary btn-sm" onclick="loadUsers()">Refresh</button>
                         </div>
-                        <div class="mb-3">
-                            <small class="text-muted">Premium Conversion</small>
-                            <div class="progress">
-                                <div class="progress-bar bg-primary" style="width: 45%"></div>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <small class="text-muted">Active Users</small>
-                            <div class="progress">
-                                <div class="progress-bar bg-warning" style="width: 85%"></div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Status</th>
+                                            <th>Premium Expiry</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                        </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="card dashboard-card mt-3">
-                    <div class="card-header">
-                        <h5 class="mb-0">🎯 Quick Actions</h5>
+                <div class="col-lg-4">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">📊 Analytics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted">Registration Trend</small>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted">Premium Conversion</small>
+                                <div class="progress">
+                                    <div class="progress-bar bg-primary" style="width: 45%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted">Active Users</small>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-outline-primary" onclick="exportUsers()">Export Users</button>
-                            <button class="btn btn-outline-success" onclick="sendNotification()">Send Notification</button>
-                            <button class="btn btn-outline-warning" onclick="generateReport()">Generate Report</button>
+
+                    <div class="card dashboard-card mt-3">
+                        <div class="card-header">
+                            <h5 class="mb-0">🎯 Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary" onclick="exportUsers()">Export Users</button>
+                                <button class="btn btn-outline-success" onclick="sendNotification()">Send Notification</button>
+                                <button class="btn btn-outline-warning" onclick="generateReport()">Generate Report</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Marketplace Products -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="card dashboard-card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">🛍️ Marketplace Products</h5>
-                        <button class="btn btn-primary btn-sm" onclick="loadProducts()">Refresh</button>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Seller</th>
-                                        <th>Price</th>
-                                        <th>Status</th>
-                                        <th>Promotion</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="productsTableBody">
-                                    <tr>
-                                        <td>Engineering Textbook</td>
-                                        <td>John Doe</td>
-                                        <td>₦5,000</td>
-                                        <td><span class="badge bg-success">Active</span></td>
-                                        <td><span class="badge bg-warning">Promoted</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Programming Notes</td>
-                                        <td>Jane Smith</td>
-                                        <td>₦2,500</td>
-                                        <td><span class="badge bg-success">Active</span></td>
-                                        <td><span class="badge bg-secondary">None</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card dashboard-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">🛍️ Marketplace Products</h5>
+                            <button class="btn btn-primary btn-sm" onclick="loadProducts()">Refresh</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Seller</th>
+                                            <th>Price</th>
+                                            <th>Status</th>
+                                            <th>Promotion</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productsTableBody">
+                                        </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -173,10 +218,9 @@
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // Firebase Configuration
@@ -195,61 +239,57 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Check if user is admin (you should implement proper admin check)
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // Check if user is admin (implement your admin logic here)
-                if (user.email === 'admin@campusboost.com') {
-                    loadDashboardData();
-                } else {
-                    alert('Access denied. Admin privileges required.');
-                    window.location.href = 'dashboard.html';
-                }
+        const loginOverlay = document.getElementById('loginOverlay');
+        const dashboardContent = document.getElementById('dashboardContent');
+
+        // Check authentication state on page load
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === 'admin@campusboost.com') {
+                loginOverlay.style.display = 'none';
+                dashboardContent.classList.remove('d-none');
+                loadDashboardData();
             } else {
-                window.location.href = 'register.html';
+                loginOverlay.style.display = 'flex';
+                dashboardContent.classList.add('d-none');
+                // You might want to sign out any non-admin user
+                if (user) {
+                    signOut(auth);
+                }
             }
         });
 
+        // Handle login form submission
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('error-message');
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                if (userCredential.user.email === 'admin@campusboost.com') {
+                    loginOverlay.style.display = 'none';
+                    dashboardContent.classList.remove('d-none');
+                    loadDashboardData();
+                } else {
+                    await signOut(auth);
+                    errorMessage.textContent = 'Invalid admin email.';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Invalid email or password.';
+                errorMessage.style.display = 'block';
+                console.error('Login error:', error);
+            }
+        });
+        
         async function loadDashboardData() {
-            await loadUsers();
             await loadStats();
+            await loadUsers();
+            await loadProducts();
         }
 
-        window.loadUsers = async function() {
-            try {
-                const usersSnapshot = await getDocs(collection(db, 'users'));
-                const tbody = document.getElementById('usersTableBody');
-                tbody.innerHTML = '';
-
-                usersSnapshot.forEach((doc) => {
-                    const user = doc.data();
-                    const premiumExpiry = user.premiumExpiry?.toDate();
-                    const isPremium = premiumExpiry && premiumExpiry > new Date();
-                    
-                    const row = `
-                        <tr>
-                            <td>${user.fullName || 'N/A'}</td>
-                            <td>${user.email || 'N/A'}</td>
-                            <td>${user.phone || 'N/A'}</td>
-                            <td>
-                                <span class="badge bg-${isPremium ? 'success' : 'secondary'}">
-                                    ${isPremium ? (user.isTrialUser ? 'Trial' : 'Premium') : 'Free'}
-                                </span>
-                            </td>
-                            <td>${premiumExpiry ? premiumExpiry.toLocaleDateString() : 'N/A'}</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${doc.id}')">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += row;
-                });
-            } catch (error) {
-                console.error('Error loading users:', error);
-            }
-        };
-
-        async function loadStats() {
+        window.loadStats = async function() {
             try {
                 const usersSnapshot = await getDocs(collection(db, 'users'));
                 let totalUsers = 0;
@@ -281,14 +321,77 @@
             } catch (error) {
                 console.error('Error loading stats:', error);
             }
-        }
+        };
+
+        window.loadUsers = async function() {
+            try {
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = '';
+
+                usersSnapshot.forEach((doc) => {
+                    const user = doc.data();
+                    const premiumExpiry = user.premiumExpiry?.toDate();
+                    const isPremium = premiumExpiry && premiumExpiry > new Date();
+                    const statusText = isPremium ? (user.isTrialUser ? 'Trial' : 'Premium') : 'Free';
+                    const statusClass = isPremium ? (user.isTrialUser ? 'warning' : 'success') : 'secondary';
+                    
+                    const row = `
+                        <tr>
+                            <td>${user.fullName || 'N/A'}</td>
+                            <td>${user.email || 'N/A'}</td>
+                            <td>${user.phone || 'N/A'}</td>
+                            <td>
+                                <span class="badge bg-${statusClass}">${statusText}</span>
+                            </td>
+                            <td>${premiumExpiry ? premiumExpiry.toLocaleDateString() : 'N/A'}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${doc.id}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        };
+
+        window.loadProducts = async function() {
+            try {
+                const productsSnapshot = await getDocs(collection(db, 'products'));
+                const tbody = document.getElementById('productsTableBody');
+                tbody.innerHTML = '';
+
+                productsSnapshot.forEach((doc) => {
+                    const product = doc.data();
+                    const productStatusClass = product.status === 'Active' ? 'success' : 'danger';
+                    const promotionStatusClass = product.promotion ? 'warning' : 'secondary';
+
+                    const row = `
+                        <tr>
+                            <td>${product.name || 'N/A'}</td>
+                            <td>${product.seller || 'N/A'}</td>
+                            <td>₦${product.price ? product.price.toLocaleString() : '0'}</td>
+                            <td><span class="badge bg-${productStatusClass}">${product.status}</span></td>
+                            <td><span class="badge bg-${promotionStatusClass}">${product.promotion ? 'Promoted' : 'None'}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct('${doc.id}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        };
 
         window.deleteUser = async function(userId) {
             if (confirm('Are you sure you want to delete this user?')) {
                 try {
                     await deleteDoc(doc(db, 'users', userId));
-                    loadUsers();
-                    loadStats();
+                    await loadDashboardData();
                     alert('User deleted successfully');
                 } catch (error) {
                     console.error('Error deleting user:', error);
@@ -297,10 +400,23 @@
             }
         };
 
+        window.deleteProduct = async function(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                try {
+                    await deleteDoc(doc(db, 'products', productId));
+                    await loadProducts();
+                    alert('Product deleted successfully');
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    alert('Error deleting product');
+                }
+            }
+        };
+
         window.logout = async function() {
             try {
                 await signOut(auth);
-                window.location.href = 'index.html';
+                // After logout, the onAuthStateChanged listener will automatically show the login overlay
             } catch (error) {
                 console.error('Error signing out:', error);
             }
@@ -316,10 +432,6 @@
 
         window.generateReport = function() {
             alert('Report generation functionality coming soon!');
-        };
-
-        window.loadProducts = function() {
-            alert('Product loading functionality coming soon!');
         };
     </script>
 
