@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -88,17 +89,17 @@
     <input type="text" id="jobName" placeholder="Job Title">
     <textarea id="jobDetails" placeholder="Job Description"></textarea>
     <input type="text" id="jobContact" placeholder="Contact Info">
-    <input type="file" id="jobImage">
     <button onclick="postJob()" class="btn">Post Job</button>
-  </div>  <div class="form-section">
+  </div>
+  <div class="form-section">
     <h3>Post a Gig</h3>
     <input type="text" id="gigName" placeholder="Gig Title">
     <textarea id="gigDetails" placeholder="Gig Description"></textarea>
     <input type="text" id="gigContact" placeholder="Contact Info">
-    <input type="file" id="gigImage">
     <button onclick="payForPromotion('daily')" class="btn">Promote Daily (₦500)</button>
     <button onclick="payForPromotion('weekly')" class="btn">Promote Weekly (₦3000)</button>
-  </div>  <input type="text" id="searchInput" placeholder="Search gigs or jobs..." oninput="loadGigs()">
+  </div>
+  <input type="text" id="searchInput" placeholder="Search gigs or jobs..." oninput="loadGigs()">
   <select id="categoryFilter" onchange="loadGigs()">
     <option value="">All Categories</option>
     <option value="Gig">Gigs</option>
@@ -110,21 +111,12 @@
 <script>
 let viewingFavorites = false;
 let pendingGig = null;
+
 function toggleFavorites() {
   viewingFavorites = !viewingFavorites;
   loadGigs();
 }
-function toggleFavorite(index) {
-  const ip = getIP();
-  let favs = JSON.parse(localStorage.getItem('favorites_' + ip) || '[]');
-  if (favs.includes(index)) {
-    favs = favs.filter(f => f !== index);
-  } else {
-    favs.push(index);
-  }
-  localStorage.setItem('favorites_' + ip, JSON.stringify(favs));
-  loadGigs();
-}
+
 function getIP() {
   let ip = localStorage.getItem('user_ip');
   if (!ip) {
@@ -133,32 +125,153 @@ function getIP() {
   }
   return ip;
 }
+
+function toggleFavorite(index) {
+  const ip = getIP();
+  let favs = JSON.parse(localStorage.getItem('favorites_' + ip) || '[]');
+  const gigIndex = getGigIndexFromDisplayIndex(index);
+  if (favs.includes(gigIndex)) {
+    favs = favs.filter(f => f !== gigIndex);
+  } else {
+    favs.push(gigIndex);
+  }
+  localStorage.setItem('favorites_' + ip, JSON.stringify(favs));
+  loadGigs();
+}
+
 function addComment(index) {
   const name = prompt("Your name:");
   const comment = prompt("Your comment:");
   if (!name || !comment) return;
   const comments = JSON.parse(localStorage.getItem('comments') || '{}');
-  if (!comments[index]) comments[index] = [];
-  comments[index].push({ name, comment });
+  const gigIndex = getGigIndexFromDisplayIndex(index);
+  if (!comments[gigIndex]) comments[gigIndex] = [];
+  comments[gigIndex].push({ name, comment });
   localStorage.setItem('comments', JSON.stringify(comments));
   loadGigs();
 }
+
 function postJob() {
   const name = document.getElementById('jobName').value;
   const details = document.getElementById('jobDetails').value;
   const contact = document.getElementById('jobContact').value;
-  const file = document.getElementById('jobImage').files[0];
-  if (!name || !details || !contact) return alert("Please fill all fields");const reader = new FileReader(); reader.onload = function(e) { const image = e.target.result; const gigs = JSON.parse(localStorage.getItem('gigs') || '[]'); gigs.push({ name, details, contact, image, category: "Job" }); localStorage.setItem('gigs', JSON.stringify(gigs)); document.getElementById('jobName').value = ""; document.getElementById('jobDetails').value = ""; document.getElementById('jobContact').value = ""; document.getElementById('jobImage').value = ""; loadGigs(); } if (file) { reader.readAsDataURL(file); } else { const gigs = JSON.parse(localStorage.getItem('gigs') || '[]'); gigs.push({ name, details, contact, image: '', category: "Job" }); localStorage.setItem('gigs', JSON.stringify(gigs)); loadGigs(); } } function payForPromotion(type) { const name = document.getElementById('gigName').value; const details = document.getElementById('gigDetails').value; const contact = document.getElementById('gigContact').value; const file = document.getElementById('gigImage').files[0]; if (!name || !details || !contact) return alert("Please fill all fields");
+  if (!name || !details || !contact) {
+    return alert("Please fill all fields");
+  }
 
-const reader = new FileReader(); reader.onload = function(e) { const image = e.target.result; pendingGig = { name, details, contact, image, category: "Gig", promote: type }; makePayment(type); }; if (file) { reader.readAsDataURL(file); } else { pendingGig = { name, details, contact, image: '', category: "Gig", promote: type }; makePayment(type); } } function makePayment(type) { const amount = type === 'daily' ? 500 : 3000; FlutterwaveCheckout({ public_key: "FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X", tx_ref: Date.now(), amount: amount, currency: "NGN", payment_options: "card,ussd", customer: { email: "user@campusboost.com", name: "Gig Poster" }, callback: function (data) { const gigs = JSON.parse(localStorage.getItem('gigs') || '[]'); gigs.unshift(pendingGig); localStorage.setItem('gigs', JSON.stringify(gigs)); document.getElementById('gigName').value = ""; document.getElementById('gigDetails').value = ""; document.getElementById('gigContact').value = ""; document.getElementById('gigImage').value = ""; pendingGig = null; loadGigs(); }, customizations: { title: "Promote Gig", description: Promote ${type} gig, logo: "https://campusboost.netlify.app/logo.png", }, }); } function loadGigs() { const gigs = JSON.parse(localStorage.getItem('gigs') || '[]'); const comments = JSON.parse(localStorage.getItem('comments') || '{}'); const ip = getIP(); const favs = JSON.parse(localStorage.getItem('favorites_' + ip) || '[]');
+  const gigs = JSON.parse(localStorage.getItem('gigs') || '[]');
+  gigs.push({ name, details, contact, image: '', category: "Job" });
+  localStorage.setItem('gigs', JSON.stringify(gigs));
+  document.getElementById('jobName').value = "";
+  document.getElementById('jobDetails').value = "";
+  document.getElementById('jobContact').value = "";
+  loadGigs();
+}
 
-const search = document.getElementById('searchInput')?.value?.toLowerCase() || ''; const filter = document.getElementById('categoryFilter')?.value;
+function payForPromotion(type) {
+  const name = document.getElementById('gigName').value;
+  const details = document.getElementById('gigDetails').value;
+  const contact = document.getElementById('gigContact').value;
+  if (!name || !details || !contact) {
+    return alert("Please fill all fields");
+  }
 
-let displayGigs = viewingFavorites ? gigs.filter((_, i) => favs.includes(i)) : gigs;
+  pendingGig = { name, details, contact, image: '', category: "Gig", promote: type };
+  makePayment(type);
+}
 
-if (search) { displayGigs = displayGigs.filter(g => g.name.toLowerCase().includes(search) || g.details.toLowerCase().includes(search) || g.contact.toLowerCase().includes(search)); } if (filter) { displayGigs = displayGigs.filter(g => g.category === filter); }
+function makePayment(type) {
+  const amount = type === 'daily' ? 500 : 3000;
+  FlutterwaveCheckout({
+    public_key: "FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X",
+    tx_ref: Date.now().toString() + Math.random().toString(36).substring(2),
+    amount: amount,
+    currency: "NGN",
+    payment_options: "card,ussd",
+    customer: {
+      email: "user@campusboost.com",
+      name: "Gig Poster"
+    },
+    callback: function (data) {
+      if (data.status === 'successful') {
+        const gigs = JSON.parse(localStorage.getItem('gigs') || '[]');
+        gigs.unshift(pendingGig);
+        localStorage.setItem('gigs', JSON.stringify(gigs));
+        document.getElementById('gigName').value = "";
+        document.getElementById('gigDetails').value = "";
+        document.getElementById('gigContact').value = "";
+        pendingGig = null;
+        loadGigs();
+      } else {
+        alert("Payment failed. Please try again.");
+      }
+    },
+    customizations: {
+      title: "Promote Gig",
+      description: `Promote ${type} gig`,
+      logo: "https://campusboost.netlify.app/logo.png",
+    },
+  });
+}
 
-document.getElementById('gigList').innerHTML = displayGigs.map((g, i) => <div class="gig"> <div class="favorite-btn" onclick="toggleFavorite(${i})"> ${favs.includes(i) ? '💖' : '🤍'} </div> <strong>${g.name} (${g.category}) ${g.promote ? '🔥 Promoted' : ''}</strong> <h4>${g.details}</h4> <p>📞 ${g.contact}</p> ${g.image ?<img src="${g.image}" alt="Image">: ''} <div class="comment-box"> <button onclick="addComment(${i})" class="btn">💬 Add Comment</button> ${(comments[i] || []).map(c =><div class='comment'><strong>${c.name}</strong>: ${c.comment}</div>).join('')} </div> </div> ).join(''); } loadGigs(); </script>
+function loadGigs() {
+  const gigs = JSON.parse(localStorage.getItem('gigs') || '[]');
+  const comments = JSON.parse(localStorage.getItem('comments') || '{}');
+  const ip = getIP();
+  const favs = JSON.parse(localStorage.getItem('favorites_' + ip) || '[]');
+  const search = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+  const filter = document.getElementById('categoryFilter')?.value;
 
+  let filteredGigs = gigs.filter(g => {
+    const matchesSearch = g.name.toLowerCase().includes(search) || g.details.toLowerCase().includes(search) || g.contact.toLowerCase().includes(search);
+    const matchesFilter = !filter || g.category === filter;
+    return matchesSearch && matchesFilter;
+  });
+
+  const displayGigs = viewingFavorites ? filteredGigs.filter((_, i) => favs.includes(gigs.indexOf(filteredGigs[i]))) : filteredGigs;
+
+  let gigHTML = displayGigs.map((g, i) => {
+    const originalIndex = gigs.indexOf(g);
+    const isFavorite = favs.includes(originalIndex);
+    const gigComments = comments[originalIndex] || [];
+    return `<div class="gig">
+      <div class="favorite-btn" onclick="toggleFavorite(${i})">
+        ${isFavorite ? '💖' : '🤍'}
+      </div>
+      <strong>${g.name} (${g.category}) ${g.promote ? '🔥 Promoted' : ''}</strong>
+      <h4>${g.details}</h4>
+      <p>📞 ${g.contact}</p>
+      ${g.image ? `<img src="${g.image}" alt="Gig image">` : ''}
+      <div class="comment-box">
+        <button onclick="addComment(${i})" class="btn">💬 Add Comment</button>
+        ${gigComments.map(c => `<div class='comment'><strong>${c.name}</strong>: ${c.comment}</div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('gigList').innerHTML = gigHTML;
+}
+
+function getGigIndexFromDisplayIndex(displayIndex) {
+  const gigs = JSON.parse(localStorage.getItem('gigs') || '[]');
+  const search = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+  const filter = document.getElementById('categoryFilter')?.value;
+
+  let filteredGigs = gigs.filter(g => {
+    const matchesSearch = g.name.toLowerCase().includes(search) || g.details.toLowerCase().includes(search) || g.contact.toLowerCase().includes(search);
+    const matchesFilter = !filter || g.category === filter;
+    return matchesSearch && matchesFilter;
+  });
+
+  const displayGigs = viewingFavorites ? filteredGigs.filter((_, i) => JSON.parse(localStorage.getItem('favorites_' + getIP()) || '[]').includes(gigs.indexOf(filteredGigs[i]))) : filteredGigs;
+
+  if (displayIndex >= 0 && displayIndex < displayGigs.length) {
+    return gigs.indexOf(displayGigs[displayIndex]);
+  }
+  return -1;
+}
+
+document.addEventListener('DOMContentLoaded', loadGigs);
+</script>
 </body>
 </html>
