@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Boost Lovers Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3B82F6;
+            --accent-color: #9333EA;
+            --background-color: #F9FAFB;
+            --text-dark: #1F2937;
+            --text-muted: #6B7280;
+        }
+        body {
+            background-color: var(--background-color);
+            color: var(--text-dark);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .navbar {
+            background-color: var(--primary-color) !important;
+        }
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: #2563EB;
+            border-color: #2563EB;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .profile-card {
+            width: 300px;
+            height: 450px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            background-size: cover;
+            background-position: center;
+        }
+        .profile-card .card-body {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+            color: white;
+            padding: 1rem;
+        }
+        .profile-card .card-actions {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Campus Boost Lovers Hub</a>
+            <button class="btn btn-light" id="logoutBtn" style="display: none;">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container mt-5">
+        <div class="modal fade" id="registrationModal" tabindex="-1" aria-labelledby="registrationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="registrationModalLabel">Register to Join</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="registrationForm">
+                            <div class="mb-3">
+                                <label for="regUsername" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="regUsername" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="regGender" class="form-label">Gender</label>
+                                <select class="form-select" id="regGender" required>
+                                    <option value="" disabled selected>Select your gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Register</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="profileModalLabel">Complete Your Profile</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="profileForm">
+                            <div class="mb-3">
+                                <label for="profileAge" class="form-label">Age</label>
+                                <input type="number" class="form-control" id="profileAge" required min="18" max="99">
+                            </div>
+                            <div class="mb-3">
+                                <label for="profileLocation" class="form-label">Location (State)</label>
+                                <input type="text" class="form-control" id="profileLocation" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="profilePicture" class="form-label">Profile Picture</label>
+                                <input type="file" class="form-control" id="profilePicture" accept="image/*" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">How to Contact You</label>
+                                <div id="contactFields">
+                                    </div>
+                                <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="addContactBtn">Add Contact Method</button>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Save Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainDashboard" class="d-none">
+            <h2 class="mb-4 text-center">Find Your Match</h2>
+            
+            <div class="d-flex justify-content-center mb-4">
+                <div class="input-group" style="max-width: 600px;">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" id="filterLocation" class="form-control" placeholder="Filter by Location">
+                    <input type="number" id="filterMinAge" class="form-control" placeholder="Min Age">
+                    <input type="number" id="filterMaxAge" class="form-control" placeholder="Max Age">
+                    <button class="btn btn-primary" id="applyFilterBtn">Apply Filters</button>
+                </div>
+            </div>
+
+            <div id="profilesContainer" class="d-flex flex-wrap justify-content-center gap-4">
+                </div>
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+    <script>
+        // --- Core Application Logic ---
+
+        // User data storage (for demonstration, in a real app this is on a server)
+        let currentUser = null;
+        let allProfiles = [];
+
+        // UI Elements
+        const registrationForm = document.getElementById('registrationForm');
+        const profileForm = document.getElementById('profileForm');
+        const mainDashboard = document.getElementById('mainDashboard');
+        const profilesContainer = document.getElementById('profilesContainer');
+        const addContactBtn = document.getElementById('addContactBtn');
+        const contactFields = document.getElementById('contactFields');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const filterLocationInput = document.getElementById('filterLocation');
+        const filterMinAgeInput = document.getElementById('filterMinAge');
+        const filterMaxAgeInput = document.getElementById('filterMaxAge');
+        const applyFilterBtn = document.getElementById('applyFilterBtn');
+
+        // Modals
+        const registrationModal = new bootstrap.Modal(document.getElementById('registrationModal'));
+        const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+
+        // Check for existing user on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkUserSession();
+        });
+
+        // Check if a user is logged in
+        function checkUserSession() {
+            const storedUser = localStorage.getItem('currentUser');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                loadAllProfiles();
+                showDashboard();
+            } else {
+                showRegistration();
+            }
+        }
+
+        // --- Registration and Profile Logic ---
+
+        function showRegistration() {
+            registrationModal.show();
+            mainDashboard.classList.add('d-none');
+            logoutBtn.style.display = 'none';
+        }
+
+        function showDashboard() {
+            mainDashboard.classList.remove('d-none');
+            logoutBtn.style.display = 'block';
+            renderProfiles();
+        }
+
+        registrationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value;
+            const gender = document.getElementById('regGender').value;
+
+            // Simple check to prevent duplicate usernames (for local storage demo)
+            const existingProfiles = JSON.parse(localStorage.getItem('allProfiles') || '[]');
+            const userExists = existingProfiles.some(profile => profile.username === username);
+            
+            if (userExists) {
+                alert('Username already exists. Please choose another.');
+                return;
+            }
+
+            currentUser = { username, gender, hasProfile: false };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            registrationModal.hide();
+            profileModal.show();
+        });
+
+        addContactBtn.addEventListener('click', () => {
+            const contactType = prompt('Enter contact method (e.g., whatsapp, instagram, email):');
+            if (!contactType) return;
+            const contactValue = prompt(`Enter your ${contactType} handle/number:`);
+            if (!contactValue) return;
+
+            const contactDiv = document.createElement('div');
+            contactDiv.classList.add('input-group', 'mb-2');
+            contactDiv.innerHTML = `
+                <span class="input-group-text">${contactType}</span>
+                <input type="text" class="form-control" value="${contactValue}" readonly>
+            `;
+            contactFields.appendChild(contactDiv);
+
+            // Store contact info temporarily
+            if (!currentUser.contact) currentUser.contact = {};
+            currentUser.contact[contactType] = contactValue;
+        });
+
+
+        profileForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const age = document.getElementById('profileAge').value;
+            const location = document.getElementById('profileLocation').value;
+            const imageFile = document.getElementById('profilePicture').files[0];
+
+            if (!imageFile) {
+                alert('Please upload a profile picture.');
+                return;
+            }
+
+            // Simulate file upload by converting image to Base64 string
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageUrl = event.target.result;
+                
+                // Finalize the current user's profile
+                currentUser.age = age;
+                currentUser.location = location;
+                currentUser.imageUrl = imageUrl;
+                currentUser.hasProfile = true;
+
+                // Save to the main list of profiles
+                let profiles = JSON.parse(localStorage.getItem('allProfiles') || '[]');
+                profiles.push(currentUser);
+                localStorage.setItem('allProfiles', JSON.stringify(profiles));
+
+                // Update current user's local storage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                profileModal.hide();
+                loadAllProfiles();
+                showDashboard();
+            };
+            reader.readAsDataURL(imageFile);
+        });
+
+        // --- Dashboard and Card Logic ---
+
+        function loadAllProfiles() {
+            allProfiles = JSON.parse(localStorage.getItem('allProfiles') || '[]');
+        }
+
+        function renderProfiles(filteredProfiles = null) {
+            profilesContainer.innerHTML = ''; // Clear previous profiles
+            
+            let profilesToShow = filteredProfiles || allProfiles;
+            
+            // Filter logic based on user's gender
+            const loggedInGender = currentUser.gender;
+            const targetGender = loggedInGender === 'male' ? 'female' : 'male';
+            profilesToShow = profilesToShow.filter(p => p.gender === targetGender);
+
+            profilesToShow.forEach(profile => {
+                // Don't show the logged-in user's own profile
+                if (profile.username !== currentUser.username) {
+                    profilesContainer.appendChild(createProfileCard(profile));
+                }
+            });
+
+            if (profilesContainer.children.length === 0) {
+                profilesContainer.innerHTML = '<p class="text-center text-muted w-100">No profiles found matching your criteria.</p>';
+            }
+        }
+
+        function createProfileCard(profile) {
+            const card = document.createElement('div');
+            card.classList.add('profile-card');
+            card.setAttribute('data-username', profile.username);
+            card.style.backgroundImage = `url(${profile.imageUrl})`;
+            
+            card.innerHTML = `
+                <div class="card-body">
+                    <h5 class="card-title">${profile.username}, ${profile.age}</h5>
+                    <p class="card-text">${profile.location}</p>
+                    <div class="card-actions">
+                        <div class="icon-btn" onclick="saveProfile('${profile.username}')"><i class="fas fa-heart"></i></div>
+                        <div class="icon-btn" onclick="discardProfile('${profile.username}')"><i class="fas fa-times"></i></div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function saveProfile(username) {
+            alert(`${username} saved!`);
+            // Here you would add logic to save this profile to the user's "saved" list
+            // For this demo, we'll just remove the card
+            removeCard(username);
+        }
+
+        function discardProfile(username) {
+            alert(`${username} discarded.`);
+            // Here you would add logic to discard this profile
+            removeCard(username);
+        }
+
+        function removeCard(username) {
+            const cardToRemove = profilesContainer.querySelector(`[data-username="${username}"]`);
+            if (cardToRemove) {
+                cardToRemove.remove();
+            }
+        }
+
+        // --- Filtering Logic ---
+
+        applyFilterBtn.addEventListener('click', () => {
+            const location = filterLocationInput.value.toLowerCase();
+            const minAge = parseInt(filterMinAgeInput.value);
+            const maxAge = parseInt(filterMaxAgeInput.value);
+
+            const filtered = allProfiles.filter(profile => {
+                const matchesLocation = location ? profile.location.toLowerCase().includes(location) : true;
+                const matchesMinAge = minAge ? profile.age >= minAge : true;
+                const matchesMaxAge = maxAge ? profile.age <= maxAge : true;
+                return matchesLocation && matchesMinAge && matchesMaxAge;
+            });
+
+            renderProfiles(filtered);
+        });
+
+        // --- Monetization Logic ---
+
+        // Flutterwave payment function
+        function makePayment(profileUsername) {
+            FlutterwaveCheckout({
+                public_key: "FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X",
+                tx_ref: "LoverHub-" + Date.now(),
+                amount: 500, // ₦500
+                currency: "NGN",
+                payment_options: "card,mobilemoney,ussd",
+                customer: {
+                    email: "test@example.com", // In a real app, use the logged-in user's email
+                    phone_number: "08012345678", // And their phone number
+                    name: currentUser.username,
+                },
+                customizations: {
+                    title: "Campus Boost Lovers Hub",
+                    description: `Access contact details for ${profileUsername}`,
+                    logo: "https://your-app-logo.png", // Replace with your logo
+                },
+                callback: function (data) {
+                    // This function is called after the payment is completed
+                    console.log(data);
+                    if (data.status === 'successful') {
+                        alert(`Payment successful! You can now contact ${profileUsername}.`);
+                        // Here, you would have logic to show the contact details
+                        // In a real app, a backend server would handle this
+                    } else {
+                        alert('Payment failed. Please try again.');
+                    }
+                },
+            });
+        }
+        
+        // --- Logout Logic ---
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            location.reload(); // Simple way to reset the page
+        });
+
+        // Initial setup
+        const body = document.querySelector('body');
+        body.style.backgroundColor = 'var(--background-color)';
+        body.style.color = 'var(--text-dark)';
+    </script>
+</body>
+</html>
