@@ -19,7 +19,7 @@
       color: var(--text-dark);
       margin: 0;
       padding: 0;
-      box-sizing: border-box; /* Add this for better box model handling */
+      box-sizing: border-box;
     }
 
     header {
@@ -47,7 +47,7 @@
       font-size: 1rem;
       border-radius: 6px;
       border: 1px solid #ccc;
-      box-sizing: border-box; /* Ensure padding doesn't affect width */
+      box-sizing: border-box;
     }
 
     button {
@@ -150,8 +150,9 @@
 </div>
 
 <script>
+  // Functions for getting and saving reviews to Local Storage
   const getReviews = () => JSON.parse(localStorage.getItem("reviews")) || [];
-  const saveReviews = data => localStorage.setItem("reviews", JSON.stringify(data));
+  const saveReviews = (data) => localStorage.setItem("reviews", JSON.stringify(data));
 
   function addReview() {
     const name = document.getElementById("name").value.trim();
@@ -174,28 +175,30 @@
     reviews.push(newReview);
     saveReviews(reviews);
 
+    // Clear input fields after submission
     document.getElementById("name").value = "";
     document.getElementById("rating").value = "";
     document.getElementById("comment").value = "";
 
+    // Re-render the reviews and stats
     renderReviews();
   }
 
   function renderReviews(filter = "all") {
     const allReviews = getReviews();
-    let filtered = filter === "all" ? allReviews : allReviews.filter(r => r.rating == filter);
+    const filteredReviews = filter === "all" ? allReviews : allReviews.filter(r => r.rating == filter);
 
-    filtered.sort((a, b) => b.rating - a.rating);
+    filteredReviews.sort((a, b) => new Date(b.time) - new Date(a.time)); // Sort by newest first
 
     const container = document.getElementById("reviewList");
     container.innerHTML = "";
 
-    if (filtered.length === 0) {
+    if (filteredReviews.length === 0) {
       container.innerHTML = "<p>No reviews available.</p>";
       return;
     }
 
-    filtered.forEach(r => {
+    filteredReviews.forEach(r => {
       const review = document.createElement("div");
       review.className = "review";
       review.innerHTML = `
@@ -219,7 +222,7 @@
     const total = reviews.length;
     const avg = (reviews.reduce((sum, r) => sum + r.rating, 0) / total).toFixed(1);
 
-    let stars = [0, 0, 0, 0, 0]; // index 0 = 1 star, 4 = 5 stars
+    const stars = [0, 0, 0, 0, 0]; // index 0 = 1 star, 4 = 5 stars
     reviews.forEach(r => stars[r.rating - 1]++);
 
     statsContainer.innerHTML = `
@@ -245,6 +248,7 @@
     renderReviews(val);
   }
 
+  // Initial render when the page loads
   window.onload = () => renderReviews();
 </script>
 
