@@ -19,6 +19,7 @@
       color: var(--text-dark);
       margin: 0;
       padding: 0;
+      box-sizing: border-box; /* Add this for better box model handling */
     }
 
     header {
@@ -46,6 +47,7 @@
       font-size: 1rem;
       border-radius: 6px;
       border: 1px solid #ccc;
+      box-sizing: border-box; /* Ensure padding doesn't affect width */
     }
 
     button {
@@ -142,8 +144,7 @@
   </div>
 
   <div class="stats-box" id="statsBox">
-    <!-- Stats will be injected here -->
-  </div>
+    </div>
 
   <div id="reviewList"></div>
 </div>
