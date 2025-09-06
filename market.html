@@ -112,10 +112,10 @@
     function promoteProduct(index) {
       const durations = [
         { label: "1 Day - ₦500", price: 500, days: 1 },
-        { label: "7 Days - ₦3000", price: 3000, days: 7 },
+        { label: "7 Days - ₦1500", price: 1500, days: 7 },
       ];
 
-      const choice = prompt("Enter 1 for 1 Day Promotion (₦500), 2 for 7 Days (₦3000)");
+      const choice = prompt("Enter 1 for 1 Day Promotion (₦500), 2 for 7 Days (₦1500)");
       const selected = durations[Number(choice) - 1];
       if (!selected) return alert("Invalid choice");
 
@@ -185,3 +185,4 @@
 
 </body>
 </html>
+
