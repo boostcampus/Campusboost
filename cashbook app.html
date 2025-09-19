@@ -1020,6 +1020,7 @@
                             <option value="JPY">🇯🇵 JPY (¥)</option>
                             <option value="INR">🇮🇳 INR (₹)</option>
                             <option value="CAD">🇨🇦 CAD (C$)</option>
+                            <option value="NGN">NGN (₦)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -2317,7 +2318,7 @@ Note: Please consult with a tax professional for accurate tax calculations.
         function formatCurrency(amount) {
             const currency = settings.currency || 'USD';
             const symbols = {
-                USD: '$', EUR: '€', GBP: '£', JPY: '¥', INR: '₹', CAD: 'C$'
+                USD: '$', EUR: '€', GBP: '£', JPY: '¥', INR: '₹', CAD: 'C$', NGN: '₦'
             };
             return (symbols[currency] || '$') + Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
