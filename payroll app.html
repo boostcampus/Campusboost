@@ -949,6 +949,7 @@
                             <option value="EUR">EUR (€)</option>
                             <option value="GBP">GBP (£)</option>
                             <option value="JPY">JPY (¥)</option>
+                            <option value="NGN">NGN (₦)</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1913,7 +1914,7 @@
         // Utility Functions
         function formatCurrency(amount) {
             const currency = systemSettings.currency || 'USD';
-            const symbols = { USD: '$', EUR: '€', GBP: '£', JPY: '¥' };
+            const symbols = { USD: '$', EUR: '€', GBP: '£', JPY: '¥', NGN: '₦' };
             return (symbols[currency] || '$') + Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
