@@ -113,7 +113,6 @@
             justify-content: center;
             color: white;
             font-size: 2.5rem;
-            cursor: pointer;
         }
         
         .user-name {
@@ -585,21 +584,6 @@
             width: 90%;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-        
-        .popup-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.5rem;
-            color: #ccc;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        
-        .popup-close:hover {
-            color: var(--dark);
         }
         
         .popup-title {
@@ -613,6 +597,16 @@
             color: #495057;
             margin-bottom: 25px;
             line-height: 1.5;
+        }
+        
+        .challenge-steps {
+            text-align: left;
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        
+        .challenge-steps li {
+            margin-bottom: 10px;
         }
         
         /* Navigation */
@@ -718,6 +712,7 @@
         </header>
         
         <div class="main-content">
+            <!-- Dashboard Screen -->
             <div id="dashboardScreen" class="screen active">
                 <div class="dashboard">
                     <div class="dashboard-main">
@@ -806,6 +801,7 @@
                 </div>
             </div>
             
+            <!-- Level Selection Screen -->
             <div id="levelSelectionScreen" class="screen">
                 <div class="nav-tabs">
                     <div class="nav-tab active" id="levelsTab">Levels</div>
@@ -817,9 +813,11 @@
                 <p>Complete each level to unlock the next one. Score 70% or higher to progress!</p>
                 
                 <div class="levels-container" id="levelsContainer">
-                    </div>
+                    <!-- Levels will be dynamically generated here -->
+                </div>
             </div>
             
+            <!-- Quiz Screen -->
             <div id="quizScreen" class="screen">
                 <div class="quiz-header">
                     <div class="question-count" id="questionCount">Question 1 of 10</div>
@@ -829,7 +827,8 @@
                 <div class="question-container">
                     <div class="question-text" id="questionText"></div>
                     <div class="options-container" id="optionsContainer">
-                        </div>
+                        <!-- Options will be dynamically generated here -->
+                    </div>
                 </div>
                 
                 <div class="navigation-buttons">
@@ -838,6 +837,7 @@
                 </div>
             </div>
             
+            <!-- Results Screen -->
             <div id="resultsScreen" class="screen">
                 <div class="results-container">
                     <h2 class="results-title">Level Completed!</h2>
@@ -877,6 +877,7 @@
                 </div>
             </div>
             
+            <!-- Certificate Screen -->
             <div id="certificateScreen" class="screen">
                 <div class="nav-tabs">
                     <div class="nav-tab" id="levelsTab2">Levels</div>
@@ -888,7 +889,8 @@
                 <p>Here are all the certificates you've earned so far.</p>
                 
                 <div id="certificatesList">
-                    </div>
+                    <!-- Certificates will be dynamically generated here -->
+                </div>
             </div>
         </div>
         
@@ -903,6 +905,7 @@
         </footer>
     </div>
     
+    <!-- Unlock Popup -->
     <div class="popup-overlay" id="unlockPopup">
         <div class="popup-content">
             <h2 class="popup-title">Level Unlocked!</h2>
@@ -911,6 +914,7 @@
         </div>
     </div>
     
+    <!-- Follow Us Popup -->
     <div class="popup-overlay" id="followPopup">
         <div class="popup-content">
             <h2 class="popup-title">Follow Campus Boost</h2>
@@ -928,14 +932,21 @@
         </div>
     </div>
     
-    <div class="popup-overlay" id="startPopup">
+    <!-- Let's Get Started Popup -->
+    <div class="popup-overlay" id="challengePopup">
         <div class="popup-content">
-            <i class="fas fa-times popup-close" id="closeStartPopup"></i>
-            <h2 class="popup-title">Ready to Challenge Yourself?</h2>
+            <h2 class="popup-title">Let's Get the Challenge Started!</h2>
             <div class="popup-message">
-                <p>Let's get the challenge started! To track your progress, screenshot or create a video talking about the quiz platform. Don't forget to use **#CampusBoost** and tag us on TikTok!</p>
+                <p>Ready to boost your knowledge? Here's how you can participate:</p>
+                <ol class="challenge-steps">
+                    <li>Take a screenshot of your progress or create a video talking about our quiz platform</li>
+                    <li>Use the hashtag <strong>#CampusBoost</strong> in your post</li>
+                    <li>Tag us on TikTok: <strong>@campusboost5</strong></li>
+                    <li>We'll respond to your content and feature the best ones!</li>
+                </ol>
+                <p>Let's build an amazing learning community together!</p>
             </div>
-            <button class="btn-primary" id="startChallengeBtn">Start Now!</button>
+            <button class="btn-primary" id="closeChallengePopup">Let's Go!</button>
         </div>
     </div>
 
@@ -1098,9 +1109,8 @@
         const closePopup = document.getElementById('closePopup');
         const followPopup = document.getElementById('followPopup');
         const closeFollowPopup = document.getElementById('closeFollowPopup');
-        const startPopup = document.getElementById('startPopup');
-        const closeStartPopup = document.getElementById('closeStartPopup');
-        const startChallengeBtn = document.getElementById('startChallengeBtn');
+        const challengePopup = document.getElementById('challengePopup');
+        const closeChallengePopup = document.getElementById('closeChallengePopup');
         const downloadCertificateBtn = document.getElementById('downloadCertificateBtn');
         const startLearningBtn = document.getElementById('startLearningBtn');
         const viewCertificatesBtn = document.getElementById('viewCertificatesBtn');
@@ -1116,7 +1126,6 @@
         const certificateLevelName = document.getElementById('certificateLevelName');
         const certificateScore = document.getElementById('certificateScore');
         const certificateDate = document.getElementById('certificateDate');
-        const avatar = document.querySelector('.avatar');
 
         // Navigation tabs
         const levelsTab = document.getElementById('levelsTab');
@@ -1133,10 +1142,13 @@
             updateDashboard();
             setupEventListeners();
             
-            // Show the start popup on first visit
-            if (!localStorage.getItem('hasVisited')) {
-                startPopup.style.display = 'flex';
-                localStorage.setItem('hasVisited', 'true');
+            // Show challenge popup if it's the first visit or after refresh
+            const hasSeenPopup = localStorage.getItem('hasSeenChallengePopup');
+            if (!hasSeenPopup) {
+                setTimeout(() => {
+                    challengePopup.style.display = 'flex';
+                    localStorage.setItem('hasSeenChallengePopup', 'true');
+                }, 1000);
             }
         }
 
@@ -1224,16 +1236,11 @@
             closeFollowPopup.addEventListener('click', () => {
                 followPopup.style.display = 'none';
             });
-
-            closeStartPopup.addEventListener('click', () => {
-                startPopup.style.display = 'none';
+            
+            closeChallengePopup.addEventListener('click', () => {
+                challengePopup.style.display = 'none';
             });
-
-            startChallengeBtn.addEventListener('click', () => {
-                startPopup.style.display = 'none';
-                showLevelSelection();
-            });
-
+            
             // Certificate generation
             downloadCertificateBtn.addEventListener('click', generateCertificate);
             
@@ -1244,9 +1251,6 @@
             followUsBtn.addEventListener('click', () => {
                 followPopup.style.display = 'flex';
             });
-
-            // Update user name
-            avatar.addEventListener('click', updateUserName);
             
             // Navigation tabs
             levelsTab.addEventListener('click', showLevelSelection);
@@ -1255,16 +1259,6 @@
             levelsTab2.addEventListener('click', showLevelSelection);
             dashboardTab2.addEventListener('click', showDashboard);
             certificatesTab2.addEventListener('click', showCertificates);
-        }
-
-        // Update user name via a prompt
-        function updateUserName() {
-            const newName = prompt("Enter your name:");
-            if (newName && newName.trim() !== '') {
-                gameState.userName = newName.trim();
-                saveGameState();
-                updateDashboard();
-            }
         }
 
         // Show dashboard screen
