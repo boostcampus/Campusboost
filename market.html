@@ -23,9 +23,6 @@
             --success: #28a745;
             --warning: #ffc107;
             --danger: #dc3545;
-            --gold: #ffd700;
-            --silver: #c0c0c0;
-            --bronze: #cd7f32;
         }
         
         body {
@@ -121,25 +118,6 @@
         .user-name {
             font-size: 1.5rem;
             margin-bottom: 5px;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        
-        .user-name:hover {
-            background: rgba(0, 0, 0, 0.05);
-        }
-        
-        .user-name-input {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-            padding: 5px 10px;
-            border: 2px solid var(--primary);
-            border-radius: 5px;
-            text-align: center;
-            width: 100%;
-            max-width: 200px;
         }
         
         .user-level {
@@ -206,7 +184,6 @@
             color: white;
             font-size: 1.2rem;
             transition: transform 0.3s;
-            text-decoration: none;
         }
         
         .social-btn:hover {
@@ -584,152 +561,6 @@
             font-weight: bold;
         }
         
-        /* Beautiful Certificate Styles */
-        .beautiful-certificate {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border: 20px solid transparent;
-            border-image: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700) 1;
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            position: relative;
-            text-align: center;
-        }
-        
-        .certificate-header {
-            margin-bottom: 30px;
-        }
-        
-        .certificate-badge {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 2.5rem;
-            color: #8b6914;
-            border: 5px solid white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .certificate-main-title {
-            font-size: 3rem;
-            color: #4a00e0;
-            margin-bottom: 10px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .certificate-subtitle {
-            font-size: 1.5rem;
-            color: #6c757d;
-            margin-bottom: 10px;
-        }
-        
-        .certificate-body {
-            margin: 40px 0;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        
-        .certificate-name {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #4a00e0;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #4a00e0, #8e2de2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .certificate-achievement {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: #495057;
-        }
-        
-        .certificate-score {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ff6b6b;
-            margin: 20px 0;
-        }
-        
-        .certificate-footer {
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .certificate-signature {
-            text-align: center;
-            flex: 1;
-        }
-        
-        .signature-line {
-            width: 200px;
-            height: 1px;
-            background: #34495e;
-            margin: 5px auto;
-        }
-        
-        .certificate-date {
-            font-size: 1.1rem;
-            color: #6c757d;
-        }
-        
-        .certificate-share {
-            margin-top: 30px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .share-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: #495057;
-        }
-        
-        .share-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .share-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-        
-        .share-btn.tiktok {
-            background: #000000;
-            color: white;
-        }
-        
-        .share-btn.whatsapp {
-            background: #25D366;
-            color: white;
-        }
-        
-        .share-btn:hover {
-            transform: translateY(-2px);
-        }
-        
         /* Popup */
         .popup-overlay {
             position: fixed;
@@ -838,11 +669,6 @@
             .user-profile {
                 order: 2;
             }
-            
-            .certificate-footer {
-                flex-direction: column;
-                gap: 20px;
-            }
         }
         
         @media (max-width: 600px) {
@@ -869,18 +695,6 @@
             
             .quick-actions {
                 flex-direction: column;
-            }
-            
-            .beautiful-certificate {
-                padding: 20px;
-            }
-            
-            .certificate-main-title {
-                font-size: 2rem;
-            }
-            
-            .certificate-name {
-                font-size: 1.8rem;
             }
         }
     </style>
@@ -951,6 +765,8 @@
                             <button class="action-btn" id="followUsBtn">
                                 <i class="fas fa-heart"></i> Follow Us
                             </button>
+                            
+                            
                         </div>
                     </div>
                     
@@ -978,8 +794,10 @@
                         
                         <h3>Follow Campus Boost</h3>
                         <div class="social-links">
-                            <a href="https://www.tiktok.com/@campusboost5" class="social-btn tiktok" target="_blank"><i class="fab fa-tiktok"></i></a>
-                            <a href="https://whatsapp.com/channel/0029Vb69PWZ3WHTQ6HWWiK0s" class="social-btn whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                             <a href="https://www.tiktok.com/@campusboost5?_r=1&_d=ef1m79jghgkfdb&sec_uid=MS4wLjABAAAAxoJAhUnH7oO8aQyikCJevuhqpVDFz_4p2CforF16vLAc6x4nCiOFT9H3PZ7yvH3i&share_author_id=7467723550285480966&sharer_language=en&source=h5_m&u_code=eihd86fi6j7bm2&timestamp=1758803748&user_id=7467723550285480966&sec_user_id=MS4wLjABAAAAxoJAhUnH7oO8aQyikCJevuhqpVDFz_4p2CforF16vLAc6x4nCiOFT9H3PZ7yvH3i&utm_source=copy&utm_campaign=client_share&utm_medium=android&share_iid=7464312254545594118&share_link_id=2a9c045c-e49e-4bcb-be7f-e50b4fe6cf50&share_app_id=1233&ugbiz_name=ACCOUNT&ug_btm=b8727%2Cb7360&social_share_type=5&enable_checksum=1" class="social-btn tiktok"><i class="fab fa-tiktok"></i></a>
+                    
+                    <a href="https://whatsapp.com/channel/0029Vb69PWZ3WHTQ6HWWiK0s" class="social-btn whatsapp"><i class="fab fa-whatsapp"></i></a>
+                  
                         </div>
                     </div>
                 </div>
@@ -1035,41 +853,16 @@
                         <h3>Download Your Certificate</h3>
                         <p>Celebrate your achievement with a personalized certificate!</p>
                         
-                        <div class="beautiful-certificate" id="beautifulCertificate">
-                            <div class="certificate-header">
-                                <div class="certificate-badge">
-                                    <i class="fas fa-award"></i>
-                                </div>
-                                <h1 class="certificate-main-title">Certificate of Achievement</h1>
-                                <div class="certificate-subtitle">Campus Boost Academy</div>
-                            </div>
+                        <div class="certificate-preview">
+                            <div class="certificate-title">Certificate of Completion</div>
+                            <div class="certificate-subtitle">Campus Boost Academy</div>
                             
-                            <div class="certificate-body">
-                                <div class="certificate-name" id="beautifulCertificateName">Student Name</div>
-                                <div class="certificate-achievement">has successfully completed</div>
-                                <div class="certificate-achievement" id="beautifulCertificateLevel">Level 1: Beginner</div>
-                                <div class="certificate-score" id="beautifulCertificateScore">Score: 0%</div>
-                                <div class="certificate-achievement">with outstanding performance</div>
-                            </div>
-                            
-                            <div class="certificate-footer">
-                                <div class="certificate-signature">
-                                    <div class="signature-line"></div>
-                                    <div>Director, Campus Boost Academy</div>
-                                </div>
-                                <div class="certificate-date" id="beautifulCertificateDate">January 1, 2023</div>
-                            </div>
-                        </div>
-                        
-                        <div class="certificate-share">
-                            <div class="share-title">Share your achievement on social media!</div>
-                            <div class="share-buttons">
-                                <button class="share-btn tiktok" id="shareTikTok">
-                                    <i class="fab fa-tiktok"></i> Share on TikTok
-                                </button>
-                                <button class="share-btn whatsapp" id="shareWhatsApp">
-                                    <i class="fab fa-whatsapp"></i> Share on WhatsApp
-                                </button>
+                            <div class="certificate-content">
+                                <div class="certificate-user" id="certificateUserName">Student Name</div>
+                                <div class="certificate-details">has successfully completed</div>
+                                <div class="certificate-details" id="certificateLevelName">Level 1: Beginner</div>
+                                <div class="certificate-details">with a score of <span id="certificateScore">0%</span></div>
+                                <div class="certificate-details">on <span id="certificateDate">January 1, 2023</span></div>
                             </div>
                         </div>
                         
@@ -1107,6 +900,7 @@
             <div class="footer-links">
                 <a href="index.html" class="footer-link">About Campus Boost</a>
                 <a href="index.html" class="footer-link">Official Website</a>
+                
             </div>
             <div class="copyright">© 2023 Campus Boost Academy. All rights reserved.</div>
         </footer>
@@ -1128,8 +922,11 @@
             <div class="popup-message">
                 <p>Stay updated with the latest content and support our mission to empower students!</p>
                 <div class="social-links" style="justify-content: center; margin: 20px 0;">
-                    <a href="https://www.tiktok.com/@campusboost5" class="social-btn tiktok" target="_blank"><i class="fab fa-tiktok"></i></a>
-                    <a href="https://whatsapp.com/channel/0029Vb69PWZ3WHTQ6HWWiK0s" class="social-btn whatsapp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://www.tiktok.com/@campusboost5?_r=1&_d=ef1m79jghgkfdb&sec_uid=MS4wLjABAAAAxoJAhUnH7oO8aQyikCJevuhqpVDFz_4p2CforF16vLAc6x4nCiOFT9H3PZ7yvH3i&share_author_id=7467723550285480966&sharer_language=en&source=h5_m&u_code=eihd86fi6j7bm2&timestamp=1758803748&user_id=7467723550285480966&sec_user_id=MS4wLjABAAAAxoJAhUnH7oO8aQyikCJevuhqpVDFz_4p2CforF16vLAc6x4nCiOFT9H3PZ7yvH3i&utm_source=copy&utm_campaign=client_share&utm_medium=android&share_iid=7464312254545594118&share_link_id=2a9c045c-e49e-4bcb-be7f-e50b4fe6cf50&share_app_id=1233&ugbiz_name=ACCOUNT&ug_btm=b8727%2Cb7360&social_share_type=5&enable_checksum=1" class="social-btn tiktok"><i class="fab fa-tiktok"></i></a>
+                     <a href="index.html" class="social-btn whatsapp">&#127760;</a>
+               
+                    <a href="https://whatsapp.com/channel/0029Vb69PWZ3WHTQ6HWWiK0s" class="social-btn whatsapp"><i class="fab fa-whatsapp"></i></a>
+                  
                 </div>
                 <p>By following us, you help us reach more students and create better content!</p>
             </div>
@@ -1327,12 +1124,10 @@
         const userProgress = document.getElementById('userProgress');
         const completedLevels = document.getElementById('completedLevels');
         const totalScore = document.getElementById('totalScore');
-        const beautifulCertificateName = document.getElementById('beautifulCertificateName');
-        const beautifulCertificateLevel = document.getElementById('beautifulCertificateLevel');
-        const beautifulCertificateScore = document.getElementById('beautifulCertificateScore');
-        const beautifulCertificateDate = document.getElementById('beautifulCertificateDate');
-        const shareTikTok = document.getElementById('shareTikTok');
-        const shareWhatsApp = document.getElementById('shareWhatsApp');
+        const certificateUserName = document.getElementById('certificateUserName');
+        const certificateLevelName = document.getElementById('certificateLevelName');
+        const certificateScore = document.getElementById('certificateScore');
+        const certificateDate = document.getElementById('certificateDate');
 
         // Navigation tabs
         const levelsTab = document.getElementById('levelsTab');
@@ -1449,7 +1244,7 @@
             });
             
             // Certificate generation
-            downloadCertificateBtn.addEventListener('click', generateBeautifulCertificate);
+            downloadCertificateBtn.addEventListener('click', generateCertificate);
             
             // Dashboard actions
             startLearningBtn.addEventListener('click', showLevelSelection);
@@ -1466,43 +1261,6 @@
             levelsTab2.addEventListener('click', showLevelSelection);
             dashboardTab2.addEventListener('click', showDashboard);
             certificatesTab2.addEventListener('click', showCertificates);
-            
-            // Name editing
-            userName.addEventListener('click', editUserName);
-            
-            // Social sharing
-            shareTikTok.addEventListener('click', shareOnTikTok);
-            shareWhatsApp.addEventListener('click', shareOnWhatsApp);
-        }
-
-        // Edit user name
-        function editUserName() {
-            const currentName = userName.textContent;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentName;
-            input.className = 'user-name-input';
-            input.maxLength = 20;
-            
-            userName.replaceWith(input);
-            input.focus();
-            input.select();
-            
-            function saveName() {
-                const newName = input.value.trim() || "Student";
-                gameState.userName = newName;
-                saveGameState();
-                updateDashboard();
-                
-                input.replaceWith(userName);
-            }
-            
-            input.addEventListener('blur', saveName);
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    saveName();
-                }
-            });
         }
 
         // Show dashboard screen
@@ -1680,11 +1438,11 @@
                 resultsMessage.textContent = "Don't give up! Review the material and try again.";
             }
             
-            // Update beautiful certificate preview
-            beautifulCertificateName.textContent = gameState.userName;
-            beautifulCertificateLevel.textContent = `Level ${gameState.currentLevel}: ${quizData[`level${gameState.currentLevel}`]?.title || 'Unknown'}`;
-            beautifulCertificateScore.textContent = `Score: ${percentage}%`;
-            beautifulCertificateDate.textContent = new Date().toLocaleDateString();
+            // Update certificate preview
+            certificateUserName.textContent = gameState.userName;
+            certificateLevelName.textContent = `Level ${gameState.currentLevel}: ${quizData[`level${gameState.currentLevel}`]?.title || 'Unknown'}`;
+            certificateScore.textContent = `${percentage}%`;
+            certificateDate.textContent = new Date().toLocaleDateString();
             
             // Show unlock message and button if applicable
             if (unlockedNewLevel) {
@@ -1722,34 +1480,29 @@
             }
         }
 
-        // Generate and download beautiful certificate as PDF
-        function generateBeautifulCertificate() {
+        // Generate and download certificate as PDF
+        function generateCertificate() {
             const certificate = document.createElement('div');
             certificate.id = 'certificate';
             certificate.innerHTML = `
-                <div class="beautiful-certificate">
-                    <div class="certificate-header">
-                        <div class="certificate-badge">
-                            <i class="fas fa-award"></i>
-                        </div>
-                        <h1 class="certificate-main-title">Certificate of Achievement</h1>
-                        <div class="certificate-subtitle">Campus Boost Academy</div>
+                <div class="certificate-border">
+                    <div class="certificate-logo">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h1 class="certificate-title">Certificate of Completion</h1>
+                    <div class="certificate-subtitle">Campus Boost Academy</div>
+                    
+                    <div class="certificate-content">
+                        <p>This is to certify that</p>
+                        <div class="certificate-user">${gameState.userName}</div>
+                        <p>has successfully completed</p>
+                        <div class="certificate-details">${quizData[`level${gameState.currentLevel}`]?.title || `Level ${gameState.currentLevel}`}</div>
+                        <p>with a score of <strong>${gameState.score}%</strong></p>
+                        <p>on ${new Date().toLocaleDateString()}</p>
                     </div>
                     
-                    <div class="certificate-body">
-                        <div class="certificate-name">${gameState.userName}</div>
-                        <div class="certificate-achievement">has successfully completed</div>
-                        <div class="certificate-achievement">${quizData[`level${gameState.currentLevel}`]?.title || `Level ${gameState.currentLevel}`}</div>
-                        <div class="certificate-score">Score: ${gameState.score}%</div>
-                        <div class="certificate-achievement">with outstanding performance</div>
-                    </div>
-                    
-                    <div class="certificate-footer">
-                        <div class="certificate-signature">
-                            <div class="signature-line"></div>
-                            <div>Director, Campus Boost Academy</div>
-                        </div>
-                        <div class="certificate-date">${new Date().toLocaleDateString()}</div>
+                    <div class="certificate-stamp">
+                        Campus Boost<br>Academy
                     </div>
                 </div>
             `;
@@ -1768,18 +1521,6 @@
             html2pdf().from(certificate).set(options).save().then(() => {
                 document.body.removeChild(certificate);
             });
-        }
-
-        // Share on TikTok
-        function shareOnTikTok() {
-            alert("Take a screenshot of your certificate and share it on TikTok with #CampusBoost! Tag us @campusboost5 for a chance to be featured!");
-        }
-
-        // Share on WhatsApp
-        function shareOnWhatsApp() {
-            const text = `I just completed Level ${gameState.currentLevel} on Campus Boost Academy with a score of ${gameState.score}%! Check it out: ${window.location.href}`;
-            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-            window.open(url, '_blank');
         }
 
         // Render certificates list
@@ -1827,7 +1568,7 @@
         function downloadCertificate(level) {
             gameState.currentLevel = level;
             gameState.score = gameState.scores[`level${level}`] || 0;
-            generateBeautifulCertificate();
+            generateCertificate();
         }
 
         // Initialize the game when the page loads
@@ -1835,3 +1576,4 @@
     </script>
 </body>
 </html>
+
