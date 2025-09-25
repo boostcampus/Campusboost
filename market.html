@@ -419,13 +419,22 @@
                     <h5 class="text-uppercase fw-bold text-white">NaijaMarket</h5>
                     <p>Connect with buyers and sellers across Nigeria. Find what you need or sell what you don't, all in one place.</p>
                 </div>
-                
+                <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                    <h5 class="text-uppercase fw-bold text-white">Quick Links</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li><a href="#home" class="text-white-50 text-decoration-none">Home</a></li>
+                        <li><a href="#premium-features" class="text-white-50 text-decoration-none">Premium</a></li>
+                        <li><a href="#about" class="text-white-50 text-decoration-none">About Us</a></li>
+                        <li><a href="#contact" class="text-white-50 text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
                 <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
                     <h5 class="text-uppercase fw-bold text-white">Follow Us</h5>
                     <div class="mt-3">
                         <a href="https://wa.me/2348086556841" class="text-white me-3">📱 WhatsApp</a>
                         <a href="https://t.me/+Ec2r_TwSfuVlYTVk" class="text-white me-3">📱 Telegram</a>
-                        <a href="https://tiktok.com/@campus.boost1" class="text-white">🎵 TikTok</a> </div>
+                        <a href="https://tiktok.com/@campus.boost1" class="text-white">🎵 TikTok</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -762,7 +771,7 @@
 
                 const imageUrls = [];
                 for (const file of images) {
-                    const imageRef = ref(storage, `product-images/${currentUser.uid}/${file.name}`);
+                    const imageRef = ref(storage, `product-images/${currentUser.uid}/${Date.now()}_${file.name}`);
                     await uploadBytes(imageRef, file);
                     const url = await getDownloadURL(imageRef);
                     imageUrls.push(url);
