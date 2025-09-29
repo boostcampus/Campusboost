@@ -1,1079 +1,1183 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Premium Finance Dashboard</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #212121; /* Dark background */
-      --sidebar: #1A1D23; /* Sidebar / card background */
-      --card: #1A1D23; /* Card background */
-      
-      --accent: #667eea; /* Updated from primary color */
-      --accent-secondary: #764ba2; /* Optional secondary accent */
-      
-      --text: #ffffff; /* Default light text */
-      --light-text: #000000; /* For light mode or light elements */
-      --light-bg: #f8f9fa; /* Light background */
-      
-      --success: #2ecc71;
-      --danger: #e74c3c;
-      --warning: #f39c12;
-      --info: #3498db;
-      
-      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-      --gradient-subtle: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 50%, rgba(240, 147, 251, 0.1) 100%);
-      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-      --glass-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
-      --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      background-image: 
-        radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(240, 147, 251, 0.08) 0%, transparent 50%);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* Loading Animation */
-    .loader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
-    }
-
-    .loader.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .loader-spinner {
-      width: 60px;
-      height: 60px;
-      border: 4px solid rgba(102, 126, 234, 0.3);
-      border-top: 4px solid var(--accent);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Header Glassmorphism */
-    header {
-      background: rgba(26, 29, 35, 0.8);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border-bottom: var(--glass-border);
-      padding: 2rem 3rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .logo-icon {
-      width: 50px;
-      height: 50px;
-      background: var(--gradient);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.4rem;
-      font-weight: 700;
-      box-shadow: var(--glass-shadow);
-    }
-
-    .logo h1 {
-      font-size: 2rem;
-      font-weight: 800;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.02em;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-
-    .menu-toggle {
-      font-size: 1.8rem;
-      color: var(--accent);
-      cursor: pointer;
-      padding: 0.75rem;
-      border-radius: 12px;
-      transition: var(--transition);
-      background: rgba(102, 126, 234, 0.1);
-      border: var(--glass-border);
-    }
-
-    .menu-toggle:hover {
-      background: rgba(102, 126, 234, 0.2);
-      transform: scale(1.05);
-    }
-
-    /* Navigation */
-    nav {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      min-width: 280px;
-      background: rgba(26, 29, 35, 0.95);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border: var(--glass-border);
-      border-radius: 20px;
-      display: none;
-      flex-direction: column;
-      padding: 1.5rem;
-      margin: 1rem;
-      box-shadow: var(--glass-shadow);
-      transform: translateY(-10px);
-      opacity: 0;
-      transition: var(--transition);
-    }
-
-    nav.active {
-      display: flex;
-      transform: translateY(0);
-      opacity: 1;
-      animation: slideDown 0.4s var(--bounce);
-    }
-
-    @keyframes slideDown {
-      from {
-        transform: translateY(-20px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    nav a {
-      color: var(--text);
-      padding: 1rem 1.5rem;
-      text-decoration: none;
-      transition: var(--transition);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
-
-    nav a:hover {
-      background: rgba(102, 126, 234, 0.15);
-      color: var(--accent);
-      transform: translateX(8px);
-    }
-
-    /* Container */
-    .container {
-      padding: 3rem;
-      max-width: 1600px;
-      margin: 0 auto;
-    }
-
-    /* Premium Subscription Card */
-    .premium-subscription-card {
-      background: rgba(26, 29, 35, 0.9);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border: 2px solid transparent;
-      background-image: linear-gradient(rgba(26, 29, 35, 0.9), rgba(26, 29, 35, 0.9)), var(--gradient);
-      background-origin: border-box;
-      background-clip: content-box, border-box;
-      border-radius: 28px;
-      padding: 3rem;
-      margin-bottom: 3rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--glass-shadow);
-      transition: var(--transition);
-    }
-
-    .premium-subscription-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: var(--gradient);
-    }
-
-    .premium-subscription-card::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -50%;
-      width: 100%;
-      height: 100%;
-      background: var(--gradient-subtle);
-      border-radius: 50%;
-      opacity: 0.4;
-      z-index: -1;
-      animation: rotate 20s linear infinite;
-    }
-
-    @keyframes rotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .premium-subscription-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 25px 70px rgba(102, 126, 234, 0.3);
-    }
-
-    .subscription-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-    }
-
-    .subscription-info h2 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.5rem;
-      letter-spacing: -0.02em;
-    }
-
-    .subscription-description {
-      font-size: 1.1rem;
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 1.5rem;
-      line-height: 1.6;
-    }
-
-    .subscription-features {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-      margin-bottom: 2rem;
-    }
-
-    .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 1rem;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .feature-item i {
-      color: var(--success);
-      font-size: 1.1rem;
-    }
-
-    .subscription-pricing {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 2rem;
-    }
-
-    .pricing-details {
-      display: flex;
-      align-items: baseline;
-      gap: 1rem;
-    }
-
-    .price-amount {
-      font-size: 3rem;
-      font-weight: 800;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.02em;
-    }
-
-    .price-duration {
-      font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.6);
-      font-weight: 500;
-    }
-
-    .savings-badge {
-      background: rgba(46, 204, 113, 0.2);
-      color: var(--success);
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      border: 1px solid rgba(46, 204, 113, 0.3);
-    }
-
-    .subscription-action {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-
-    .btn-premium {
-      background: var(--gradient);
-      color: white;
-      padding: 1.25rem 2.5rem;
-      border: none;
-      border-radius: 18px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: var(--transition);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-      position: relative;
-      overflow: hidden;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .btn-premium::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn-premium:hover::before {
-      left: 100%;
-    }
-
-    .btn-premium:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
-    }
-
-    .btn-premium:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* Balance Card */
-    .balance-card {
-      background: rgba(26, 29, 35, 0.7);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border: var(--glass-border);
-      border-radius: 24px;
-      padding: 3rem;
-      margin-bottom: 3rem;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--glass-shadow);
-      transition: var(--transition);
-    }
-
-    .balance-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: var(--gradient);
-    }
-
-    .balance-card::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -50%;
-      width: 100%;
-      height: 100%;
-      background: var(--gradient-subtle);
-      border-radius: 50%;
-      opacity: 0.5;
-      z-index: -1;
-    }
-
-    .balance-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
-    }
-
-    .balance-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 2rem;
-    }
-
-    .balance-info h2 {
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .balance-amount {
-      font-size: 3.5rem;
-      font-weight: 800;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.02em;
-    }
-
-    .balance-actions {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    .btn {
-      padding: 1rem 2rem;
-      border: none;
-      border-radius: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-family: inherit;
-      font-size: 1rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
-
-    .btn:hover::before {
-      left: 100%;
-    }
-
-    .btn-primary {
-      background: var(--gradient);
-      color: white;
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-secondary {
-      background: rgba(102, 126, 234, 0.1);
-      color: var(--accent);
-      border: 2px solid rgba(102, 126, 234, 0.3);
-      backdrop-filter: blur(10px);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(102, 126, 234, 0.2);
-      transform: translateY(-3px);
-      border-color: rgba(102, 126, 234, 0.5);
-    }
-
-    /* Section Headers */
-    .section {
-      margin-bottom: 4rem;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .section-title {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
-
-    .section-badge {
-      padding: 0.5rem 1rem;
-      background: rgba(102, 126, 234, 0.15);
-      color: var(--accent);
-      border-radius: 25px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      border: var(--glass-border);
-    }
-
-    /* Tools Grid */
-    .tools-grid {
-      display: grid;
-      gap: 2rem;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    }
-
-    /* Tool Cards - Premium Glassmorphism */
-    .tool-box {
-      background: rgba(26, 29, 35, 0.7);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      border: var(--glass-border);
-      border-radius: 24px;
-      padding: 2rem;
-      text-align: center;
-      box-shadow: var(--glass-shadow);
-      transition: var(--transition);
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    .tool-box::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--gradient-subtle);
-      opacity: 0;
-      transition: var(--transition);
-    }
-
-    .tool-box::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -50%;
-      width: 100%;
-      height: 100%;
-      background: var(--gradient-subtle);
-      border-radius: 50%;
-      opacity: 0;
-      transition: var(--transition);
-      z-index: -1;
-    }
-
-    .tool-box:hover {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 0 25px 50px rgba(102, 126, 234, 0.2);
-      border-color: rgba(102, 126, 234, 0.4);
-    }
-
-    .tool-box:hover::before {
-      opacity: 1;
-    }
-
-    .tool-box:hover::after {
-      opacity: 0.3;
-    }
-
-    .tool-icon {
-      width: 80px;
-      height: 80px;
-      background: var(--gradient);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.5rem;
-      font-size: 2rem;
-      color: white;
-      transition: var(--transition);
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-    }
-
-    .tool-box:hover .tool-icon {
-      transform: scale(1.1) rotate(5deg);
-      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-    }
-
-    .tool-box h3 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      color: var(--text);
-      letter-spacing: -0.01em;
-    }
-
-    .tool-description {
-      font-size: 0.95rem;
-      color: rgba(255, 255, 255, 0.6);
-      margin-bottom: 2rem;
-      line-height: 1.6;
-    }
-
-    .tool-box .btn {
-      width: 100%;
-      margin-top: auto;
-    }
-
-    /* Premium Tools Styling */
-    .premium-tool {
-      position: relative;
-    }
-
-    .premium-tool::after {
-      content: '✨ Premium';
-      position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
-      background: var(--gradient);
-      color: white;
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    /* Modal Glassmorphism */
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: var(--transition);
-    }
-
-    .modal.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .modal-content {
-      background: rgba(26, 29, 35, 0.95);
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-      border: var(--glass-border);
-      border-radius: 30px;
-      padding: 3rem;
-      text-align: center;
-      color: var(--text);
-      max-width: 90vw;
-      width: 500px;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-      transform: scale(0.9);
-      transition: var(--transition);
-    }
-
-    .modal.active .modal-content {
-      transform: scale(1);
-      animation: modalBounce 0.5s var(--bounce);
-    }
-
-    @keyframes modalBounce {
-      0% {
-        transform: scale(0.8);
-        opacity: 0;
-      }
-      50% {
-        transform: scale(1.05);
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .modal-header {
-      margin-bottom: 2rem;
-    }
-
-    .modal-header h3 {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 0.75rem;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .modal-description {
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 2.5rem;
-      font-size: 1.1rem;
-    }
-
-    .pricing-options {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .pricing-option {
-      background: rgba(102, 126, 234, 0.1);
-      border: 2px solid rgba(102, 126, 234, 0.2);
-      border-radius: 16px;
-      padding: 1.5rem;
-      transition: var(--transition);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .pricing-option:hover {
-      background: rgba(102, 126, 234, 0.2);
-      border-color: rgba(102, 126, 234, 0.4);
-      transform: translateX(4px);
-    }
-
-    .pricing-info {
-      text-align: left;
-    }
-
-    .pricing-price {
-      font-weight: 800;
-      color: var(--success);
-      font-size: 1.3rem;
-    }
-
-    .pricing-duration {
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.6);
-      margin-top: 0.25rem;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 1.5rem;
-      justify-content: center;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .container {
-        padding: 1.5rem;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Premium Finance Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #212121; /* Dark background */
+        --sidebar: #1a1d23; /* Sidebar / card background */
+        --card: #1a1d23; /* Card background */
+
+        --accent: #667eea; /* Updated from primary color */
+        --accent-secondary: #764ba2; /* Optional secondary accent */
+
+        --text: #ffffff; /* Default light text */
+        --light-text: #000000; /* For light mode or light elements */
+        --light-bg: #f8f9fa; /* Light background */
+
+        --success: #2ecc71;
+        --danger: #e74c3c;
+        --warning: #f39c12;
+        --info: #3498db;
+
+        --gradient: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 50%,
+          #f093fb 100%
+        );
+        --gradient-subtle: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.1) 0%,
+          rgba(118, 75, 162, 0.1) 50%,
+          rgba(240, 147, 251, 0.1) 100%
+        );
+        --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        --glass-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+        --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+        --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        --bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
       }
 
-      header {
-        padding: 1.5rem;
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
 
-      .logo h1 {
-        font-size: 1.5rem;
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--bg);
+        background-image: radial-gradient(
+            circle at 20% 80%,
+            rgba(102, 126, 234, 0.15) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(118, 75, 162, 0.15) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 40% 40%,
+            rgba(240, 147, 251, 0.08) 0%,
+            transparent 50%
+          );
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
       }
 
-      .premium-subscription-card {
-        padding: 2rem;
-      }
-
-      .subscription-header {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .subscription-info h2 {
-        font-size: 1.8rem;
-      }
-
-      .subscription-features {
+      /* Loading Animation */
+      .loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
         justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
       }
 
-      .subscription-pricing {
-        flex-direction: column;
-        text-align: center;
+      .loader.hidden {
+        opacity: 0;
+        visibility: hidden;
       }
 
-      .price-amount {
-        font-size: 2.5rem;
+      .loader-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(102, 126, 234, 0.3);
+        border-top: 4px solid var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
       }
 
-      .balance-content {
-        flex-direction: column;
-        text-align: center;
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
 
-      .balance-amount {
-        font-size: 2.5rem;
+      /* Header Glassmorphism */
+      header {
+        background: rgba(26, 29, 35, 0.8);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border-bottom: var(--glass-border);
+        padding: 2rem 3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
       }
 
-      .section-title {
-        font-size: 2rem;
-      }
-
-      .tools-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-      }
-
-      .modal-content {
-        margin: 1rem;
-        padding: 2rem;
-      }
-
-      .pricing-options {
+      .logo {
+        display: flex;
+        align-items: center;
         gap: 1rem;
       }
 
-      .pricing-option {
-        flex-direction: column;
-        text-align: center;
-        gap: 0.75rem;
+      .logo-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--gradient);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.4rem;
+        font-weight: 700;
+        box-shadow: var(--glass-shadow);
       }
 
+      .logo h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.02em;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .menu-toggle {
+        font-size: 1.8rem;
+        color: var(--accent);
+        cursor: pointer;
+        padding: 0.75rem;
+        border-radius: 12px;
+        transition: var(--transition);
+        background: rgba(102, 126, 234, 0.1);
+        border: var(--glass-border);
+      }
+
+      .menu-toggle:hover {
+        background: rgba(102, 126, 234, 0.2);
+        transform: scale(1.05);
+      }
+
+      /* Navigation */
       nav {
-        right: 1rem;
-        min-width: 250px;
-      }
-    }
-
-    /* Utility Classes */
-    .fade-in {
-      animation: fadeIn 0.8s ease-out forwards;
-    }
-
-    @keyframes fadeIn {
-      from {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        min-width: 280px;
+        background: rgba(26, 29, 35, 0.95);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: var(--glass-border);
+        border-radius: 20px;
+        display: none;
+        flex-direction: column;
+        padding: 1.5rem;
+        margin: 1rem;
+        box-shadow: var(--glass-shadow);
+        transform: translateY(-10px);
         opacity: 0;
-        transform: translateY(30px);
+        transition: var(--transition);
       }
-      to {
-        opacity: 1;
+
+      nav.active {
+        display: flex;
         transform: translateY(0);
+        opacity: 1;
+        animation: slideDown 0.4s var(--bounce);
       }
-    }
 
-    .pulse {
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+      @keyframes slideDown {
+        from {
+          transform: translateY(-20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
       }
-      70% {
-        box-shadow: 0 0 0 15px rgba(102, 126, 234, 0);
+
+      nav a {
+        color: var(--text);
+        padding: 1rem 1.5rem;
+        text-decoration: none;
+        transition: var(--transition);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
       }
-      100% {
-        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+
+      nav a:hover {
+        background: rgba(102, 126, 234, 0.15);
+        color: var(--accent);
+        transform: translateX(8px);
       }
-    }
 
-    /* Scrollbar Styling */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
+      /* Container */
+      .container {
+        padding: 3rem;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
 
-    ::-webkit-scrollbar-track {
-      background: var(--bg);
-    }
+      /* Premium Subscription Card */
+      .premium-subscription-card {
+        background: rgba(26, 29, 35, 0.9);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 2px solid transparent;
+        background-image: linear-gradient(
+            rgba(26, 29, 35, 0.9),
+            rgba(26, 29, 35, 0.9)
+          ),
+          var(--gradient);
+        background-origin: border-box;
+        background-clip: content-box, border-box;
+        border-radius: 28px;
+        padding: 3rem;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--glass-shadow);
+        transition: var(--transition);
+      }
 
-    ::-webkit-scrollbar-thumb {
-      background: var(--gradient);
-      border-radius: 4px;
-    }
+      .premium-subscription-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient);
+      }
 
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--accent-secondary);
-    }
+      .premium-subscription-card::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-subtle);
+        border-radius: 50%;
+        opacity: 0.4;
+        z-index: -1;
+        animation: rotate 20s linear infinite;
+      }
 
-  </style>
-</head>
-<body>
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
 
+      .premium-subscription-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 25px 70px rgba(102, 126, 234, 0.3);
+      }
+
+      .subscription-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+
+      .subscription-info h2 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+      }
+
+      .subscription-description {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+
+      .subscription-features {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .feature-item i {
+        color: var(--success);
+        font-size: 1.1rem;
+      }
+
+      .subscription-pricing {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+      }
+
+      .pricing-details {
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+      }
+
+      .price-amount {
+        font-size: 3rem;
+        font-weight: 800;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.02em;
+      }
+
+      .price-duration {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 500;
+      }
+
+      .savings-badge {
+        background: rgba(46, 204, 113, 0.2);
+        color: var(--success);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border: 1px solid rgba(46, 204, 113, 0.3);
+      }
+
+      .subscription-action {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      .btn-premium {
+        background: var(--gradient);
+        color: white;
+        padding: 1.25rem 2.5rem;
+        border: none;
+        border-radius: 18px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-premium::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .btn-premium:hover::before {
+        left: 100%;
+      }
+
+      .btn-premium:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+      }
+
+      .btn-premium:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* Balance Card */
+      .balance-card {
+        background: rgba(26, 29, 35, 0.7);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: var(--glass-border);
+        border-radius: 24px;
+        padding: 3rem;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--glass-shadow);
+        transition: var(--transition);
+      }
+
+      .balance-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gradient);
+      }
+
+      .balance-card::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-subtle);
+        border-radius: 50%;
+        opacity: 0.5;
+        z-index: -1;
+      }
+
+      .balance-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 60px rgba(102, 126, 234, 0.25);
+      }
+
+      .balance-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+      }
+
+      .balance-info h2 {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .balance-amount {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.02em;
+      }
+
+      .balance-actions {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .btn {
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-family: inherit;
+        font-size: 1rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary {
+        background: var(--gradient);
+        color: white;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-secondary {
+        background: rgba(102, 126, 234, 0.1);
+        color: var(--accent);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        backdrop-filter: blur(10px);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(102, 126, 234, 0.2);
+        transform: translateY(-3px);
+        border-color: rgba(102, 126, 234, 0.5);
+      }
+
+      /* Section Headers */
+      .section {
+        margin-bottom: 4rem;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text);
+        letter-spacing: -0.02em;
+      }
+
+      .section-badge {
+        padding: 0.5rem 1rem;
+        background: rgba(102, 126, 234, 0.15);
+        color: var(--accent);
+        border-radius: 25px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border: var(--glass-border);
+      }
+
+      /* Tools Grid */
+      .tools-grid {
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      }
+
+      /* Tool Cards - Premium Glassmorphism */
+      .tool-box {
+        background: rgba(26, 29, 35, 0.7);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: var(--glass-border);
+        border-radius: 24px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: var(--glass-shadow);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+      }
+
+      .tool-box::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--gradient-subtle);
+        opacity: 0;
+        transition: var(--transition);
+      }
+
+      .tool-box::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-subtle);
+        border-radius: 50%;
+        opacity: 0;
+        transition: var(--transition);
+        z-index: -1;
+      }
+
+      .tool-box:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 25px 50px rgba(102, 126, 234, 0.2);
+        border-color: rgba(102, 126, 234, 0.4);
+      }
+
+      .tool-box:hover::before {
+        opacity: 1;
+      }
+
+      .tool-box:hover::after {
+        opacity: 0.3;
+      }
+
+      .tool-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--gradient);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        color: white;
+        transition: var(--transition);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      }
+
+      .tool-box:hover .tool-icon {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+      }
+
+      .tool-box h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text);
+        letter-spacing: -0.01em;
+      }
+
+      .tool-description {
+        font-size: 0.95rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .tool-box .btn {
+        width: 100%;
+        margin-top: auto;
+      }
+
+      /* Premium Tools Styling */
+      .premium-tool {
+        position: relative;
+      }
+
+      .premium-tool::after {
+        content: "✨ Premium";
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: var(--gradient);
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* Modal Glassmorphism */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+      }
+
+      .modal.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal-content {
+        background: rgba(26, 29, 35, 0.95);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        border: var(--glass-border);
+        border-radius: 30px;
+        padding: 3rem;
+        text-align: center;
+        color: var(--text);
+        max-width: 90vw;
+        width: 500px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+        transform: scale(0.9);
+        transition: var(--transition);
+      }
+
+      .modal.active .modal-content {
+        transform: scale(1);
+        animation: modalBounce 0.5s var(--bounce);
+      }
+
+      @keyframes modalBounce {
+        0% {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .modal-header {
+        margin-bottom: 2rem;
+      }
+
+      .modal-header h3 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.75rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .modal-description {
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 2.5rem;
+        font-size: 1.1rem;
+      }
+
+      .pricing-options {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .pricing-option {
+        background: rgba(102, 126, 234, 0.1);
+        border: 2px solid rgba(102, 126, 234, 0.2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: var(--transition);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .pricing-option:hover {
+        background: rgba(102, 126, 234, 0.2);
+        border-color: rgba(102, 126, 234, 0.4);
+        transform: translateX(4px);
+      }
+
+      .pricing-info {
+        text-align: left;
+      }
+
+      .pricing-price {
+        font-weight: 800;
+        color: var(--success);
+        font-size: 1.3rem;
+      }
+
+      .pricing-duration {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 0.25rem;
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .container {
+          padding: 1.5rem;
+        }
+
+        header {
+          padding: 1.5rem;
+        }
+
+        .logo h1 {
+          font-size: 1.5rem;
+        }
+
+        .premium-subscription-card {
+          padding: 2rem;
+        }
+
+        .subscription-header {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .subscription-info h2 {
+          font-size: 1.8rem;
+        }
+
+        .subscription-features {
+          justify-content: center;
+        }
+
+        .subscription-pricing {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .price-amount {
+          font-size: 2.5rem;
+        }
+
+        .balance-content {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .balance-amount {
+          font-size: 2.5rem;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+
+        .tools-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .modal-content {
+          margin: 1rem;
+          padding: 2rem;
+        }
+
+        .pricing-options {
+          gap: 1rem;
+        }
+
+        .pricing-option {
+          flex-direction: column;
+          text-align: center;
+          gap: 0.75rem;
+        }
+
+        nav {
+          right: 1rem;
+          min-width: 250px;
+        }
+      }
+
+      /* Utility Classes */
+      .fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(102, 126, 234, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+        }
+      }
+
+      /* Scrollbar Styling */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--gradient);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent-secondary);
+      }
+    </style>
+  </head>
+  <body>
     <!-- Free Tools Section -->
     <div class="section fade-in">
-      
       <div class="tools-grid">
         <div class="tool-box">
           <div class="tool-icon">
             <i class="fas fa-calculator"></i>
           </div>
           <h3>Profit Calculator</h3>
-          <p class="tool-description">Calculate your business profits with ease and accuracy using our advanced algorithms</p>
-          <button class="btn btn-primary" onclick="window.location.href='profit calculator.html'">
+          <p class="tool-description">
+            Calculate your business profits with ease and accuracy using our
+            advanced algorithms
+          </p>
+          <button
+            class="btn btn-primary"
+            onclick="window.location.href='profit calculator.html'"
+          >
             <i class="fas fa-play"></i>
             Open Tool
           </button>
         </div>
-        
+
         <div class="tool-box">
           <div class="tool-icon">
             <i class="fas fa-hand-holding-usd"></i>
           </div>
           <h3>Loan Calculator</h3>
-          <p class="tool-description">Plan your loans and calculate monthly payments instantly with detailed breakdown</p>
-          <button class="btn btn-primary" onclick="window.location.href='loan calculator .html'">
+          <p class="tool-description">
+            Plan your loans and calculate monthly payments instantly with
+            detailed breakdown
+          </p>
+          <button
+            class="btn btn-primary"
+            onclick="window.location.href='loan calculator .html'"
+          >
             <i class="fas fa-play"></i>
             Open Tool
           </button>
         </div>
-       
-        
+
         <div class="tool-box">
           <div class="tool-icon">
             <i class="fas fa-file-invoice-dollar"></i>
           </div>
           <h3>Tax Calculator</h3>
-          <p class="tool-description">Calculate your taxes accurately and efficiently with up-to-date tax brackets</p>
-          <button class="btn btn-primary" onclick="window.location.href='tax calculator.html'">
+          <p class="tool-description">
+            Calculate your taxes accurately and efficiently with up-to-date tax
+            brackets
+          </p>
+          <button
+            class="btn btn-primary"
+            onclick="window.location.href='tax calculator.html'"
+          >
             <i class="fas fa-play"></i>
             Open Tool
           </button>
         </div>
-        
+
         <div class="tool-box">
           <div class="tool-icon">
             <i class="fas fa-receipt"></i>
           </div>
           <h3>VAT Calculator</h3>
-          <p class="tool-description">Calculate VAT amounts for your business transactions across different regions</p>
-          <button class="btn btn-primary" onclick="window.location.href='vat calculator.html'">
+          <p class="tool-description">
+            Calculate VAT amounts for your business transactions across
+            different regions
+          </p>
+          <button
+            class="btn btn-primary"
+            onclick="window.location.href='vat calculator.html'"
+          >
             <i class="fas fa-play"></i>
             Open Tool
           </button>
         </div>
-        
+
         <div class="tool-box">
           <div class="tool-icon">
             <i class="fas fa-percentage"></i>
           </div>
           <h3>Discount Calculator</h3>
-          <p class="tool-description">Calculate discounts and savings for better deals with percentage breakdowns</p>
-          <button class="btn btn-primary" onclick="window.location.href='discount calculator .html'">
+          <p class="tool-description">
+            Calculate discounts and savings for better deals with percentage
+            breakdowns
+          </p>
+          <button
+            class="btn btn-primary"
+            onclick="window.location.href='discount calculator .html'"
+          >
             <i class="fas fa-play"></i>
             Open Tool
           </button>
         </div>
-        
+
         <div class="tool-box">
           <div class="tool-icon">
             <i class="fas fa-chart-area"></i>
           </div>
           <h3>Interest Calculator</h3>
-          <p class="tool-description">Calculate simple and compound interest rates with detailed projections</p>
-          <button class="btn btn-primary" onclick="window.location.href='intrest calculator.html'">
+          <p class="tool-description">
+            Calculate simple and compound interest rates with detailed
+            projections
+          </p>
+          <button
+            class="btn btn-primary"
+            onclick="window.location.href='intrest calculator.html'"
+          >
             <i class="fas fa-play"></i>
             Open Tool
           </button>
         </div>
-        
+
         <div class="tool-box">
           <div class="tool-icon">
             <i class="fas fa-clock"></i>
           </div>
           <h3>Overtime Calculator</h3>
-          <p class="tool-description">Calculate overtime pay and work hours accurately with customizable rates</p>
-          <button class="btn btn-primary" onclick="window.location.href='ovwrtime calculator .html'">
+          <p class="tool-description">
+            Calculate overtime pay and work hours accurately with customizable
+            rates
+          </p>
+          <button
+            class="btn btn-primary"
+            onclick="window.location.href='ovwrtime calculator .html'"
+          >
             <i class="fas fa-play"></i>
             Open Tool
           </button>
         </div>
-        
+
         <div class="tool-box">
           <div class="tool-icon">
             <i class="fas fa-calendar-day"></i>
           </div>
           <h3>Daily Income Calculator</h3>
-          <p class="tool-description">Track and calculate your daily income streams with detailed analytics</p>
-          <button class="btn btn-primary" onclick="window.location.href='daily income calculator .html'">
+          <p class="tool-description">
+            Track and calculate your daily income streams with detailed
+            analytics
+          </p>
+          <button
+            class="btn btn-primary"
+            onclick="window.location.href='daily income calculator .html'"
+          >
             <i class="fas fa-play"></i>
             Open Tool
           </button>
         </div>
-        
+
         <div class="tool-box">
           <div class="tool-icon">
             <i class="fas fa-chart-pie"></i>
           </div>
           <h3>Tax Planner App</h3>
-          <p class="tool-description">Plan your tax strategies for maximum savings with professional insights</p>
-          <button class="btn btn-primary" onclick="window.location.href='tax planner app.html'">
+          <p class="tool-description">
+            Plan your tax strategies for maximum savings with professional
+            insights
+          </p>
+          <button
+            class="btn btn-primary"
+            onclick="window.location.href='tax planner app.html'"
+          >
             <i class="fas fa-play"></i>
             Open Tool
           </button>
         </div>
-        
+
         <div class="tool-box">
           <div class="tool-icon">
             <i class="fas fa-ruler-combined"></i>
           </div>
           <h3>Measurement Converter</h3>
-          <p class="tool-description">Convert between different units of measurement with precision and ease</p>
-          <button class="btn btn-primary" onclick="window.location.href='measurement.html'">
+          <p class="tool-description">
+            Convert between different units of measurement with precision and
+            ease
+          </p>
+          <button
+            class="btn btn-primary"
+            onclick="window.location.href='measurement.html'"
+          >
             <i class="fas fa-play"></i>
             Open Tool
           </button>
@@ -1083,109 +1187,198 @@
 
     <!-- Premium Tools Section -->
     <div class="section fade-in">
-        <div class="tool-box premium-tool">
-          <div class="tool-icon">
-            <i class="fas fa-file-invoice"></i>
-          </div>
-          <h3>Invoice Generator</h3>
-          <p class="tool-description">Create professional invoices with custom branding and automated calculations</p>
-           <button class="btn btn-primary" onclick="window.location.href='invoice generator .html'">
-            <i class="fas fa-play"></i>
-            Open Tool
-          </button>
+      <div class="tool-box premium-tool">
+        <div class="tool-icon">
+          <i class="fas fa-file-invoice"></i>
         </div>
-        
-        <div class="tool-box premium-tool">
-          <div class="tool-icon">
-            <i class="fas fa-receipt"></i>
-          </div>
-          <h3>Receipt Generator</h3>
-          <p class="tool-description">Generate professional receipts for all transactions with custom templates</p>
-           <button class="btn btn-primary" onclick="window.location.href='recipt generator .html'">
-            <i class="fas fa-play"></i>
-            Open Tool
-          </button>
+        <h3>Invoice Generator</h3>
+        <p class="tool-description">
+          Create professional invoices with custom branding and automated
+          calculations
+        </p>
+        <button
+          class="btn btn-primary"
+          onclick="window.location.href='invoice generator .html'"
+        >
+          <i class="fas fa-play"></i>
+          Open Tool
+        </button>
+      </div>
+
+      <div class="tool-box premium-tool">
+        <div class="tool-icon">
+          <i class="fas fa-receipt"></i>
         </div>
-        
-        <div class="tool-box premium-tool">
-          <div class="tool-icon">
-            <i class="fas fa-cash-register"></i>
-          </div>
-          <h3>Cashbook App</h3>
-          <p class="tool-description">Digital cashbook for tracking cash flow with real-time balance updates</p>
-           <button class="btn btn-primary" onclick="window.location.href='cashbook app.html'">
-            <i class="fas fa-play"></i>
-            Open Tool
-          </button>
+        <h3>Receipt Generator</h3>
+        <p class="tool-description">
+          Generate professional receipts for all transactions with custom
+          templates
+        </p>
+        <button
+          class="btn btn-primary"
+          onclick="window.location.href='recipt generator .html'"
+        >
+          <i class="fas fa-play"></i>
+          Open Tool
+        </button>
+      </div>
+
+      <div class="tool-box premium-tool">
+        <div class="tool-icon">
+          <i class="fas fa-cash-register"></i>
         </div>
-        
-   
-        
-       
-        
-        <div class="tool-box premium-tool">
-          <div class="tool-icon">
-            <i class="fas fa-boxes"></i>
-          </div>
-          <h3>Inventory App</h3>
-          <p class="tool-description">Complete inventory management system with real-time stock tracking</p>
-          <button class="btn btn-primary" onclick="window.location.href='imvrntory app.html'">
-            <i class="fas fa-play"></i>
-            Open Tool
-          </button>
+        <h3>Cashbook App</h3>
+        <p class="tool-description">
+          Digital cashbook for tracking cash flow with real-time balance updates
+        </p>
+        <button
+          class="btn btn-primary"
+          onclick="window.location.href='cashbook app.html'"
+        >
+          <i class="fas fa-play"></i>
+          Open Tool
+        </button>
+      </div>
+
+      <div class="tool-box premium-tool">
+        <div class="tool-icon">
+          <i class="fas fa-boxes"></i>
         </div>
-        
-        <div class="tool-box premium-tool">
-          <div class="tool-icon">
-            <i class="fas fa-building"></i>
-          </div>
-          <h3>Company Management App</h3>
-          <p class="tool-description">Comprehensive company management solution with employee tracking</p>
-          <button class="btn btn-primary" onclick="window.location.href='payroll app.html'">
-            <i class="fas fa-play"></i>
-            Open Tool
-          </button>
+        <h3>Inventory App</h3>
+        <p class="tool-description">
+          Complete inventory management system with real-time stock tracking
+        </p>
+        <button
+          class="btn btn-primary"
+          onclick="window.location.href='imvrntory app.html'"
+        >
+          <i class="fas fa-play"></i>
+          Open Tool
+        </button>
+      </div>
+
+      <div class="tool-box premium-tool">
+        <div class="tool-icon">
+          <i class="fas fa-building"></i>
         </div>
-        
-        
-        
-        <div class="tool-box premium-tool">
-          <div class="tool-icon">
-            <i class="fas fa-hard-hat"></i>
-          </div>
-          <h3>Material Cost Calculator</h3>
-          <p class="tool-description">Calculate material costs for projects accurately with market price updates</p>
-           <button class="btn btn-primary" onclick="window.location.href='material cost calculator .html'">
-            <i class="fas fa-play"></i>
-            Open Tool
-          </button>
-        </div>
-        
-        <div class="tool-box premium-tool">
-          <div class="tool-icon">
-            <i class="fas fa-chart-bar"></i>
-          </div>
-          <h3>Profit and Loss Calculator</h3>
-          <p class="tool-description">Advanced P&L statements and analysis with predictive modeling</p>
-           <button class="btn btn-primary" onclick="window.location.href='profit and loss calculator.html'">
-            <i class="fas fa-play"></i>
-            Open Tool
-          </button>
-        </div>
-        
-        <div class="tool-box premium-tool">
-          <div class="tool-icon">
-            <i class="fas fa-quote-right"></i>
-          </div>
-          <h3>Quotation Generator</h3>
-          <p class="tool-description">Create professional quotations for clients with automatic pricing</p>
-         <button class="btn btn-primary" onclick="window.location.href='quotation generator app.html'">
-            <i class="fas fa-play"></i>
-            Open Tool
-          </button>
-        </div>
-      
+        <h3>Company Management App</h3>
+        <p class="tool-description">
+          Comprehensive company management solution with employee tracking
+        </p>
+        <button
+          class="btn btn-primary"
+          onclick="window.location.href='payroll app.html'"
+        >
+          <i class="fas fa-play"></i>
+          Open Tool
+        </button>
+      </div>
+
+      <div class="tool-box premium-tool">
+  <div class="tool-icon">
+    <i class="fas fa-school"></i>
+  </div>
+  <h3>School Management System</h3>
+  <p class="tool-description">
+    All-in-one system for student records, classes, and academic management
+  </p>
+  <button
+    class="btn btn-primary"
+    onclick="window.location.href='school.html'"
+  >
+    <i class="fas fa-play"></i>
+    Open Tool
+  </button>
 </div>
-  
-</body>
+
+
+<div class="tool-box premium-tool">
+  <div class="tool-icon">
+    <i class="fas fa-chart-line"></i>
+  </div>
+  <h3>Revenue Forecaster</h3>
+  <p class="tool-description">
+    Predict and analyze business revenue trends with accuracy
+  </p>
+  <button
+    class="btn btn-primary"
+    onclick="window.location.href='ai_advisor.html'"
+  >
+    <i class="fas fa-play"></i>
+    Open Tool
+  </button>
+</div>
+
+<div class="tool-box premium-tool">
+  <div class="tool-icon">
+    <i class="fas fa-balance-scale"></i>
+  </div>
+  <h3>Comparative Statement App</h3>
+  <p class="tool-description">
+    Generate and analyze side-by-side financial and business statements
+  </p>
+  <button
+    class="btn btn-primary"
+    onclick="window.location.href='comprative statment app.html'"
+  >
+    <i class="fas fa-play"></i>
+    Open Tool
+  </button>
+</div>
+
+
+
+      <div class="tool-box premium-tool">
+        <div class="tool-icon">
+          <i class="fas fa-hard-hat"></i>
+        </div>
+        <h3>Material Cost Calculator</h3>
+        <p class="tool-description">
+          Calculate material costs for projects accurately with market price
+          updates
+        </p>
+        <button
+          class="btn btn-primary"
+          onclick="window.location.href='material cost calculator .html'"
+        >
+          <i class="fas fa-play"></i>
+          Open Tool
+        </button>
+      </div>
+
+      <div class="tool-box premium-tool">
+        <div class="tool-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <h3>Profit and Loss Calculator</h3>
+        <p class="tool-description">
+          Advanced P&L statements and analysis with predictive modeling
+        </p>
+        <button
+          class="btn btn-primary"
+          onclick="window.location.href='profit and loss calculator.html'"
+        >
+          <i class="fas fa-play"></i>
+          Open Tool
+        </button>
+      </div>
+
+      <div class="tool-box premium-tool">
+        <div class="tool-icon">
+          <i class="fas fa-quote-right"></i>
+        </div>
+        <h3>Quotation Generator</h3>
+        <p class="tool-description">
+          Create professional quotations for clients with automatic pricing
+        </p>
+        <button
+          class="btn btn-primary"
+          onclick="window.location.href='quotation generator app.html'"
+        >
+          <i class="fas fa-play"></i>
+          Open Tool
+        </button>
+      </div>
+    </div>
+  </body>
 </html>
