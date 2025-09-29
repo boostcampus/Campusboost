@@ -45,28 +45,27 @@
                         <hr>
                         <h6 class="text-muted small">Free Features</h6>
                         <a class="nav-link" href="#" onclick="showSection('cgpa')">📈 CGPA Calculator</a>
-                        <a class="nav-link" href="#" onclick="showSection('planner')">📅 Study Planner</a>
+                        <!-- <a class="nav-link" href="#" onclick="showSection('planner')">📅 Study Planner</a> -->
                         <a class="nav-link" href="#" onclick="showSection('todo')">✅ To-Do List</a>
                         <a class="nav-link" href="#" onclick="showSection('timer')">⏰ Simple Timer</a>
                         <a class="nav-link" href="#" onclick="showSection('notes')">📝 Notes</a>
                         <a class="nav-link" href="#" onclick="showSection('converter')">🔄 Unit Converter</a>
                         <a class="nav-link" href="#" onclick="showSection('dictionary')">📖 Dictionary</a>
-                         <a class="nav-link premium-feature" href="save.html" >📢 Save-Box</a>
-               
+                        
                      
                         <a class="nav-link" href="#" onclick="showSection('community')">💬 Community</a>
                         <hr>
                         <h6 class="text-muted small">Premium Features</h6>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('advanced-planner')">⭐ Smart Study Planner</a>
+                        <!-- <a class="nav-link premium-feature" href="#" onclick="showSection('advanced-planner')">⭐ Smart Study Planner</a> -->
                         <a class="nav-link premium-feature" href="#" onclick="showSection('pomodoro')">🍅 Pomodoro Timer</a>
                         <a class="nav-link premium-feature" href="#" onclick="showSection('flashcards')">📚 Flashcard Creator</a>
                         <a class="nav-link premium-feature" href="#" onclick="showSection('calculator')">🧮 Scientific Calculator</a>
                         <a class="nav-link premium-feature" href="#" onclick="showSection('goals')">🎯 Goal Tracker</a>
                         <a class="nav-link premium-feature" href="#" onclick="showSection('habits')">🔄 Habit Tracker</a>
                         <a class="nav-link premium-feature" href="#" onclick="showSection('vocabulary')">📚 Vocabulary Builder</a>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('timetable-premium')">📋 Premium Timetable</a>
+                        <a class="nav-link premium-feature" href="timetable.html"">📋 Premium Timetable</a>
                         <a class="nav-link premium-feature" href="#" onclick="showSection('budget-premium')">💰 Advanced Budget</a>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('attendance')">👥 Attendance Generator</a>
+                        <a class="nav-link premium-feature" href="attend.html"">👥 Attendance Generator</a>
                         <a class="nav-link premium-feature" href="#" onclick="showSection('reports')">🧾 Report Card Generator</a>
                         <a class="nav-link premium-feature" href="#" onclick="showSection('vip-community')">👑 VIP Community</a>
                         <a class="nav-link premium-feature" href="#" onclick="showSection('promotion')">📢 Promotion Tools</a>
@@ -139,9 +138,7 @@
                                         <div class="col-md-6 mb-2">
                                             <button class="btn btn-outline-primary w-100" onclick="showSection('planner')">📅 Plan Study</button>
                                         </div>
-                                        <div class="col-md-6 mb-2">
-                                            <button class="btn btn-outline-primary w-100" onclick="showSection('marketplace')">🛍️ Marketplace</button>
-                                        </div>
+                                         <li>✅ Unlimited Marketplace Posting</li>
                                         <div class="col-md-6 mb-2">
                                             <button class="btn btn-primary w-100 premium-feature" onclick="showSection('reports')">🧾 Generate Report</button>
                                         </div>
@@ -151,16 +148,20 @@
                         </div>
                         <div class="col-lg-4 mb-4">
                             <div class="card dashboard-card">
-                                <div class="card-body">
-                                    <h5 class="card-title">📢 Latest Updates</h5>
-                                    <div class="small">
-                                        <div class="mb-2">🎉 Welcome to your 30-day free trial!</div>
-                                        <div class="mb-2">📚 New study planner features added</div>
-                                        <div class="mb-2">💰 Budget allocator now available</div>
-                                        <div class="text-muted">More updates coming soon...</div>
-                                    </div>
-                                </div>
-                            </div>
+    <div class="card-body">
+        <h5 class="card-title">📢 Latest Updates</h5>
+        <div class="small">
+            <div class="mb-2">🎉 Welcome to your 30-day free trial!</div>
+            <div class="mb-2">📚 New study planner features added</div>
+            <div class="mb-2">💰 Budget allocator now available</div>
+            
+            <div class="mb-2">🗓️ Attendance Generator added</div>
+          
+            <div class="mt-2 text-muted">ℹ️ For more information on how to use our tools, click <strong><a class="nav-link" href="#" onclick="showSection('support')">Contact & Socials</a></strong> — we post videos to teach people how to use them.</div>
+        </div>
+    </div>
+</div>
+
                         </div>
                     </div>
                 </div>
@@ -488,42 +489,13 @@
                         <div class="card-body">
                             <h3 class="fw-bold mb-4">💬 Community Discussions</h3>
                             <div class="row">
-                                <div class="col-md-8">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>📚 Study Group Discussions</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="discussion-item border-bottom pb-3 mb-3">
-                                                <div class="d-flex justify-content-between">
-                                                    <h6>Need help with Calculus</h6>
-                                                    <small class="text-muted">2 hours ago</small>
-                                                </div>
-                                                <p class="text-muted small">Looking for study partners for upcoming exam...</p>
-                                                <div class="d-flex gap-2">
-                                                    <span class="badge bg-primary">Mathematics</span>
-                                                    <span class="text-muted small">12 replies</span>
-                                                </div>
-                                            </div>
-                                            <div class="discussion-item border-bottom pb-3 mb-3">
-                                                <div class="d-flex justify-content-between">
-                                                    <h6>Selling Physics Textbook</h6>
-                                                    <small class="text-muted">5 hours ago</small>
-                                                </div>
-                                                <p class="text-muted small">University Physics 14th Edition, good condition...</p>
-                                                <div class="d-flex gap-2">
-                                                    <span class="badge bg-success">Marketplace</span>
-                                                    <span class="text-muted small">8 replies</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                                 <div class="col-md-4">
                                     <div class="card">
                                         <div class="card-body">
                                             <h6>👑 VIP Community Lounge</h6>
                                             <p class="text-muted small">Access premium-only discussions with exclusive content and networking opportunities.</p>
+                                              <p class="text-muted small">Also get acess to past questions and other digital materials</p>
                                             <button href="https://t.me/+Ec2r_TwSfuVlYTVk" class="btn btn-primary premium-feature w-100">Join VIP Lounge</button>
                                         </div>
                                     </div>
@@ -1060,7 +1032,8 @@
                                             <h6>📚 Available Words</h6>
                                             <p class="small text-muted">Dictionary includes common academic and everyday words to help expand your vocabulary.</p>
                                             <div class="small">
-                                                <strong>Sample words:</strong> academic, algorithm, analysis, bibliography, calculate, data, education, framework...
+                                                <strong>Sample words:</strong> abate, abdicate, aberrant, abeyance, abhor, abide, abject, abjure, ablution, abnegation, abolish, abominable, aboriginal, abortive, abridge, abrogate, abscond, absolute, absolve, abstain, abstract, abstruse, abundant, abysmal, accolade, accommodate, accord, accost, acerbic, acme, acquiesce, acrid, acrimonious, acumen, acute, adamant, adept, adhere, admonish, adorn, adroit, adulation, adverse, advocate, aesthetic, affable, affinity, affluent, affront, aggregate, aghast, agile, agog, alacrity, albeit, alienate, alleviate, allocate, allude, allure, aloof, altruistic, amalgamate, ambiguous, ambivalent, ameliorate, amenable, amend, amenity, amiable, amicable, amorphous, anachronism, analogous, anarchy, anecdote, anguish, animosity, annihilate, anomaly, anonymous, antagonize, antecedent, antipathy, apathy, apocryphal, appall, apprehend, arbitrary, arcane, archaic, ardent, arduous, arid, arrogate, articulate, ascend, ascertain, ascetic, ascribe, aspire, assail, assimilate, assuage, astute, asylum, atone, atrophy, attest, audacious, augment, auspicious, austere, authentic, authoritarian, autonomous, avarice, avenge, averse, avert, avid, benevolent, benevolence, benign, berate, bizarre, blatant, blight, blithe, boisterous, bolster, bombastic, boorish, brevity, brusque, cacophony, cajole, calamity, callous, candid, candor, capacious, capitulate, capricious, cardinal, catalyst, caustic, censure, cerebral, chaos, charlatan, chastise, chicanery, chronological, circuitous, circumspect, clairvoyant, clandestine, clemency, cliché, clientele, clout, coalesce, cogent, cognitive, coherent, collaborate, colloquial, collusion, commemorate, commend, commensurate, commodious, communal, compassion, compatible, compelling, compensate, complacent, complement, compliant, comprehensive, compromise, compunction, concede, concise, concur, condescend, condone, conducive, confide, congenial, congenital, conglomerate, congruent, conjecture, connoisseur, conscientious, consecutive, consensus, consign, consolidate, conspicuous, conspire, constituent, constrain, construe, contagious, contemplate, contemporary, contempt, contend, contentious, contrite, contrive, conundrum, convene, conventional, converge, convivial, copious, cordial, corroborate, corrosive, cosmopolitan, counterfeit, coup, covet, covert, credible, credulous, criterion, crucial, cryptic, culminate, culpable, cultivate, cumbersome, cursory, curtail, cynical, dearth, debacle, debase, debunk, decorum, decry, deference, definitive, deflect, deft, defunct, delegate, deleterious, deliberate, delineate, demagogue, demise, demographic, demur, denigrate, denounce, deplete, deplore, depravity, deprecate, deride, derivative, desiccate, despondent, despot, destitute, deter, detrimental, devious, devise, devoid, devout, didactic, diffident, diffuse, diligent, diminutive, discern, discerning, disconcert, discordant, discredit, discrepancy, discrete, discretion, discriminate, disdain, disingenuous, disinterested, dismantle, dismay, disparage, disparate, disparity, dispatch, disperse, disposition, disputatious, disseminate, dissent, dissident, dissipate, dissonance, dissuade, distend, distill, distinct, distinguish, distort, diverge, divergent, divulge, doctrine, document, dogma, dogmatic, dormant, dubious, duplicity, durable, dwindle, dynamic, eccentric, eclectic, eclipse, economical, ecstasy, edifice, edify, efface, effervescent, efficacious, efficient, effigy, effrontery, effusive, egregious, elaborate, elated, elegy, elicit, eloquent, elucidate, elude, emaciated, emanate, emancipate, embellish, embezzle, embody, embrace, eminent, emphatic, empirical, emulate, enamor, encapsulate, enchant, encompass, encounter, encroach, encumber, endorse, endure, energize, enervate, engender, engross, enhance, enigma, enlighten, enmity, ennui, enormity, enrapture, ensue, entail, enthrall, entice, entity, entomology, entourage, entreat, enumerate, enunciate, ephemeral, epic, epicure, epigram, epitome, equanimity, equivocal, eradicate, erratic, erroneous, erudite, escalate, eschew, esoteric, espouse, esteem, ethereal, ethical, ethos, eulogy, euphemism, euphoria, evade, evanescent, evasive, evoke, exacerbate, exalt, exasperate, excavate, exceptional, excerpt, exhilarating, exonerate, exorbitant, expedient, expedite, explicit, exploit, extol, extraneous, extricate, exuberant, fabricate, facilitate, facsimile, fallacy, falter, famine, fanatic, fastidious, fathom, feasible, feign, felicity, fervent, fickle, fidelity, figurative, finite, flagrant, flamboyant, flaunt, fledgling, florid, flourish, fluctuate, forbearance, foreboding, forestall, forlorn, formidable, fortitude, fortuitous, foster, fracas, fragile, frantic, fraudulent, frenetic, frugal, frustrate, futile, garrulous, gaudy, genial, germane, glib, gloat, gregarious, grievous, guile, hackneyed, haphazard, harangue, harass, harbinger, harrowing, haughty, hedonist, heed, heinous, heresy, hiatus, hierarchy, hinder, hoard, homogeneous, hone, hostile, hubris, humane, humility, hypocrisy, hypothesis, iconoclast, idealist, idiosyncrasy, idle, ignominious, illuminate, illusory, illustrious, imbue, immaculate, immerse, immutable, impair, impartial, impeccable, impede, imperative, imperious, impermeable, impertinent, impetuous, implacable, implement, implicate, implicit, implore, imposing, impoverished, impromptu, improvise, impudent, inadvertent, inalienable, inane, inanimate, inaugurate, incense, incentive, incessant, incidental, incisive, incite, inclined, incoherent, incompatible, inconsequential, incontrovertible, incorporate, incorrigible, incredulous, increment, incumbent, indefatigable, indelible, indigenous, indignant, indiscriminate, indolent, indomitable, induce, indulgent, ineffable, ineluctable, inept, inert, inevitable, inexorable, infallible, infamous, infer, infiltrate, infinitesimal, infringe, ingenious, ingenuous, inherent, inhibit, inimical, iniquitous, initiate, inject, innate, innocuous, innovate, innuendo, inopportune, insatiable, inscrutable, insidious
+...
                                             </div>
                                         </div>
                                     </div>
@@ -1443,17 +1416,20 @@
                             </div>
                             <div class="modal-body">
                                 <div class="text-center mb-4">
-                                    <h4 class="text-primary">₦1000/month</h4>
+                                    <h4 class="text-primary">₦500/month</h4>
                                     <p class="text-muted">Continue enjoying all premium features after your trial</p>
                                 </div>
                                 <h6>✨ Premium Features Include:</h6>
                                 <ul class="list-unstyled">
-                                     <li class="mb-2">✅ All free features included</li>
-                                <li class="mb-2">✅ PDF generators & downloads</li>
-                                <li class="mb-2">✅ Advanced study planner</li>
-                                <li class="mb-2">✅ School Management System</li> 
-                                <li class="mb-2">✅ Company Management System</li>
-                                <li class="mb-2">✅ Inventory Management System</li>
+                                    <li>✅ Smart Study Planner with Reminders</li>
+                                    <li>✅ Premium Timetable Generator (PDF Export)</li>
+                                    <li>✅ Advanced Budget Allocator with Analytics</li>
+                                    <li>✅ Attendance Sheet Generator</li>
+                                    <li>✅ Report Card Generator</li>
+                                   
+                                    <li>✅ Priority Product Promotion</li>
+                                    <li>✅ VIP Community Access</li>
+                                    <li>✅ Premium Badge & Priority Support</li>
                                 </ul>
                                 <button class="btn btn-primary w-100" onclick="processPayment()">Pay with Flutterwave</button>
                             </div>
