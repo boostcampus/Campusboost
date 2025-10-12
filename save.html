@@ -3,393 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaveBox Pro | Smart Savings Platform</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Advanced Save Box</title>
     <style>
-        /* Base Styles */
-        :root {
-            --primary: #4361ee;
-            --primary-light: #4895ef;
-            --primary-dark: #3a0ca3;
-            --secondary: #f72585;
-            --success: #4cc9f0;
-            --warning: #f8961e;
-            --danger: #e63946;
-            --dark: #1d3557;
-            --light: #f1faee;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
+        /* Base styles and reset */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            color: var(--light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2438, #2c3e50);
+            color: #f0f4f8;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 16px;
             overflow-x: hidden;
         }
-
-        /* Background Animation */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .bg-circle {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
-            opacity: 0.1;
-            animation: float 15s infinite linear;
-        }
-
-        .bg-circle:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
-        }
-
-        .bg-circle:nth-child(2) {
-            width: 200px;
-            height: 200px;
-            top: 60%;
-            left: 80%;
-            animation-delay: -5s;
-        }
-
-        .bg-circle:nth-child(3) {
-            width: 400px;
-            height: 400px;
-            top: 30%;
-            left: 60%;
-            animation-delay: -10s;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(0) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-20px) rotate(180deg);
-            }
-            100% {
-                transform: translateY(0) rotate(360deg);
-            }
-        }
-
-        /* Main Container */
+        
+        /* Main container */
         .save-box-container {
+            background: linear-gradient(135deg, #1f2a40, #364968);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 24px;
             width: 100%;
-            max-width: 1200px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            animation: fadeIn 1s ease-out;
+            max-width: 500px;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+            z-index: 1;
         }
-
+        
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         /* Header */
-        header {
-            padding: 24px 30px;
-            background: rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        header h1 {
+            margin-bottom: 16px;
+            font-size: 1.8rem;
+            color: #4CAF50;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+            line-height: 1.2;
         }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: white;
-        }
-
-        .logo-text {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-light), var(--success));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
-
-        /* Main Content */
-        .main-content {
+        /* Display section */
+        .display-section {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 24px;
-            padding: 30px;
+            gap: 16px;
+            margin-bottom: 20px;
         }
 
-        @media (min-width: 992px) {
-            .main-content {
+        @media (min-width: 480px) {
+            .display-section {
                 grid-template-columns: 1fr 1fr;
             }
         }
 
-        /* Dashboard Cards */
-        .dashboard-card {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
+        .total-amount, .goal-display {
+            background-color: #34495e;
+            padding: 16px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out;
         }
 
-        .dashboard-card:hover {
+        .total-amount:hover, .goal-display:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .card-header {
+        .total-amount span, .goal-display span {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4CAF50;
+            transition: transform 0.5s ease-in-out;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .total-amount:hover span {
+            transform: scale(1.1);
+        }
+        
+        /* Progress bar */
+        .progress-bar {
+            height: 10px;
+            background-color: #2c3e50;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Timer */
+        .timer-display {
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #f39c12;
+            line-height: 1.4;
+        }
+
+        /* Input section */
+        .input-section {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 12px;
             margin-bottom: 20px;
         }
 
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--light);
-        }
-
-        .card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: var(--primary-light);
-        }
-
-        /* Amount Display */
-        .amount-display {
-            font-size: 36px;
-            font-weight: 700;
-            margin: 10px 0;
-            background: linear-gradient(135deg, var(--primary-light), var(--success));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transition: var(--transition);
-        }
-
-        .amount-display:hover {
-            transform: scale(1.05);
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            margin: 20px 0;
-        }
-
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .progress-bar {
-            height: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--success));
-            border-radius: 10px;
-            width: 0%;
-            transition: width 1s ease-in-out;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background-image: linear-gradient(
-                -45deg,
-                rgba(255, 255, 255, 0.2) 25%,
-                transparent 25%,
-                transparent 50%,
-                rgba(255, 255, 255, 0.2) 50%,
-                rgba(255, 255, 255, 0.2) 75%,
-                transparent 75%,
-                transparent
-            );
-            background-size: 20px 20px;
-            animation: move 1s linear infinite;
-        }
-
-        @keyframes move {
-            0% {
-                background-position: 0 0;
+        @media (min-width: 400px) {
+            .input-section {
+                flex-direction: row;
             }
-            100% {
-                background-position: 20px 0;
+            
+            .input-section input {
+                flex: 1;
+            }
+            
+            .input-section button {
+                width: auto;
             }
         }
 
-        /* Input Section */
-        .input-section {
-            display: flex;
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .input-field {
-            flex: 1;
-            padding: 14px 18px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--light);
-            font-size: 16px;
-            transition: var(--transition);
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 14px 24px;
-            border-radius: 12px;
+        input[type="number"] {
+            padding: 12px;
+            border-radius: 8px;
             border: none;
-            font-weight: 600;
-            font-size: 16px;
+            background-color: #34495e;
+            color: #f0f4f8;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px #4CAF50;
+        }
+
+        button, select {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            width: 100%;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
+        @media (min-width: 480px) {
+            button, select {
+                width: auto;
+            }
         }
 
-        .btn-primary:hover {
+        #add-btn {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+
+        #add-btn:hover {
+            background-color: #45a049;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
         }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--light);
-            border: 1px solid var(--glass-border);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #2ec4b6);
-            color: white;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.4);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #ff6b6b);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(230, 57, 70, 0.4);
-        }
-
-        /* Contributions List */
-        .contributions-list {
-            max-height: 300px;
-            overflow-y: auto;
+        /* Actions section */
+        .actions-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
             margin-top: 20px;
         }
 
-        .contribution-item {
+        @media (min-width: 600px) {
+            .actions-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        #currency-select, .set-duration-btn {
+            background-color: #34495e;
+            color: #f0f4f8;
+        }
+        
+        #currency-select:hover, .set-duration-btn:hover {
+            background-color: #45627e;
+            transform: translateY(-2px);
+        }
+
+        #set-goal-btn {
+            background-color: #f39c12;
+            color: #fff;
+        }
+
+        #set-goal-btn:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        #break-box-btn {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+
+        #break-box-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* Contributions section */
+        .contributions-section h2 {
+            color: #4CAF50;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+        }
+
+        #contributions-list {
+            list-style-type: none;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #34495e;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #2c3e50;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #contributions-list li {
+            background-color: #34495e;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            transition: var(--transition);
             animation: slideIn 0.5s ease-out;
-        }
-
-        .contribution-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateX(5px);
+            font-size: 0.9rem;
         }
 
         @keyframes slideIn {
@@ -397,421 +264,750 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Goals Grid */
-        .goals-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+        /* Challenge section */
+        .challenge-section {
             margin-top: 20px;
+            padding: 15px;
+            background-color: #34495e;
+            border-radius: 10px;
+        }
+        
+        .challenge-section h3 {
+            margin-bottom: 12px;
+            color: #9b59b6;
+        }
+        
+        #create-challenge-btn {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        #create-challenge-btn:hover {
+            background-color: #8e44ad;
         }
 
-        .goal-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--glass-border);
-            transition: var(--transition);
+        /* Social sharing */
+        .social-share {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .share-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .share-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
         }
 
-        .goal-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.08);
+        /* Premium section */
+        .premium-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-radius: 10px;
+            text-align: left;
         }
-
-        .goal-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
+        
+        .premium-section h3 {
+            color: #fff;
+            margin-top: 0;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .premium-features {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .premium-features li {
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: 15px;
-            color: var(--primary-light);
+            font-size: 0.95rem;
         }
-
-        .goal-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .goal-amount {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 10px 0;
-            color: var(--success);
-        }
-
-        /* Analytics Chart */
-        .chart-container {
-            height: 200px;
-            margin-top: 20px;
-            position: relative;
-        }
-
-        /* Premium Badge */
-        .premium-badge {
-            background: linear-gradient(135deg, #ff9a00, #ff6a00);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
+        
+        .premium-features li:before {
+            content: "✓";
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 10px;
+            background: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            animation: pulse 2s infinite;
+            justify-content: center;
+            flex-shrink: 0;
         }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        
+        #upgrade-btn {
+            background-color: #9b59b6;
+            color: white;
+            margin-top: 15px;
+            padding: 15px;
+            font-size: 1rem;
         }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 10px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 500;
-        }
-
-        .tab.active {
-            background: rgba(67, 97, 238, 0.2);
-            color: var(--primary-light);
-        }
-
-        .tab:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.05);
+        
+        #upgrade-btn:hover {
+            background-color: #8e44ad;
+            transform: translateY(-2px);
         }
 
         /* Footer */
         footer {
-            padding: 20px 30px;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #95a5a6;
             text-align: center;
-            border-top: 1px solid var(--glass-border);
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
         }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .input-section {
-                flex-direction: column;
-            }
-            
-            .header-actions {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .amount-display {
-                font-size: 28px;
-            }
+        
+        /* Badge */
+        .badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
         }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1f2a40, #364968);
+            padding: 24px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #f0f4f8;
+        }
+        
+        #challenge-image {
+            max-width: 100%;
             border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        #download-challenge-btn {
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 15px;
+            display: none;
+            width: 100%;
+        }
+        
+        @media (min-width: 480px) {
+            #download-challenge-btn {
+                width: auto;
+            }
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
+        /* Confetti canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
-    <!-- Background Animation -->
-    <div class="bg-animation">
-        <div class="bg-circle"></div>
-        <div class="bg-circle"></div>
-        <div class="bg-circle"></div>
-    </div>
+    <canvas id="confetti-canvas"></canvas>
 
-    <!-- Main Container -->
     <div class="save-box-container">
-        <!-- Header -->
         <header>
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-piggy-bank"></i>
-                </div>
-                <div class="logo-text">SaveBox Pro</div>
-            </div>
-            <div class="header-actions">
-                <div class="premium-badge">
-                    <i class="fas fa-crown"></i>
-                    PREMIUM
-                </div>
-                <button class="btn btn-secondary">
-                    <i class="fas fa-user"></i>
-                    Profile
-                </button>
-                <button class="btn btn-secondary">
-                    <i class="fas fa-cog"></i>
-                    Settings
-                </button>
-            </div>
+            <h1>My Save Box <span id="premium-badge" class="badge" style="display: none;">PREMIUM</span></h1>
         </header>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Left Column -->
-            <div class="left-column">
-                <!-- Savings Overview Card -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <div class="card-title">Savings Overview</div>
-                        <div class="card-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                    </div>
-                    <div class="amount-display" id="total-amount">₦25,750.00</div>
-                    <div class="progress-container">
-                        <div class="progress-info">
-                            <span>Monthly Goal</span>
-                            <span>72%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 72%"></div>
-                        </div>
-                    </div>
-                    <div class="input-section">
-                        <input type="number" class="input-field" placeholder="Enter amount to add...">
-                        <button class="btn btn-primary">
-                            <i class="fas fa-plus"></i>
-                            Add
-                        </button>
-                    </div>
+        <main>
+            <div class="display-section">
+                <div class="total-amount">
+                    <p>Total Saved:</p>
+                    <span id="total-amount">₦0.00</span>
                 </div>
-
-                <!-- Goals Card -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <div class="card-title">My Savings Goals</div>
-                        <div class="card-icon">
-                            <i class="fas fa-bullseye"></i>
-                        </div>
-                    </div>
-                    <div class="goals-grid">
-                        <div class="goal-card">
-                            <div class="goal-icon">
-                                <i class="fas fa-laptop"></i>
-                            </div>
-                            <div class="goal-title">New Laptop</div>
-                            <div class="goal-amount">₦185,000</div>
-                            <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 45%"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="goal-card">
-                            <div class="goal-icon">
-                                <i class="fas fa-plane"></i>
-                            </div>
-                            <div class="goal-title">Vacation</div>
-                            <div class="goal-amount">₦350,000</div>
-                            <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 28%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary" style="margin-top: 20px; width: 100%;">
-                        <i class="fas fa-plus"></i>
-                        Create New Goal
-                    </button>
+                <div class="goal-display">
+                    <p>Goal:</p>
+                    <span id="goal-amount">No Goal Set</span>
                 </div>
             </div>
-
-            <!-- Right Column -->
-            <div class="right-column">
-                <!-- Recent Activity Card -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <div class="card-title">Recent Activity</div>
-                        <div class="card-icon">
-                            <i class="fas fa-history"></i>
-                        </div>
-                    </div>
-                    <div class="contributions-list">
-                        <div class="contribution-item">
-                            <div>
-                                <div>July 15, 2023</div>
-                                <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Added to Emergency Fund</div>
-                            </div>
-                            <div style="font-weight: 600; color: var(--success);">+₦5,000</div>
-                        </div>
-                        <div class="contribution-item">
-                            <div>
-                                <div>July 12, 2023</div>
-                                <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Added to Vacation Fund</div>
-                            </div>
-                            <div style="font-weight: 600; color: var(--success);">+₦7,500</div>
-                        </div>
-                        <div class="contribution-item">
-                            <div>
-                                <div>July 10, 2023</div>
-                                <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Added to New Laptop Fund</div>
-                            </div>
-                            <div style="font-weight: 600; color: var(--success);">+₦10,000</div>
-                        </div>
-                        <div class="contribution-item">
-                            <div>
-                                <div>July 5, 2023</div>
-                                <div style="font-size: 12px; color: rgba(255,255,255,0.6);">Monthly Savings</div>
-                            </div>
-                            <div style="font-weight: 600; color: var(--success);">+₦15,000</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Analytics Card -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <div class="card-title">Savings Analytics</div>
-                        <div class="card-icon">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                    </div>
-                    <div class="tabs">
-                        <div class="tab active">Weekly</div>
-                        <div class="tab">Monthly</div>
-                        <div class="tab">Yearly</div>
-                    </div>
-                    <div class="chart-container">
-                        <!-- Chart would be implemented with a library like Chart.js in a real app -->
-                        <div style="display: flex; align-items: flex-end; justify-content: space-between; height: 100%; padding: 0 10px;">
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 30px; background: linear-gradient(to top, var(--primary), var(--primary-light)); height: 40%; border-radius: 5px 5px 0 0;"></div>
-                                <div style="margin-top: 5px; font-size: 12px;">Mon</div>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 30px; background: linear-gradient(to top, var(--primary), var(--primary-light)); height: 60%; border-radius: 5px 5px 0 0;"></div>
-                                <div style="margin-top: 5px; font-size: 12px;">Tue</div>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 30px; background: linear-gradient(to top, var(--primary), var(--primary-light)); height: 80%; border-radius: 5px 5px 0 0;"></div>
-                                <div style="margin-top: 5px; font-size: 12px;">Wed</div>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 30px; background: linear-gradient(to top, var(--primary), var(--primary-light)); height: 100%; border-radius: 5px 5px 0 0;"></div>
-                                <div style="margin-top: 5px; font-size: 12px;">Thu</div>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 30px; background: linear-gradient(to top, var(--primary), var(--primary-light)); height: 70%; border-radius: 5px 5px 0 0;"></div>
-                                <div style="margin-top: 5px; font-size: 12px;">Fri</div>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 30px; background: linear-gradient(to top, var(--primary), var(--primary-light)); height: 50%; border-radius: 5px 5px 0 0;"></div>
-                                <div style="margin-top: 5px; font-size: 12px;">Sat</div>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 30px; background: linear-gradient(to top, var(--primary), var(--primary-light)); height: 30%; border-radius: 5px 5px 0 0;"></div>
-                                <div style="margin-top: 5px; font-size: 12px;">Sun</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <div class="card-title">Quick Actions</div>
-                        <div class="card-icon">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px;">
-                        <button class="btn btn-success">
-                            <i class="fas fa-share-alt"></i>
-                            Share
-                        </button>
-                        <button class="btn btn-secondary">
-                            <i class="fas fa-download"></i>
-                            Export
-                        </button>
-                        <button class="btn btn-secondary">
-                            <i class="fas fa-bell"></i>
-                            Reminders
-                        </button>
-                        <button class="btn btn-danger">
-                            <i class="fas fa-lock"></i>
-                            Lock Box
-                        </button>
-                    </div>
-                </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="goal-progress"></div>
             </div>
-        </div>
 
-        <!-- Footer -->
+            <div class="timer-display" id="timer-display"></div>
+
+            <div class="input-section">
+                <input type="number" id="daily-input" placeholder="Enter amount to add...">
+                <button id="add-btn">Add to Box</button>
+            </div>
+
+            <div class="contributions-section">
+                <h2>Daily Contributions</h2>
+                <ul id="contributions-list"></ul>
+            </div>
+            
+            <div class="challenge-section">
+                <h3>Savings Challenge</h3>
+                <button id="create-challenge-btn">Create & Share Challenge</button>
+            </div>
+
+            <div class="actions-section">
+                <select id="currency-select">
+                    <option value="$">US Dollar ($)</option>
+                    <option value="€">Euro (€)</option>
+                    <option value="¥">Japanese Yen (¥)</option>
+                    <option value="£">British Pound (£)</option>
+                    <option value="₦" selected>Nigerian Naira (₦)</option>
+                </select>
+                <button id="set-goal-btn">Set Goal</button>
+                <button class="set-duration-btn">Set Duration</button>
+                <button id="break-box-btn" class="break-btn">Break the Box</button>
+            </div>
+            
+            <div class="social-share">
+                <div class="share-btn" id="share-twitter">Twitter</div>
+                <div class="share-btn" id="share-facebook">Facebook</div>
+                <div class="share-btn" id="share-whatsapp">WhatsApp</div>
+            </div>
+            
+            <div class="premium-section">
+                <h3>Upgrade to Premium</h3>
+                <ul class="premium-features">
+                    <li>Multiple savings goals</li>
+                    <li>Advanced analytics & charts</li>
+                    <li>Export data to Excel/PDF</li>
+                    <li>Customizable reminders</li>
+                    <li>Priority support</li>
+                </ul>
+                <button id="upgrade-btn">Upgrade Now - Only ₦500/month</button>
+            </div>
+        </main>
+
         <footer>
-            <p>&copy; 2023 SaveBox Pro. All rights reserved. | Your financial future starts today.</p>
+            <p>&copy; 2024 Advanced Save Box</p>
         </footer>
     </div>
-
+    
+    <!-- Modal for challenge creation -->
+    <div class="modal" id="challenge-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Your Savings Challenge</h2>
+            <p>Share your progress and challenge friends!</p>
+            <canvas id="challenge-canvas" width="500" height="300"></canvas>
+            <img id="challenge-image" alt="Savings Challenge">
+            <button id="download-challenge-btn">Download Image</button>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    
     <script>
-        // Simple animations and interactions
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate progress bars on load
-            const progressBars = document.querySelectorAll('.progress-fill');
-            progressBars.forEach(bar => {
-                const width = bar.style.width;
-                bar.style.width = '0%';
-                setTimeout(() => {
-                    bar.style.width = width;
-                }, 500);
-            });
+        const saveBoxApp = {
+            // Select all necessary DOM elements
+            totalAmountEl: document.getElementById('total-amount'),
+            goalAmountEl: document.getElementById('goal-amount'),
+            dailyInputEl: document.getElementById('daily-input'),
+            addBtn: document.getElementById('add-btn'),
+            setGoalBtn: document.getElementById('set-goal-btn'),
+            setDurationBtn: document.querySelector('.set-duration-btn'),
+            breakBoxBtn: document.getElementById('break-box-btn'),
+            contributionsList: document.getElementById('contributions-list'),
+            currencySelect: document.getElementById('currency-select'),
+            timerDisplay: document.getElementById('timer-display'),
+            confettiCanvas: document.getElementById('confetti-canvas'),
+            myConfetti: null,
+            challengeModal: document.getElementById('challenge-modal'),
+            closeModalBtn: document.querySelector('.close-modal'),
+            createChallengeBtn: document.getElementById('create-challenge-btn'),
+            challengeCanvas: document.getElementById('challenge-canvas'),
+            challengeImage: document.getElementById('challenge-image'),
+            downloadChallengeBtn: document.getElementById('download-challenge-btn'),
+            upgradeBtn: document.getElementById('upgrade-btn'),
+            premiumBadge: document.getElementById('premium-badge'),
+            goalProgress: document.getElementById('goal-progress'),
+            shareTwitter: document.getElementById('share-twitter'),
+            shareFacebook: document.getElementById('share-facebook'),
+            shareWhatsapp: document.getElementById('share-whatsapp'),
 
-            // Tab functionality
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
+            // Initialize application state
+            state: {
+                total: 0,
+                goal: null,
+                contributions: [],
+                currency: '₦',
+                breakTime: null,
+                timerInterval: null,
+                goalMetPreviously: false,
+                isPremium: false,
+                challenges: []
+            },
+            
+            // Unique user ID to separate data in local storage
+            userId: null,
 
-            // Add contribution animation
-            const addButton = document.querySelector('.btn-primary');
-            addButton.addEventListener('click', function() {
-                this.innerHTML = '<i class="fas fa-check"></i> Added!';
-                this.style.background = 'linear-gradient(135deg, var(--success), #2ec4b6)';
+            // Initialize the app when the page loads
+            init() {
+                this.ensureUserId();
+                this.loadState();
+                this.updateUI();
+                this.addEventListeners();
+                this.checkTimer();
                 
-                setTimeout(() => {
-                    this.innerHTML = '<i class="fas fa-plus"></i> Add';
-                    this.style.background = 'linear-gradient(135deg, var(--primary), var(--primary-light))';
-                }, 2000);
-            });
-        });
+                // Initialize confetti instance
+                this.myConfetti = confetti.create(this.confettiCanvas, {
+                    resize: true,
+                    useWorker: true
+                });
+            },
+            
+            // New function to trigger confetti
+            triggerConfetti() {
+                this.myConfetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            },
+
+            // Create or retrieve a unique user ID
+            ensureUserId() {
+                let id = localStorage.getItem('saveBoxUserId');
+                if (!id) {
+                    id = 'user-' + Math.random().toString(36).substring(2, 15);
+                    localStorage.setItem('saveBoxUserId', id);
+                }
+                this.userId = id;
+            },
+
+            // Load state from local storage based on the user ID
+            loadState() {
+                const storedState = localStorage.getItem(`saveBoxState_${this.userId}`);
+                if (storedState) {
+                    this.state = JSON.parse(storedState);
+                }
+            },
+
+            // Save state to local storage based on the user ID
+            saveState() {
+                localStorage.setItem(`saveBoxState_${this.userId}`, JSON.stringify(this.state));
+            },
+
+            // Update the UI with the current state
+            updateUI() {
+                const currency = this.state.currency;
+
+                // Update total amount display
+                this.totalAmountEl.textContent = `${currency}${this.state.total.toFixed(2)}`;
+                
+                // Update goal display
+                if (this.state.goal) {
+                    this.goalAmountEl.textContent = `${currency}${this.state.goal.toFixed(2)}`;
+                    
+                    // Update progress bar
+                    const progressPercent = Math.min(100, (this.state.total / this.state.goal) * 100);
+                    this.goalProgress.style.width = `${progressPercent}%`;
+                    
+                    this.checkGoalCompletion();
+                } else {
+                    this.goalAmountEl.textContent = 'No Goal Set';
+                    this.goalProgress.style.width = '0%';
+                }
+
+                // Set currency selector
+                this.currencySelect.value = currency;
+
+                // Render the list of contributions
+                this.contributionsList.innerHTML = '';
+                this.state.contributions.forEach(contribution => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${contribution.date}</span><span>${currency}${contribution.amount.toFixed(2)}</span>`;
+                    this.contributionsList.appendChild(li);
+                });
+                
+                // Update premium status
+                if (this.state.isPremium) {
+                    this.premiumBadge.style.display = 'inline-block';
+                } else {
+                    this.premiumBadge.style.display = 'none';
+                }
+            },
+            
+            // Check if the goal is met and animate
+            checkGoalCompletion() {
+                const isGoalMet = this.state.goal && this.state.total >= this.state.goal;
+
+                if (isGoalMet) {
+                    this.goalAmountEl.style.color = '#fff';
+                    this.totalAmountEl.style.color = '#fff';
+                    this.totalAmountEl.style.animation = 'glow 1s infinite alternate';
+                    
+                    // Trigger confetti when goal is first met
+                    if (!this.state.goalMetPreviously) {
+                        this.triggerConfetti();
+                        this.state.goalMetPreviously = true; // Prevents re-firing on every UI update
+                        this.saveState();
+                    }
+                } else {
+                    this.goalAmountEl.style.color = '#4CAF50';
+                    this.totalAmountEl.style.color = '#4CAF50';
+                    this.totalAmountEl.style.animation = 'none';
+                    this.state.goalMetPreviously = false; // Reset when goal is no longer met
+                    this.saveState();
+                }
+            },
+
+            // Timer functionality
+            checkTimer() {
+                if (this.state.breakTime) {
+                    // Clear any existing timer to prevent duplicates
+                    clearInterval(this.state.timerInterval);
+                    
+                    this.state.timerInterval = setInterval(() => {
+                        const now = new Date().getTime();
+                        const distance = this.state.breakTime - now;
+
+                        if (distance < 0) {
+                            clearInterval(this.state.timerInterval);
+                            this.timerDisplay.textContent = 'Time is up! Box broken.';
+                            this.breakBox();
+                            return;
+                        }
+
+                        // Calculate time remaining
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        this.timerDisplay.textContent = `Breaks in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+                    }, 1000);
+                } else {
+                    this.timerDisplay.textContent = '';
+                }
+            },
+
+            // Add all event listeners
+            addEventListeners() {
+                this.addBtn.addEventListener('click', () => this.addDailyAmount());
+                this.setGoalBtn.addEventListener('click', () => this.setGoal());
+                this.setDurationBtn.addEventListener('click', () => this.setDuration());
+                this.breakBoxBtn.addEventListener('click', () => this.breakBox());
+                this.dailyInputEl.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        this.addDailyAmount();
+                    }
+                });
+                this.currencySelect.addEventListener('change', (e) => this.changeCurrency(e.target.value));
+                
+                // New event listeners for added features
+                this.createChallengeBtn.addEventListener('click', () => this.createChallenge());
+                this.closeModalBtn.addEventListener('click', () => this.challengeModal.style.display = 'none');
+                this.downloadChallengeBtn.addEventListener('click', () => this.downloadChallenge());
+                this.upgradeBtn.addEventListener('click', () => this.upgradeToPremium());
+                
+                // Social sharing
+                this.shareTwitter.addEventListener('click', () => this.shareOnTwitter());
+                this.shareFacebook.addEventListener('click', () => this.shareOnFacebook());
+                this.shareWhatsapp.addEventListener('click', () => this.shareOnWhatsapp());
+                
+                // Close modal when clicking outside
+                window.addEventListener('click', (e) => {
+                    if (e.target === this.challengeModal) {
+                        this.challengeModal.style.display = 'none';
+                    }
+                });
+            },
+
+            // Function to add a daily amount to the total
+            addDailyAmount() {
+                const amount = parseFloat(this.dailyInputEl.value);
+                if (amount > 0) {
+                    // Update state
+                    this.state.total += amount;
+                    this.state.contributions.unshift({
+                        date: new Date().toLocaleDateString(),
+                        amount: amount
+                    });
+
+                    // Save and update UI
+                    this.saveState();
+                    this.updateUI();
+
+                    // Clear input and add animation
+                    this.dailyInputEl.value = '';
+                    this.addBtn.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        this.addBtn.style.transform = 'scale(1)';
+                    }, 200);
+                } else {
+                    alert('Please enter a valid amount.');
+                }
+            },
+
+            // Function to set a new goal
+            setGoal() {
+                const newGoal = parseFloat(prompt('Enter your savings goal:'));
+                if (newGoal > 0) {
+                    this.state.goal = newGoal;
+                    this.saveState();
+                    this.updateUI();
+                } else {
+                    alert('Please enter a valid goal amount.');
+                }
+            },
+            
+            // Function to set a duration for the box
+            setDuration() {
+                const durationDays = parseInt(prompt('Enter duration in days:'), 10);
+                if (durationDays > 0) {
+                    const now = new Date();
+                    now.setDate(now.getDate() + durationDays);
+                    this.state.breakTime = now.getTime();
+                    this.saveState();
+                    this.checkTimer();
+                    alert(`Save box will automatically break in ${durationDays} days.`);
+                } else {
+                    alert('Please enter a valid number of days.');
+                }
+            },
+
+            // Function to change currency
+            changeCurrency(newCurrency) {
+                this.state.currency = newCurrency;
+                this.saveState();
+                this.updateUI();
+            },
+
+            // Function to "break" the box and reset
+            breakBox() {
+                clearInterval(this.state.timerInterval);
+                const confirmation = confirm(`Are you sure you want to break the box? Your total is ${this.state.currency}${this.state.total.toFixed(2)}.`);
+                if (confirmation) {
+                    // Trigger confetti animation before resetting
+                    this.triggerConfetti();
+
+                    // Reset state
+                    this.state.total = 0;
+                    this.state.goal = null;
+                    this.state.contributions = [];
+                    this.state.breakTime = null;
+                    this.state.goalMetPreviously = false;
+                    
+                    // Save and update UI
+                    this.saveState();
+                    this.updateUI();
+                    this.checkTimer();
+
+                    alert('Your save box has been broken! All data has been reset.');
+                }
+            },
+            
+            // Create a savings challenge image
+            createChallenge() {
+                this.challengeModal.style.display = 'flex';
+                
+                const canvas = this.challengeCanvas;
+                const ctx = canvas.getContext('2d');
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw background
+                ctx.fillStyle = '#1f2a40';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw gradient header
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+                gradient.addColorStop(0, '#364968');
+                gradient.addColorStop(1, '#1f2a40');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, 80);
+                
+                // Draw title
+                ctx.fillStyle = '#4CAF50';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Savings Challenge', canvas.width / 2, 40);
+                
+                // Draw user's savings information
+                ctx.fillStyle = '#f0f4f8';
+                ctx.font = '18px Arial';
+                ctx.fillText(`Total Saved: ${this.state.currency}${this.state.total.toFixed(2)}`, canvas.width / 2, 120);
+                
+                if (this.state.goal) {
+                    ctx.fillText(`Goal: ${this.state.currency}${this.state.goal.toFixed(2)}`, canvas.width / 2, 160);
+                    
+                    // Draw progress bar
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.fillRect(100, 190, 300, 20);
+                    
+                    const progressPercent = Math.min(1, this.state.total / this.state.goal);
+                    ctx.fillStyle = '#4CAF50';
+                    ctx.fillRect(100, 190, 300 * progressPercent, 20);
+                    
+                    ctx.fillStyle = '#f0f4f8';
+                    ctx.font = '14px Arial';
+                    ctx.fillText(`${Math.round(progressPercent * 100)}%`, canvas.width / 2, 205);
+                }
+                
+                // Draw motivational message
+                ctx.font = 'italic 16px Arial';
+                ctx.fillStyle = '#f39c12';
+                ctx.fillText('Keep saving for your future!', canvas.width / 2, 250);
+                
+                // Draw website URL
+                ctx.font = '12px Arial';
+                ctx.fillStyle = '#95a5a6';
+                ctx.fillText('campusboost.netlify.app/save', canvas.width / 2, 290);
+                
+                // Convert canvas to image
+                this.challengeImage.src = canvas.toDataURL('image/png');
+                this.challengeImage.style.display = 'block';
+                this.downloadChallengeBtn.style.display = 'block';
+            },
+            
+            // Download the challenge as an image
+            downloadChallenge() {
+                const link = document.createElement('a');
+                link.download = 'savings-challenge.png';
+                link.href = this.challengeCanvas.toDataURL('image/png');
+                link.click();
+            },
+            
+            // Upgrade to premium using Flutterwave
+            upgradeToPremium() {
+                // Check if already premium
+                if (this.state.isPremium) {
+                    alert('You are already a premium user!');
+                    return;
+                }
+                
+                // Flutterwave payment integration
+                const paymentData = {
+                    public_key: 'FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X',
+                    tx_ref: 'premium-' + Date.now(),
+                    amount: 500,
+                    currency: 'NGN',
+                    payment_options: 'card, banktransfer, ussd',
+                    customer: {
+                        email: 'user@example.com', // In a real app, you'd collect this
+                        name: 'Save Box User'
+                    },
+                    customizations: {
+                        title: 'Save Box Premium',
+                        description: 'Monthly subscription',
+                        logo: 'https://example.com/logo.png' // Your app logo
+                    },
+                    callback: (response) => {
+                        // Handle successful payment
+                        if (response.status === 'successful') {
+                            this.state.isPremium = true;
+                            this.saveState();
+                            this.updateUI();
+                            alert('Thank you for upgrading to Premium!');
+                        } else {
+                            alert('Payment failed. Please try again.');
+                        }
+                    },
+                    onclose: () => {
+                        // Handle when modal is closed
+                        console.log('Payment modal closed');
+                    }
+                };
+                
+                // Initialize Flutterwave payment
+                if (typeof FlutterwaveCheckout !== 'undefined') {
+                    FlutterwaveCheckout(paymentData);
+                } else {
+                    alert('Payment service temporarily unavailable. Please try again later.');
+                }
+            },
+            
+            // Social sharing functions
+            shareOnTwitter() {
+                const text = `I've saved ${this.state.currency}${this.state.total.toFixed(2)} with Save Box! Check out this awesome app.`;
+                const url = 'https://campusboost.netlify.app/save';
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+            },
+            
+            shareOnFacebook() {
+                const url = 'https://campusboost.netlify.app/save';
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+            },
+            
+            shareOnWhatsapp() {
+                const text = `I've saved ${this.state.currency}${this.state.total.toFixed(2)} with Save Box! Check out this awesome app: https://campusboost.netlify.app/save`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            }
+        };
+
+        // Start the application when the DOM is ready
+        document.addEventListener('DOMContentLoaded', () => saveBoxApp.init());
+        
+        // Load Flutterwave script dynamically
+        function loadFlutterwave() {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.flutterwave.com/v3.js';
+            document.head.appendChild(script);
+        }
+        
+        // Load the script
+        loadFlutterwave();
     </script>
 </body>
 </html>
