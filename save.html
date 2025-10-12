@@ -140,7 +140,7 @@
             }
         }
 
-        input[type="number"] {
+        input[type="number"], input[type="text"], input[type="date"] {
             padding: 12px;
             border-radius: 8px;
             border: none;
@@ -151,7 +151,7 @@
             width: 100%;
         }
 
-        input[type="number"]:focus {
+        input[type="number"]:focus, input[type="text"]:focus, input[type="date"]:focus {
             outline: none;
             box-shadow: 0 0 10px #4CAF50;
         }
@@ -462,10 +462,198 @@
             pointer-events: none;
             z-index: 1000;
         }
+        
+        /* Premium-only sections */
+        .premium-only {
+            display: none;
+        }
+        
+        .premium-active .premium-only {
+            display: block;
+        }
+        
+        /* Goals section */
+        .goals-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #34495e;
+            border-radius: 10px;
+        }
+        
+        .goals-section h3 {
+            margin-bottom: 12px;
+            color: #9b59b6;
+        }
+        
+        .goals-list {
+            list-style-type: none;
+            margin-bottom: 10px;
+        }
+        
+        .goals-list li {
+            background-color: #2c3e50;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .goal-progress {
+            height: 5px;
+            background-color: #2c3e50;
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .goal-progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Analytics section */
+        .analytics-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #34495e;
+            border-radius: 10px;
+        }
+        
+        .analytics-section h3 {
+            margin-bottom: 12px;
+            color: #9b59b6;
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin-top: 15px;
+            position: relative;
+        }
+        
+        /* Reminders section */
+        .reminders-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #34495e;
+            border-radius: 10px;
+        }
+        
+        .reminders-section h3 {
+            margin-bottom: 12px;
+            color: #9b59b6;
+        }
+        
+        .reminder-item {
+            background-color: #2c3e50;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Export section */
+        .export-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #34495e;
+            border-radius: 10px;
+        }
+        
+        .export-section h3 {
+            margin-bottom: 12px;
+            color: #9b59b6;
+        }
+        
+        .export-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        /* AI Advisor */
+        .ai-advisor-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #34495e;
+            border-radius: 10px;
+        }
+        
+        .ai-advisor-section h3 {
+            margin-bottom: 12px;
+            color: #9b59b6;
+        }
+        
+        .ai-message {
+            background-color: #2c3e50;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        /* Dark mode toggle */
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: #f0f4f8;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        
+        /* Achievement badges */
+        .achievements-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #34495e;
+            border-radius: 10px;
+        }
+        
+        .achievements-section h3 {
+            margin-bottom: 12px;
+            color: #9b59b6;
+        }
+        
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .achievement {
+            background-color: #2c3e50;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .achievement:hover {
+            transform: scale(1.05);
+        }
+        
+        .achievement.locked {
+            opacity: 0.5;
+        }
+        
+        .achievement-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
     <canvas id="confetti-canvas"></canvas>
+    <button class="dark-mode-toggle" id="dark-mode-toggle">🌙</button>
 
     <div class="save-box-container">
         <header>
@@ -500,6 +688,52 @@
                 <ul id="contributions-list"></ul>
             </div>
             
+            <!-- Premium-only sections -->
+            <div class="premium-only">
+                <div class="goals-section">
+                    <h3>Multiple Savings Goals</h3>
+                    <ul class="goals-list" id="goals-list"></ul>
+                    <button id="add-goal-btn">Add New Goal</button>
+                </div>
+                
+                <div class="analytics-section">
+                    <h3>Savings Analytics</h3>
+                    <div class="chart-container" id="analytics-chart">
+                        <canvas id="savings-chart"></canvas>
+                    </div>
+                    <button id="view-analytics-btn">View Detailed Analytics</button>
+                </div>
+                
+                <div class="reminders-section">
+                    <h3>Smart Reminders</h3>
+                    <div id="reminders-list"></div>
+                    <button id="add-reminder-btn">Add Reminder</button>
+                </div>
+                
+                <div class="export-section">
+                    <h3>Export Data</h3>
+                    <div class="export-options">
+                        <button id="export-excel-btn">Export to Excel</button>
+                        <button id="export-pdf-btn">Export to PDF</button>
+                    </div>
+                </div>
+                
+                <div class="ai-advisor-section">
+                    <h3>AI Savings Advisor</h3>
+                    <div class="ai-message" id="ai-message">
+                        <p>Hi! I'm your AI savings advisor. I'll help you optimize your savings strategy based on your financial goals.</p>
+                    </div>
+                    <button id="ask-ai-btn">Ask for Advice</button>
+                </div>
+                
+                <div class="achievements-section">
+                    <h3>Achievements</h3>
+                    <div class="achievements-grid" id="achievements-grid">
+                        <!-- Achievements will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
             <div class="challenge-section">
                 <h3>Savings Challenge</h3>
                 <button id="create-challenge-btn">Create & Share Challenge</button>
@@ -530,10 +764,13 @@
                     <li>Multiple savings goals</li>
                     <li>Advanced analytics & charts</li>
                     <li>Export data to Excel/PDF</li>
-                    <li>Customizable reminders</li>
+                    <li>Smart reminders & notifications</li>
+                    <li>AI savings advisor</li>
+                    <li>Achievement badges</li>
+                    <li>Dark mode</li>
                     <li>Priority support</li>
                 </ul>
-                <button id="upgrade-btn">Upgrade Now - Only ₦500/month</button>
+                <button id="upgrade-btn">Upgrade Now - Only ₦1000/month</button>
             </div>
         </main>
 
@@ -554,7 +791,45 @@
         </div>
     </div>
     
+    <!-- Modal for adding goals -->
+    <div class="modal" id="goal-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Add New Savings Goal</h2>
+            <input type="text" id="goal-name" placeholder="Goal name (e.g., New Laptop)">
+            <input type="number" id="goal-target" placeholder="Target amount">
+            <input type="date" id="goal-deadline" placeholder="Deadline">
+            <button id="save-goal-btn">Save Goal</button>
+        </div>
+    </div>
+    
+    <!-- Modal for analytics -->
+    <div class="modal" id="analytics-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Detailed Savings Analytics</h2>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="detailed-chart"></canvas>
+            </div>
+            <div id="analytics-insights"></div>
+        </div>
+    </div>
+    
+    <!-- Modal for AI advisor -->
+    <div class="modal" id="ai-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>AI Savings Advisor</h2>
+            <div class="ai-message" id="ai-response">
+                <p>Analyzing your savings patterns...</p>
+            </div>
+            <input type="text" id="ai-question" placeholder="Ask a question about your savings...">
+            <button id="ask-ai-question-btn">Ask</button>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
         const saveBoxApp = {
@@ -572,7 +847,7 @@
             confettiCanvas: document.getElementById('confetti-canvas'),
             myConfetti: null,
             challengeModal: document.getElementById('challenge-modal'),
-            closeModalBtn: document.querySelector('.close-modal'),
+            closeModalBtn: document.querySelectorAll('.close-modal'),
             createChallengeBtn: document.getElementById('create-challenge-btn'),
             challengeCanvas: document.getElementById('challenge-canvas'),
             challengeImage: document.getElementById('challenge-image'),
@@ -583,6 +858,27 @@
             shareTwitter: document.getElementById('share-twitter'),
             shareFacebook: document.getElementById('share-facebook'),
             shareWhatsapp: document.getElementById('share-whatsapp'),
+            darkModeToggle: document.getElementById('dark-mode-toggle'),
+            goalsList: document.getElementById('goals-list'),
+            addGoalBtn: document.getElementById('add-goal-btn'),
+            goalModal: document.getElementById('goal-modal'),
+            saveGoalBtn: document.getElementById('save-goal-btn'),
+            analyticsChart: document.getElementById('savings-chart'),
+            viewAnalyticsBtn: document.getElementById('view-analytics-btn'),
+            analyticsModal: document.getElementById('analytics-modal'),
+            detailedChart: document.getElementById('detailed-chart'),
+            analyticsInsights: document.getElementById('analytics-insights'),
+            remindersList: document.getElementById('reminders-list'),
+            addReminderBtn: document.getElementById('add-reminder-btn'),
+            exportExcelBtn: document.getElementById('export-excel-btn'),
+            exportPdfBtn: document.getElementById('export-pdf-btn'),
+            aiMessage: document.getElementById('ai-message'),
+            askAiBtn: document.getElementById('ask-ai-btn'),
+            aiModal: document.getElementById('ai-modal'),
+            aiResponse: document.getElementById('ai-response'),
+            askAiQuestionBtn: document.getElementById('ask-ai-question-btn'),
+            aiQuestion: document.getElementById('ai-question'),
+            achievementsGrid: document.getElementById('achievements-grid'),
 
             // Initialize application state
             state: {
@@ -594,7 +890,16 @@
                 timerInterval: null,
                 goalMetPreviously: false,
                 isPremium: false,
-                challenges: []
+                challenges: [],
+                goals: [],
+                analytics: {
+                    dailyAverage: 0,
+                    monthlyProjection: 0,
+                    completionRate: 0
+                },
+                reminders: [],
+                achievements: [],
+                darkMode: false
             },
             
             // Unique user ID to separate data in local storage
@@ -607,12 +912,19 @@
                 this.updateUI();
                 this.addEventListeners();
                 this.checkTimer();
+                this.initCharts();
+                this.updateAchievements();
                 
                 // Initialize confetti instance
                 this.myConfetti = confetti.create(this.confettiCanvas, {
                     resize: true,
                     useWorker: true
                 });
+                
+                // Apply dark mode if enabled
+                if (this.state.darkMode) {
+                    this.toggleDarkMode();
+                }
             },
             
             // New function to trigger confetti
@@ -682,9 +994,265 @@
                 // Update premium status
                 if (this.state.isPremium) {
                     this.premiumBadge.style.display = 'inline-block';
+                    document.querySelector('.save-box-container').classList.add('premium-active');
                 } else {
                     this.premiumBadge.style.display = 'none';
+                    document.querySelector('.save-box-container').classList.remove('premium-active');
                 }
+                
+                // Update goals list if premium
+                if (this.state.isPremium) {
+                    this.updateGoalsList();
+                    this.updateRemindersList();
+                    this.updateAnalytics();
+                }
+            },
+            
+            // Update goals list
+            updateGoalsList() {
+                this.goalsList.innerHTML = '';
+                this.state.goals.forEach((goal, index) => {
+                    const li = document.createElement('li');
+                    const progressPercent = Math.min(100, (goal.currentAmount / goal.target) * 100);
+                    
+                    li.innerHTML = `
+                        <div>
+                            <strong>${goal.name}</strong>
+                            <div>${this.state.currency}${goal.currentAmount.toFixed(2)} / ${this.state.currency}${goal.target.toFixed(2)}</div>
+                            <div class="goal-progress">
+                                <div class="goal-progress-bar" style="width: ${progressPercent}%"></div>
+                            </div>
+                        </div>
+                        <button class="add-to-goal-btn" data-index="${index}">Add</button>
+                    `;
+                    this.goalsList.appendChild(li);
+                });
+                
+                // Add event listeners to "Add" buttons
+                document.querySelectorAll('.add-to-goal-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        this.addToGoal(index);
+                    });
+                });
+            },
+            
+            // Update reminders list
+            updateRemindersList() {
+                this.remindersList.innerHTML = '';
+                this.state.reminders.forEach((reminder, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'reminder-item';
+                    div.innerHTML = `
+                        <div>
+                            <strong>${reminder.title}</strong>
+                            <div>${reminder.date} - ${reminder.time}</div>
+                        </div>
+                        <button class="delete-reminder-btn" data-index="${index}">Delete</button>
+                    `;
+                    this.remindersList.appendChild(div);
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-reminder-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-index');
+                        this.deleteReminder(index);
+                    });
+                });
+            },
+            
+            // Update analytics
+            updateAnalytics() {
+                // Calculate analytics
+                if (this.state.contributions.length > 0) {
+                    const totalDays = Math.max(1, this.state.contributions.length);
+                    const totalAmount = this.state.contributions.reduce((sum, contribution) => sum + contribution.amount, 0);
+                    
+                    this.state.analytics.dailyAverage = totalAmount / totalDays;
+                    this.state.analytics.monthlyProjection = this.state.analytics.dailyAverage * 30;
+                    
+                    if (this.state.goal) {
+                        this.state.analytics.completionRate = (this.state.total / this.state.goal) * 100;
+                    }
+                }
+                
+                // Update charts
+                this.updateCharts();
+            },
+            
+            // Initialize charts
+            initCharts() {
+                // Main savings chart
+                this.savingsChart = new Chart(this.analyticsChart, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Savings Over Time',
+                            data: [],
+                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#f0f4f8'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#f0f4f8'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#f0f4f8'
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Detailed chart for modal
+                this.detailedSavingsChart = new Chart(this.detailedChart, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Daily Contributions',
+                            data: [],
+                            backgroundColor: '#4CAF50'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#f0f4f8'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#f0f4f8'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#f0f4f8'
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            
+            // Update charts with current data
+            updateCharts() {
+                if (this.state.contributions.length === 0) return;
+                
+                // Prepare data for charts
+                const labels = [];
+                const data = [];
+                let cumulative = 0;
+                
+                this.state.contributions.forEach(contribution => {
+                    cumulative += contribution.amount;
+                    labels.push(contribution.date);
+                    data.push(cumulative);
+                });
+                
+                // Update main chart
+                this.savingsChart.data.labels = labels;
+                this.savingsChart.data.datasets[0].data = data;
+                this.savingsChart.update();
+                
+                // Update detailed chart
+                const dailyData = this.state.contributions.map(c => c.amount);
+                const dailyLabels = this.state.contributions.map(c => c.date);
+                
+                this.detailedSavingsChart.data.labels = dailyLabels;
+                this.detailedSavingsChart.data.datasets[0].data = dailyData;
+                this.detailedSavingsChart.update();
+                
+                // Update analytics insights
+                this.updateAnalyticsInsights();
+            },
+            
+            // Update analytics insights
+            updateAnalyticsInsights() {
+                if (!this.state.analytics.dailyAverage) return;
+                
+                const insights = `
+                    <h3>Savings Insights</h3>
+                    <p>Daily Average: ${this.state.currency}${this.state.analytics.dailyAverage.toFixed(2)}</p>
+                    <p>Monthly Projection: ${this.state.currency}${this.state.analytics.monthlyProjection.toFixed(2)}</p>
+                    ${this.state.goal ? `<p>Goal Completion: ${this.state.analytics.completionRate.toFixed(1)}%</p>` : ''}
+                    <p>Total Contributions: ${this.state.contributions.length}</p>
+                `;
+                
+                this.analyticsInsights.innerHTML = insights;
+            },
+            
+            // Update achievements
+            updateAchievements() {
+                const achievements = [
+                    { id: 'first_save', name: 'First Save', icon: '💰', description: 'Make your first contribution', unlocked: this.state.contributions.length > 0 },
+                    { id: 'goal_setter', name: 'Goal Setter', icon: '🎯', description: 'Set your first savings goal', unlocked: this.state.goal !== null },
+                    { id: 'consistent_saver', name: 'Consistent Saver', icon: '📈', description: 'Save for 7 consecutive days', unlocked: this.state.contributions.length >= 7 },
+                    { id: 'halfway_there', name: 'Halfway There', icon: '⏳', description: 'Reach 50% of your goal', unlocked: this.state.goal && this.state.total >= this.state.goal * 0.5 },
+                    { id: 'goal_achiever', name: 'Goal Achiever', icon: '🏆', description: 'Reach your savings goal', unlocked: this.state.goal && this.state.total >= this.state.goal },
+                    { id: 'premium_member', name: 'Premium Member', icon: '⭐', description: 'Upgrade to Premium', unlocked: this.state.isPremium }
+                ];
+                
+                this.state.achievements = achievements;
+                this.renderAchievements();
+            },
+            
+            // Render achievements
+            renderAchievements() {
+                this.achievementsGrid.innerHTML = '';
+                
+                this.state.achievements.forEach(achievement => {
+                    const div = document.createElement('div');
+                    div.className = `achievement ${achievement.unlocked ? '' : 'locked'}`;
+                    div.innerHTML = `
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div class="achievement-name">${achievement.name}</div>
+                    `;
+                    
+                    if (!achievement.unlocked) {
+                        div.title = achievement.description;
+                    }
+                    
+                    this.achievementsGrid.appendChild(div);
+                });
             },
             
             // Check if the goal is met and animate
@@ -701,6 +1269,9 @@
                         this.triggerConfetti();
                         this.state.goalMetPreviously = true; // Prevents re-firing on every UI update
                         this.saveState();
+                        
+                        // Unlock achievement if applicable
+                        this.unlockAchievement('goal_achiever');
                     }
                 } else {
                     this.goalAmountEl.style.color = '#4CAF50';
@@ -708,6 +1279,19 @@
                     this.totalAmountEl.style.animation = 'none';
                     this.state.goalMetPreviously = false; // Reset when goal is no longer met
                     this.saveState();
+                }
+            },
+            
+            // Unlock achievement
+            unlockAchievement(achievementId) {
+                const achievement = this.state.achievements.find(a => a.id === achievementId);
+                if (achievement && !achievement.unlocked) {
+                    achievement.unlocked = true;
+                    this.saveState();
+                    this.renderAchievements();
+                    
+                    // Show notification
+                    alert(`Achievement Unlocked: ${achievement.name}! ${achievement.description}`);
                 }
             },
 
@@ -756,7 +1340,13 @@
                 
                 // New event listeners for added features
                 this.createChallengeBtn.addEventListener('click', () => this.createChallenge());
-                this.closeModalBtn.addEventListener('click', () => this.challengeModal.style.display = 'none');
+                this.closeModalBtn.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.modal').forEach(modal => {
+                            modal.style.display = 'none';
+                        });
+                    });
+                });
                 this.downloadChallengeBtn.addEventListener('click', () => this.downloadChallenge());
                 this.upgradeBtn.addEventListener('click', () => this.upgradeToPremium());
                 
@@ -765,12 +1355,50 @@
                 this.shareFacebook.addEventListener('click', () => this.shareOnFacebook());
                 this.shareWhatsapp.addEventListener('click', () => this.shareOnWhatsapp());
                 
-                // Close modal when clicking outside
-                window.addEventListener('click', (e) => {
-                    if (e.target === this.challengeModal) {
-                        this.challengeModal.style.display = 'none';
+                // Premium features
+                this.addGoalBtn.addEventListener('click', () => this.goalModal.style.display = 'flex');
+                this.saveGoalBtn.addEventListener('click', () => this.saveGoal());
+                this.viewAnalyticsBtn.addEventListener('click', () => this.analyticsModal.style.display = 'flex');
+                this.addReminderBtn.addEventListener('click', () => this.addReminder());
+                this.exportExcelBtn.addEventListener('click', () => this.exportToExcel());
+                this.exportPdfBtn.addEventListener('click', () => this.exportToPdf());
+                this.askAiBtn.addEventListener('click', () => this.aiModal.style.display = 'flex');
+                this.askAiQuestionBtn.addEventListener('click', () => this.askAI());
+                this.aiQuestion.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        this.askAI();
                     }
                 });
+                
+                // Dark mode toggle
+                this.darkModeToggle.addEventListener('click', () => this.toggleDarkMode());
+                
+                // Close modal when clicking outside
+                window.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal')) {
+                        e.target.style.display = 'none';
+                    }
+                });
+            },
+            
+            // Toggle dark mode
+            toggleDarkMode() {
+                if (!this.state.isPremium) {
+                    alert('Dark mode is a Premium feature. Upgrade to access it!');
+                    return;
+                }
+                
+                this.state.darkMode = !this.state.darkMode;
+                
+                if (this.state.darkMode) {
+                    document.body.style.background = 'linear-gradient(135deg, #0d1424, #1a2438)';
+                    this.darkModeToggle.textContent = '☀️';
+                } else {
+                    document.body.style.background = 'linear-gradient(135deg, #1a2438, #2c3e50)';
+                    this.darkModeToggle.textContent = '🌙';
+                }
+                
+                this.saveState();
             },
 
             // Function to add a daily amount to the total
@@ -787,6 +1415,19 @@
                     // Save and update UI
                     this.saveState();
                     this.updateUI();
+                    
+                    // Unlock achievements if applicable
+                    if (this.state.contributions.length === 1) {
+                        this.unlockAchievement('first_save');
+                    }
+                    
+                    if (this.state.contributions.length === 7) {
+                        this.unlockAchievement('consistent_saver');
+                    }
+                    
+                    if (this.state.goal && this.state.total >= this.state.goal * 0.5) {
+                        this.unlockAchievement('halfway_there');
+                    }
 
                     // Clear input and add animation
                     this.dailyInputEl.value = '';
@@ -798,6 +1439,76 @@
                     alert('Please enter a valid amount.');
                 }
             },
+            
+            // Add amount to a specific goal
+            addToGoal(goalIndex) {
+                const amount = parseFloat(prompt('Enter amount to add to this goal:'));
+                if (amount > 0) {
+                    this.state.goals[goalIndex].currentAmount += amount;
+                    this.saveState();
+                    this.updateGoalsList();
+                }
+            },
+            
+            // Save a new goal
+            saveGoal() {
+                const name = document.getElementById('goal-name').value;
+                const target = parseFloat(document.getElementById('goal-target').value);
+                const deadline = document.getElementById('goal-deadline').value;
+                
+                if (name && target > 0 && deadline) {
+                    this.state.goals.push({
+                        name,
+                        target,
+                        currentAmount: 0,
+                        deadline
+                    });
+                    
+                    this.saveState();
+                    this.updateGoalsList();
+                    this.goalModal.style.display = 'none';
+                    
+                    // Clear form
+                    document.getElementById('goal-name').value = '';
+                    document.getElementById('goal-target').value = '';
+                    document.getElementById('goal-deadline').value = '';
+                    
+                    // Unlock achievement if applicable
+                    if (this.state.goals.length === 1) {
+                        this.unlockAchievement('goal_setter');
+                    }
+                } else {
+                    alert('Please fill in all fields with valid values.');
+                }
+            },
+            
+            // Add a reminder
+            addReminder() {
+                const title = prompt('Enter reminder title:');
+                const date = prompt('Enter date (YYYY-MM-DD):');
+                const time = prompt('Enter time (HH:MM):');
+                
+                if (title && date && time) {
+                    this.state.reminders.push({
+                        title,
+                        date,
+                        time
+                    });
+                    
+                    this.saveState();
+                    this.updateRemindersList();
+                    
+                    // Schedule notification (simulated)
+                    alert(`Reminder set for ${date} at ${time}`);
+                }
+            },
+            
+            // Delete a reminder
+            deleteReminder(index) {
+                this.state.reminders.splice(index, 1);
+                this.saveState();
+                this.updateRemindersList();
+            },
 
             // Function to set a new goal
             setGoal() {
@@ -806,6 +1517,9 @@
                     this.state.goal = newGoal;
                     this.saveState();
                     this.updateUI();
+                    
+                    // Unlock achievement if applicable
+                    this.unlockAchievement('goal_setter');
                 } else {
                     alert('Please enter a valid goal amount.');
                 }
@@ -929,6 +1643,70 @@
                 link.click();
             },
             
+            // Export to Excel
+            exportToExcel() {
+                if (!this.state.isPremium) {
+                    alert('Exporting data is a Premium feature. Upgrade to access it!');
+                    return;
+                }
+                
+                // Create CSV content
+                let csvContent = "Date,Amount\n";
+                this.state.contributions.forEach(contribution => {
+                    csvContent += `${contribution.date},${contribution.amount}\n`;
+                });
+                
+                // Create download link
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'savings-data.csv';
+                link.click();
+                
+                alert('Data exported to CSV file!');
+            },
+            
+            // Export to PDF
+            exportToPDF() {
+                if (!this.state.isPremium) {
+                    alert('Exporting data is a Premium feature. Upgrade to access it!');
+                    return;
+                }
+                
+                // In a real app, you would use a PDF library like jsPDF
+                // For this demo, we'll simulate the export
+                alert('PDF export feature would generate a detailed report with charts and insights. In a real implementation, this would use a library like jsPDF.');
+            },
+            
+            // Ask AI for savings advice
+            askAI() {
+                if (!this.state.isPremium) {
+                    alert('AI Savings Advisor is a Premium feature. Upgrade to access it!');
+                    return;
+                }
+                
+                const question = this.aiQuestion.value;
+                if (!question) {
+                    alert('Please enter a question.');
+                    return;
+                }
+                
+                // Simulate AI response (in a real app, this would connect to an AI service)
+                const responses = [
+                    "Based on your savings pattern, I recommend increasing your daily contributions by 10% to reach your goal faster.",
+                    "Consider setting up automatic transfers to make saving effortless and consistent.",
+                    "Your savings rate is good! To optimize further, try to reduce unnecessary expenses and redirect those funds to your savings.",
+                    "I notice you've been consistent with your savings. Great job! To accelerate progress, consider finding additional income sources.",
+                    "Based on your current trajectory, you'll reach your goal in approximately " + Math.ceil((this.state.goal - this.state.total) / this.state.analytics.dailyAverage) + " days."
+                ];
+                
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                
+                this.aiResponse.innerHTML = `<p><strong>You:</strong> ${question}</p><p><strong>AI Advisor:</strong> ${randomResponse}</p>`;
+                this.aiQuestion.value = '';
+            },
+            
             // Upgrade to premium using Flutterwave
             upgradeToPremium() {
                 // Check if already premium
@@ -941,7 +1719,7 @@
                 const paymentData = {
                     public_key: 'FLWPUBK-b144c0c07294bbc6f4b3ac884960f766-X',
                     tx_ref: 'premium-' + Date.now(),
-                    amount: 500,
+                    amount: 1000,
                     currency: 'NGN',
                     payment_options: 'card, banktransfer, ussd',
                     customer: {
@@ -959,7 +1737,8 @@
                             this.state.isPremium = true;
                             this.saveState();
                             this.updateUI();
-                            alert('Thank you for upgrading to Premium!');
+                            this.unlockAchievement('premium_member');
+                            alert('Thank you for upgrading to Premium! You now have access to all premium features.');
                         } else {
                             alert('Payment failed. Please try again.');
                         }
