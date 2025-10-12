@@ -5,214 +5,329 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Reviews Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
-   :root {
-  --bg: #212121;
-  --sidebar: #1A1D23;
-  --card: #1A1D23;
-  
-  --accent: #667eea;
-  --accent-secondary: #764ba2;
-  
-  --text: #ffffff;
-  --light-text: #000000;
-  --light-bg: #f8f9fa;
-  
-  --success: #2ecc71;
-  --danger: #e74c3c;
-  --warning: #f39c12;
-  --info: #3498db;
-  
-  --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --review-card-bg: #2a2a2a;
-}
+    :root {
+      --bg: #212121;
+      --sidebar: #1A1D23;
+      --card: #1A1D23;
+      
+      --accent: #667eea;
+      --accent-secondary: #764ba2;
+      
+      --text: #ffffff;
+      --light-text: #000000;
+      --light-bg: #f8f9fa;
+      
+      --success: #2ecc71;
+      --danger: #e74c3c;
+      --warning: #f39c12;
+      --info: #3498db;
+      
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --review-card-bg: #2a2a2a;
+    }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Outfit', sans-serif;
-}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Outfit', sans-serif;
+    }
 
-body {
-  background: var(--card);
-  color: var(--text);
-  padding: 20px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+    body {
+      background: var(--card);
+      color: var(--text);
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
 
-.container {
-  max-width: 800px;
-  margin: 20px auto;
-  background: var(--bg);
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: var(--card-shadow);
-  position: relative;
-}
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: var(--bg);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: var(--card-shadow);
+      position: relative;
+    }
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: var(--accent);
-}
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--accent);
+      font-size: 2.5rem;
+      font-weight: 700;
+    }
 
-form {
-  display: grid;
-  gap: 15px;
-  margin-bottom: 20px;
-}
+    form {
+      display: grid;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
 
-input,
-textarea,
-select {
-  padding: 12px;
-  background: var(--review-card-bg);
-  color: var(--text);
-  border: none;
-  border-radius: 10px;
-  resize: vertical;
-}
+    input,
+    textarea,
+    select {
+      padding: 15px;
+      background: var(--review-card-bg);
+      color: var(--text);
+      border: none;
+      border-radius: 12px;
+      resize: vertical;
+      font-size: 16px;
+      border: 2px solid transparent;
+      transition: var(--transition);
+    }
 
-button {
-  background: var(--accent);
-  color: var(--light-text);
-  border: none;
-  padding: 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
 
-button:hover {
-  background: var(--accent-secondary);
-}
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
 
-.reviews {
-  display: grid;
-  gap: 20px;
-}
+    button:hover {
+      background: var(--accent-secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
 
-.review-card {
-  background: var(--review-card-bg);
-  padding: 15px;
-  border-radius: 12px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-  position: relative;
-}
+    .reviews {
+      display: grid;
+      gap: 20px;
+    }
 
-.review-card h3 {
-  margin-bottom: 5px;
-  color: var(--accent);
-}
+    .review-card {
+      background: var(--review-card-bg);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      position: relative;
+      transition: var(--transition);
+      border-left: 4px solid var(--accent);
+    }
 
-.stars {
-  color: gold;
-  margin: 5px 0;
-}
+    .review-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
 
-.review-card p {
-  margin: 10px 0;
-  line-height: 1.5;
-}
+    .review-card h3 {
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 1.4rem;
+    }
 
-.review-card .delete-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: transparent;
-  color: var(--danger);
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-  transition: color 0.3s;
-}
+    .stars {
+      color: gold;
+      margin: 8px 0;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+    }
 
-.review-card .delete-btn:hover {
-  color: #cc3b3b;
-}
+    .review-card p {
+      margin: 15px 0;
+      line-height: 1.6;
+      color: #e0e0e0;
+    }
 
-.review-card .download-review-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: var(--info);
-  color: white;
-  padding: 6px 10px;
-  font-size: 12px;
-  border-radius: 8px;
-  transition: background 0.3s;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
+    .review-card .delete-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: transparent;
+      color: var(--danger);
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.review-card .download-review-btn:hover {
-  background: #1d6fb8;
-}
+    .review-card .delete-btn:hover {
+      color: #cc3b3b;
+      background: rgba(231, 76, 60, 0.1);
+    }
 
-#reviewImageOutput {
-  background: var(--light-bg);
-  color: var(--light-text);
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-  display: none;
-  position: absolute;
-  left: -9999px;
-  top: -9999px;
-  z-index: -1;
-  box-sizing: content-box;
-}
+    .review-card .download-review-btn {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      background: var(--info);
+      color: white;
+      padding: 8px 15px;
+      font-size: 14px;
+      border-radius: 8px;
+      transition: var(--transition);
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+    }
 
-#reviewImageOutput .review-card-for-image {
-  background: var(--light-bg);
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 100%;
-  box-sizing: border-box;
-}
+    .review-card .download-review-btn:hover {
+      background: #1d6fb8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+    }
 
-#reviewImageOutput h3 {
-  color: #333;
-  margin-bottom: 10px;
-  font-size: 1.8em;
-}
+    /* Social Media Image Styles */
+    #reviewImageOutput {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: #333;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+      display: none;
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+      z-index: -1;
+      box-sizing: content-box;
+      width: 1080px;
+      height: 1080px;
+      font-family: 'Poppins', sans-serif;
+    }
 
-#reviewImageOutput .stars-for-image {
-  color: gold;
-  font-size: 2.5em;
-  margin-bottom: 15px;
-}
+    .review-card-for-image {
+      background: white;
+      padding: 60px;
+      border-radius: 30px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
 
-#reviewImageOutput p {
-  color: #555;
-  font-size: 1.4em;
-  line-height: 1.6;
-}
+    .review-card-for-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    }
 
-canvas {
-  display: none;
-}
+    .review-card-for-image h3 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
 
-@media (max-width: 600px) {
-  input,
-  textarea,
-  button {
-    font-size: 14px;
-  }
+    .stars-for-image {
+      color: #FFD700;
+      font-size: 4.5rem;
+      margin-bottom: 40px;
+      letter-spacing: 8px;
+      text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+    }
 
-  .review-card {
-    font-size: 15px;
-  }
-}
+    .review-card-for-image p {
+      color: #555;
+      font-size: 2.2rem;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto 40px;
+      font-weight: 400;
+    }
+
+    .quote-icon {
+      font-size: 5rem;
+      color: #667eea;
+      opacity: 0.2;
+      margin-bottom: 30px;
+    }
+
+    .review-footer {
+      margin-top: 40px;
+      color: #7f8c8d;
+      font-size: 1.8rem;
+      font-weight: 300;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      input,
+      textarea,
+      button {
+        font-size: 16px; /* Prevents zoom on iOS */
+      }
+
+      .review-card {
+        font-size: 15px;
+      }
+      
+      #reviewImageOutput {
+        width: 600px;
+        height: 600px;
+        padding: 20px;
+      }
+      
+      .review-card-for-image h3 {
+        font-size: 2.2rem;
+      }
+      
+      .stars-for-image {
+        font-size: 3rem;
+      }
+      
+      .review-card-for-image p {
+        font-size: 1.5rem;
+      }
+      
+      .quote-icon {
+        font-size: 3rem;
+      }
+      
+      .review-footer {
+        font-size: 1.2rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -234,17 +349,18 @@ canvas {
     </form>
 
     <div class="reviews" id="reviewsList">
-      </div>
+      <!-- Reviews will be added here dynamically -->
+    </div>
   </div>
 
   <div id="reviewImageOutput">
-    </div>
+    <!-- This will be populated when generating images -->
+  </div>
   <canvas id="hiddenCanvas"></canvas>
-
 
   <script>
     // DOM elements
-    const appContainer = document.getElementById('appContainer'); // No longer hidden by default
+    const appContainer = document.getElementById('appContainer');
     const form = document.getElementById('reviewForm');
     const reviewsList = document.getElementById('reviewsList');
     const reviewImageOutput = document.getElementById('reviewImageOutput');
@@ -252,8 +368,7 @@ canvas {
 
     let reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
 
-    // No need for auth.onAuthStateChanged as login is removed
-    // Directly render reviews on load
+    // Render reviews on load
     document.addEventListener('DOMContentLoaded', renderReviews);
 
     // Add review
@@ -273,12 +388,9 @@ canvas {
       renderReviews();
     });
 
-    // Removed filter event listeners
-
     // Render reviews function
     function renderReviews() {
       reviewsList.innerHTML = '';
-      // No search/filter logic needed now
 
       reviews.forEach((r, index) => {
         const card = document.createElement('div');
@@ -311,9 +423,11 @@ canvas {
         // Populate the hidden reviewImageOutput div with content for capture
         reviewImageOutput.innerHTML = `
             <div class="review-card-for-image">
+                <div class="quote-icon">❝</div>
                 <h3>${review.name}</h3>
                 <div class="stars-for-image">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
-                <p>${review.comment}</p>
+                <p>"${review.comment}"</p>
+                <div class="review-footer">Customer Review</div>
             </div>
         `;
 
@@ -324,8 +438,9 @@ canvas {
         
         html2canvas(reviewImageOutput, {
             scale: 2, // Capture at 2x resolution for sharpness
-            backgroundColor: "#ffffff", // White background for the image
-            useCORS: true 
+            backgroundColor: null, // Transparent background
+            useCORS: true,
+            logging: false
         }).then(canvas => {
             const ctx = hiddenCanvas.getContext('2d');
 
@@ -334,7 +449,7 @@ canvas {
             let finalWidth = targetWidthPx;
             let finalHeight = targetWidthPx / outputAspectRatio; 
 
-            // Optional: Constrain height for common social media ratios (e.g., Instagram portrait 4:5 ratio)
+            // Optional: Constrain height for common social media ratios
             const maxHeight = 1350; 
             if (finalHeight > maxHeight) {
                 finalHeight = maxHeight;
@@ -354,6 +469,11 @@ canvas {
             // Hide the reviewImageOutput div again
             reviewImageOutput.style.display = 'none';
             reviewImageOutput.innerHTML = ''; // Clear its content
+        }).catch(err => {
+            console.error('Error generating image:', err);
+            alert('There was an error generating the image. Please try again.');
+            reviewImageOutput.style.display = 'none';
+            reviewImageOutput.innerHTML = '';
         });
     }
 
