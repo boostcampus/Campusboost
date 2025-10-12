@@ -1208,7 +1208,7 @@ window.processPayment = function() {
     FlutterwaveCheckout({
         public_key: "FLWPUBK-b144c0c07294bbc6f4b3ac884960f766-X",
         tx_ref: "CB-" + Date.now(),
-        amount: 500,
+        amount: 1000,
         currency: "NGN",
         country: "NG",
         payment_options: "card,mobilemoney,ussd",
