@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusBoost - Download Android App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6c63ff;
+            --secondary-color: #4a44c9;
+            --dark-color: #2a2a72;
+            --light-color: #f8f9fa;
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7ff;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .hero-section {
+            background: var(--gradient);
+            color: white;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,197.3C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .app-icon i {
+            font-size: 60px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: var(--primary-color);
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            min-width: 200px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            color: var(--secondary-color);
+        }
+        
+        .download-btn i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .features-section {
+            padding: 100px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .feature-icon i {
+            font-size: 30px;
+            color: white;
+        }
+        
+        .screenshots-section {
+            background: var(--light-color);
+            padding: 100px 0;
+        }
+        
+        .screenshot-img {
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .screenshot-img:hover {
+            transform: scale(1.05);
+        }
+        
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .download-modal {
+            background: var(--gradient);
+            color: white;
+            border-radius: 20px;
+            border: none;
+        }
+        
+        .modal-content {
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 1s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .device-detect {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .auto-download-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .auto-download-btn:hover {
+            background: #45a049;
+            transform: translateY(-3px);
+        }
+        
+        .file-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .file-info h6 {
+            margin-bottom: 5px;
+        }
+        
+        .instructions {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .instructions h5 {
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            text-align: left;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        .campusboost-logo {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .campusboost-logo span {
+            color: #ffd166;
+        }
+        
+        .navbar {
+            background: var(--gradient);
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero-section {
+            margin-top: 76px;
+        }
+        
+        .android-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 80px 0;
+                margin-top: 66px;
+            }
+            
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+            
+            .download-btn {
+                min-width: 180px;
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .features-section, .screenshots-section {
+                padding: 60px 0;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-section {
+                padding: 60px 0;
+            }
+            
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+            
+            .download-btn {
+                min-width: 160px;
+                padding: 10px 15px;
+                font-size: 0.85rem;
+                margin: 5px;
+            }
+            
+            .feature-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="campusboost-logo" href="https://campusboost.netlify.app">
+                Campus<span>Boost</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon text-white"><i class="fas fa-bars"></i></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="https://campusboost.netlify.app">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#screenshots">Screenshots</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#download">Download</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="download">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content animate-fade-in">
+                    <div class="app-icon pulse">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="android-badge">
+                        <i class="fab fa-android me-1"></i> ANDROID APP
+                    </div>
+                    <h1 class="display-4 fw-bold mb-4">Get CampusBoost Android App</h1>
+                    <p class="lead mb-5">The ultimate campus companion app for Android. Connect with peers, access resources, and boost your campus experience.</p>
+                    
+                    <!-- Auto Device Detection -->
+                    <div class="device-detect" id="deviceDetect">
+                        <p id="deviceMessage">We've detected your device. Click below to download the Android version.</p>
+                        <button id="autoDownloadBtn" class="auto-download-btn">
+                            <i class="fas fa-download me-2"></i> Download CampusBoost APK
+                        </button>
+                    </div>
+                    
+                    <div class="d-flex flex-wrap justify-content-center justify-content-lg-start">
+                        <button class="download-btn" data-bs-toggle="modal" data-bs-target="#androidModal">
+                            <i class="fab fa-android"></i>
+                            <div>
+                                <small>Download</small>
+                                <div>campus.apk</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="screen.jpg" alt="CampusBoost App Preview" class="img-fluid mt-5 mt-lg-0" style="max-height: 500px; border-radius: 20px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col">
+                    <h2 class="fw-bold">Amazing Features</h2>
+                    <p class="text-muted">Discover what makes CampusBoost special</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Campus Community</h4>
+                        <p>Connect with students, join clubs, and participate in campus events to build your network.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h4>Study Resources</h4>
+                        <p>Access notes, past papers, and study materials shared by students and faculty.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h4>Event Calendar</h4>
+                        <p>Never miss important dates, exams, or campus events with our integrated calendar.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h4>Campus Updates</h4>
+                        <p>Stay informed with real-time notifications about campus news and announcements.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h4>Campus Navigation</h4>
+                        <p>Find your way around campus with interactive maps and building locations.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h4>Career Support</h4>
+                        <p>Access internship opportunities, job postings, and career guidance resources.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section class="screenshots-section" id="screenshots">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col">
+                    <h2 class="fw-bold">App Screenshots</h2>
+                    <p class="text-muted">See how CampusBoost looks on Android</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-4 text-center">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Dashboard Screenshot" class="img-fluid screenshot-img">
+                </div>
+                <div class="col-md-3 mb-4 text-center">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1171&q=80" alt="Community Screenshot" class="img-fluid screenshot-img">
+                </div>
+                <div class="col-md-3 mb-4 text-center">
+                    <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Study Resources Screenshot" class="img-fluid screenshot-img">
+                </div>
+                <div class="col-md-3 mb-4 text-center">
+                    <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Events Screenshot" class="img-fluid screenshot-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h4>CampusBoost</h4>
+                    <p>The ultimate campus companion app designed to enhance student life, foster connections, and provide essential campus resources.</p>
+                    <div class="d-flex">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="https://campusboost.netlify.app" class="text-white text-decoration-none">Home</a></li>
+                        <li><a href="#features" class="text-white text-decoration-none">Features</a></li>
+                        <li><a href="#screenshots" class="text-white text-decoration-none">Screenshots</a></li>
+                        <li><a href="#download" class="text-white text-decoration-none">Download</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5>Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white text-decoration-none">Help Center</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Contact Us</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Privacy Policy</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row pt-4 border-top">
+                <div class="col text-center">
+                    <p>&copy; 2023 CampusBoost. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Android Download Modal -->
+    <div class="modal fade" id="androidModal" tabindex="-1" aria-labelledby="androidModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content download-modal">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="androidModalLabel">Download CampusBoost for Android</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="fab fa-android fa-4x mb-3"></i>
+                    <h4>Download campus.apk</h4>
+                    <p class="mb-4">Get the latest version of CampusBoost for Android</p>
+                    
+                    <div class="file-info">
+                        <h6>File Information</h6>
+                        <p class="mb-1">File Name: campus.apk</p>
+                        <p class="mb-1">Version: 2.1.4</p>
+                        <p class="mb-1">Size: 48.2 MB</p>
+                        <p class="mb-0">Updated: October 15, 2023</p>
+                    </div>
+                    
+                    <button id="downloadAndroid" class="btn btn-light btn-lg px-4 rounded-pill fw-bold mb-3">
+                        <i class="fab fa-android me-2"></i> Download campus.apk
+                    </button>
+                    
+                    <div class="instructions">
+                        <h5>Installation Instructions</h5>
+                        <ol>
+                            <li>Download the campus.apk file to your Android device</li>
+                            <li>Open your device's Settings > Security</li>
+                            <li>Enable "Install from Unknown Sources"</li>
+                            <li>Open the downloaded campus.apk file and tap Install</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i> Download started successfully!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Create realistic APK file
+        function createApkFile() {
+            // Create a more realistic file structure for the APK
+            let fileContent = '';
+            let fileName = 'campus.apk';
+            let mimeType = 'application/vnd.android.package-archive';
+            
+            // Simulate a more realistic APK structure
+            fileContent = 'PK\x03\x04'; // APK file signature
+            fileContent += 'This is a simulated Android APK file for CampusBoost. ';
+            fileContent += 'In a real implementation, this would be your actual APK file binary data. ';
+            fileContent += 'The file would contain compiled code, resources, and manifest for CampusBoost.';
+            fileContent += 'PK\x01\x02'; // End of central directory signature
+            
+            return { fileName, mimeType, fileContent };
+        }
+        
+        // Download file function
+        function downloadApk() {
+            const { fileName, mimeType, fileContent } = createApkFile();
+            
+            // Create a blob with the file content
+            const blob = new Blob([fileContent], { type: mimeType });
+            
+            // Create a temporary URL for the blob
+            const url = window.URL.createObjectURL(blob);
+            
+            // Create a temporary anchor element to trigger the download
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = fileName;
+            
+            // Append to the document, click, and remove
+            document.body.appendChild(a);
+            a.click();
+            
+            // Clean up
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            // Show success message
+            const toast = new bootstrap.Toast(document.getElementById('successToast'));
+            toast.show();
+            
+            // Log download for analytics (in a real app)
+            console.log(`Downloaded Android app: ${fileName}`);
+        }
+        
+        // Device detection and auto-download functionality
+        function detectDevice() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // Check if device is Android
+            if (/android/i.test(userAgent)) {
+                return 'Android';
+            }
+            
+            // Default to unknown
+            return 'Unknown';
+        }
+        
+        // Initialize device detection
+        document.addEventListener('DOMContentLoaded', function() {
+            const device = detectDevice();
+            const deviceMessage = document.getElementById('deviceMessage');
+            const autoDownloadBtn = document.getElementById('autoDownloadBtn');
+            
+            if (device === 'Android') {
+                deviceMessage.textContent = "We've detected you're using an Android device. Click below to download CampusBoost for Android (campus.apk).";
+                autoDownloadBtn.innerHTML = '<i class="fab fa-android me-2"></i> Download campus.apk';
+                autoDownloadBtn.onclick = function() {
+                    downloadApk();
+                };
+            } else {
+                deviceMessage.textContent = "Download CampusBoost for Android. Click below to get the campus.apk file.";
+                autoDownloadBtn.innerHTML = '<i class="fab fa-android me-2"></i> Download campus.apk';
+                autoDownloadBtn.onclick = function() {
+                    downloadApk();
+                };
+            }
+        });
+        
+        // Android download handler
+        document.getElementById('downloadAndroid').addEventListener('click', function(e) {
+            e.preventDefault();
+            downloadApk();
+            
+            // Close the modal
+            const androidModal = bootstrap.Modal.getInstance(document.getElementById('androidModal'));
+            androidModal.hide();
+        });
+        
+        // Add animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.feature-card, .screenshot-img');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeIn 1s ease forwards';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            elements.forEach(element => {
+                element.style.opacity = '0';
+                observer.observe(element);
+            });
+        });
+    </script>
+</body>
+</html>
