@@ -379,7 +379,7 @@
                             <i class="fab fa-android"></i>
                             <div>
                                 <small>Download</small>
-                                <div>campus.apk</div>
+                                <div>app-release.apk</div>
                             </div>
                         </button>
                     </div>
@@ -538,28 +538,28 @@
                 </div>
                 <div class="modal-body text-center py-4">
                     <i class="fab fa-android fa-4x mb-3"></i>
-                    <h4>Download campus.apk</h4>
+                    <h4>Download app-release.apk</h4>
                     <p class="mb-4">Get the latest version of CampusBoost for Android</p>
                     
                     <div class="file-info">
                         <h6>File Information</h6>
-                        <p class="mb-1">File Name: campus.apk</p>
+                        <p class="mb-1">File Name: app-release.apk</p>
                         <p class="mb-1">Version: 2.1.4</p>
                         <p class="mb-1">Size: 48.2 MB</p>
                         <p class="mb-0">Updated: October 15, 2023</p>
                     </div>
                     
                     <button id="downloadAndroid" class="btn btn-light btn-lg px-4 rounded-pill fw-bold mb-3">
-                        <i class="fab fa-android me-2"></i> Download campus.apk
+                        <i class="fab fa-android me-2"></i> Download app-release.apk
                     </button>
                     
                     <div class="instructions">
                         <h5>Installation Instructions</h5>
                         <ol>
-                            <li>Download the campus.apk file to your Android device</li>
+                            <li>Download the app-release.apk file to your Android device</li>
                             <li>Open your device's Settings > Security</li>
                             <li>Enable "Install from Unknown Sources"</li>
-                            <li>Open the downloaded campus.apk file and tap Install</li>
+                            <li>Open the downloaded app-release.apk file and tap Install</li>
                         </ol>
                     </div>
                 </div>
@@ -585,7 +585,7 @@
         function createApkFile() {
             // Create a more realistic file structure for the APK
             let fileContent = '';
-            let fileName = 'campus.apk';
+            let fileName = 'app-release.apk';
             let mimeType = 'application/vnd.android.package-archive';
             
             // Simulate a more realistic APK structure
@@ -650,14 +650,14 @@
             const autoDownloadBtn = document.getElementById('autoDownloadBtn');
             
             if (device === 'Android') {
-                deviceMessage.textContent = "We've detected you're using an Android device. Click below to download CampusBoost for Android (campus.apk).";
-                autoDownloadBtn.innerHTML = '<i class="fab fa-android me-2"></i> Download campus.apk';
+                deviceMessage.textContent = "We've detected you're using an Android device. Click below to download CampusBoost for Android (app-release.apk).";
+                autoDownloadBtn.innerHTML = '<i class="fab fa-android me-2"></i> Download app-release.apk';
                 autoDownloadBtn.onclick = function() {
                     downloadApk();
                 };
             } else {
-                deviceMessage.textContent = "Download CampusBoost for Android. Click below to get the campus.apk file.";
-                autoDownloadBtn.innerHTML = '<i class="fab fa-android me-2"></i> Download campus.apk';
+                deviceMessage.textContent = "Download CampusBoost for Android. Click below to get the app-release.apk file.";
+                autoDownloadBtn.innerHTML = '<i class="fab fa-android me-2"></i> Download app-release.apk';
                 autoDownloadBtn.onclick = function() {
                     downloadApk();
                 };
@@ -694,4 +694,5 @@
         });
     </script>
 </body>
+
 </html>
