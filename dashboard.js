@@ -29,7 +29,7 @@ const db = getFirestore(app);
 // --- Global Constants & State ---
 // CRITICAL: REPLACE THIS WITH YOUR ACTUAL LIVE FLUTTERWAVE PUBLIC KEY
 const FLUTTERWAVE_PUBLIC_KEY = "FLWPUBK-b144c0c07294bbc6f4b3ac884960f766-X"; 
-const PREMIUM_PRICE_NGN = 500;
+const PREMIUM_PRICE_NGN = 1000;
 const TRIAL_DAYS = 30;
 
 let currentUser = null;
