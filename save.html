@@ -533,7 +533,7 @@
                     <li>Customizable reminders</li>
                     <li>Priority support</li>
                 </ul>
-                <button id="upgrade-btn">Upgrade Now - Only ₦1000/month</button>
+                <button id="upgrade-btn">Upgrade Now - Only ₦500/month</button>
             </div>
         </main>
 
@@ -913,7 +913,7 @@
                 // Draw website URL
                 ctx.font = '12px Arial';
                 ctx.fillStyle = '#95a5a6';
-                ctx.fillText('campusboost.netlify.app/save', canvas.width / 2, 290);
+                ctx.fillText('savemoneyapp.com/challenge', canvas.width / 2, 290);
                 
                 // Convert canvas to image
                 this.challengeImage.src = canvas.toDataURL('image/png');
@@ -939,9 +939,9 @@
                 
                 // Flutterwave payment integration
                 const paymentData = {
-                    public_key: 'FLWPUBK-b144c0c07294bbc6f4b3ac884960f766-X',
+                    public_key: 'FLWPUBK_TEST-465e3825b7841beb379d071ed70c4054-X',
                     tx_ref: 'premium-' + Date.now(),
-                    amount: 1000,
+                    amount: 500,
                     currency: 'NGN',
                     payment_options: 'card, banktransfer, ussd',
                     customer: {
@@ -981,17 +981,17 @@
             // Social sharing functions
             shareOnTwitter() {
                 const text = `I've saved ${this.state.currency}${this.state.total.toFixed(2)} with Save Box! Check out this awesome app.`;
-                const url = 'https://campusboost.netlify.app/save';
+                const url = 'https://savemoneyapp.com';
                 window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
             },
             
             shareOnFacebook() {
-                const url = 'https://campusboost.netlify.app/save';
+                const url = 'https://savemoneyapp.com';
                 window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
             },
             
             shareOnWhatsapp() {
-                const text = `I've saved ${this.state.currency}${this.state.total.toFixed(2)} with Save Box! Check out this awesome app: https://campusboost.netlify.app/save`;
+                const text = `I've saved ${this.state.currency}${this.state.total.toFixed(2)} with Save Box! Check out this awesome app: https://savemoneyapp.com`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
             }
         };
@@ -1010,6 +1010,4 @@
         loadFlutterwave();
     </script>
 </body>
-
 </html>
-
