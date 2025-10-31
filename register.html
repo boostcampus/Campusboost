@@ -1,19 +1,16 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join Campus Boost - Register/Login</title>
+    <title>Join Campus Boost - Register</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css"> 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-light">
+    <!-- Navigation -->
     <nav class="navbar navbar-light bg-white shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold text-primary" href="index.html">
@@ -26,6 +23,7 @@
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-lg-8">
+                <!-- Toggle Buttons -->
                 <div class="text-center mb-4">
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-primary" id="registerTab">Register</button>
@@ -33,6 +31,7 @@
                     </div>
                 </div>
 
+                <!-- Registration Form -->
                 <div class="card shadow border-0" id="registerForm">
                     <div class="card-body p-5">
                         <div class="text-center mb-4">
@@ -89,6 +88,7 @@
                     </div>
                 </div>
 
+                <!-- Login Form -->
                 <div class="card shadow border-0 d-none" id="loginForm">
                     <div class="card-body p-5">
                         <div class="text-center mb-4">
@@ -123,22 +123,19 @@
                     </div>
                 </div>
 
+                <!-- Alert Messages -->
                 <div id="alertContainer" class="mt-3"></div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://checkout.flutterwave.com/v3.js"></script> 
-    <script type="module" src="dashboard.js"></script> 
-
+    <!-- Firebase Scripts -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-        // ⚠️ WARNING: Your API Key is exposed in the client-side code.
-        // Ensure your Firestore Security Rules are strict to prevent unauthorized access.
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAEFnSKxmuxZ3JKHacGn3iMzps6yuwCS0E",
             authDomain: "campus-boost-7d7ac.firebaseapp.com",
@@ -171,7 +168,6 @@
             loginTab.classList.remove('btn-primary');
             registerFormDiv.classList.remove('d-none');
             loginFormDiv.classList.add('d-none');
-            alertContainer.innerHTML = ''; // Clear alerts
         });
 
         loginTab.addEventListener('click', () => {
@@ -181,7 +177,6 @@
             registerTab.classList.remove('btn-primary');
             loginFormDiv.classList.remove('d-none');
             registerFormDiv.classList.add('d-none');
-            alertContainer.innerHTML = ''; // Clear alerts
         });
 
         // Show Alert Function
@@ -189,30 +184,10 @@
             alertContainer.innerHTML = `
                 <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                     ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             `;
         }
-
-        /**
-         * Cleans up Firebase error messages for better user readability.
-         * @param {string} rawMessage The raw error message from Firebase.
-         * @returns {string} A user-friendly error message.
-         */
-        function getFriendlyErrorMessage(rawMessage) {
-            if (rawMessage.includes('auth/email-already-in-use')) {
-                return 'The email address is already in use by another account.';
-            } else if (rawMessage.includes('auth/invalid-email')) {
-                return 'Invalid email address format.';
-            } else if (rawMessage.includes('auth/weak-password')) {
-                return 'Password should be at least 6 characters.';
-            } else if (rawMessage.includes('auth/invalid-credential') || rawMessage.includes('auth/wrong-password') || rawMessage.includes('auth/user-not-found')) {
-                return 'Invalid email or password. Please try again.';
-            }
-            // Fallback for general errors
-            return 'An unexpected error occurred. Please try again.';
-        }
-
 
         // Registration Form Handler
         registrationForm.addEventListener('submit', async (e) => {
@@ -235,45 +210,41 @@
             registerBtn.disabled = true;
 
             try {
-                // 1. Create user account
+                // Create user account
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // 2. Update user profile
+                // Update user profile
                 await updateProfile(user, {
                     displayName: fullName
                 });
 
-                // 3. Calculate premium expiry (30 days from now)
+                // Calculate premium expiry (30 days from now)
                 const premiumExpiry = new Date();
                 premiumExpiry.setDate(premiumExpiry.getDate() + 30);
 
-                // 4. Save user data to Firestore
+                // Save user data to Firestore
                 await setDoc(doc(db, 'users', user.uid), {
                     fullName: fullName,
                     username: username,
                     email: email,
                     phone: phone,
-                    // Use Firestore Timestamp for expiry
-                    premiumExpiry: premiumExpiry, 
-                    isPremium: true, // Free trial status is true
+                    premiumExpiry: premiumExpiry,
+                    isPremium: true, // Free trial
                     isTrialUser: true,
                     createdAt: serverTimestamp(),
                     lastLogin: serverTimestamp()
                 });
 
-                showAlert('Account created successfully! Starting free trial and redirecting to dashboard...', 'success');
+                showAlert('Account created successfully! Redirecting to dashboard...', 'success');
                 
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 2000);
 
             } catch (error) {
-                console.error('Registration error:', error.code, error.message);
-                showAlert(getFriendlyErrorMessage(error.code || error.message));
-                
-            } finally {
-                // Ensure button is reset in case of success or failure
+                console.error('Registration error:', error);
+                showAlert(error.message);
                 registerBtn.innerHTML = 'Create Account & Start Free Trial';
                 registerBtn.disabled = false;
             }
@@ -291,15 +262,7 @@
             loginBtn.disabled = true;
 
             try {
-                // Sign in the user
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                
-                // Optional: Update last login time in Firestore
-                // This step is not critical for login but good practice.
-                // await updateDoc(doc(db, 'users', userCredential.user.uid), {
-                //     lastLogin: serverTimestamp()
-                // });
-
                 showAlert('Login successful! Redirecting...', 'success');
                 
                 setTimeout(() => {
@@ -307,15 +270,14 @@
                 }, 1500);
 
             } catch (error) {
-                console.error('Login error:', error.code, error.message);
-                showAlert(getFriendlyErrorMessage(error.code || error.message));
-                
-            } finally {
-                // Ensure button is reset
+                console.error('Login error:', error);
+                showAlert(error.message);
                 loginBtn.innerHTML = 'Sign In';
                 loginBtn.disabled = false;
             }
         });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
