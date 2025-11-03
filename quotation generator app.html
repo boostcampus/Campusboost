@@ -408,7 +408,7 @@
                 const qty = parseFloat(quantity.value) || 0;
                 const unitPrice = parseFloat(price.value) || 0;
                 const itemTotal = qty * unitPrice;
-                total.value = '$' + itemTotal.toFixed(2);
+                total.value = '₦' + itemTotal.toFixed(2);
                 updatePreview();
             }
 
@@ -471,8 +471,8 @@
                     tr.innerHTML = `
                         <td>${description || 'Item'}</td>
                         <td>${qty}</td>
-                        <td>$${unitPrice.toFixed(2)}</td>
-                        <td>$${total.toFixed(2)}</td>
+                        <td>$₦{unitPrice.toFixed(2)}</td>
+                        <td>$₦{total.toFixed(2)}</td>
                     `;
                     tableBody.appendChild(tr);
                 }
@@ -608,7 +608,7 @@
 
             doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
-            doc.text('Total: $' + grandTotal.toFixed(2), 170, yPos, { align: 'right' });
+            doc.text('Total: ₦' + grandTotal.toFixed(2), 170, yPos, { align: 'right' });
 
             // Save the PDF
             const fileName = 'quotation_' + (quoteNumber || 'Q001') + '_' + new Date().toISOString().split('T')[0] + '.pdf';
