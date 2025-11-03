@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -279,7 +278,7 @@
                 </div>
                 <div class="form-group">
                     <label for="companyPhone">Phone:</label>
-                    <input type="text" id="companyPhone" placeholder="+1 (555) 123-4567">
+                    <input type="text" id="companyPhone" placeholder="+234 (0) 123 456 7890">
                 </div>
                 <div class="form-group">
                     <label for="companyEmail">Email:</label>
@@ -360,7 +359,7 @@
                     </table>
 
                     <div class="total-section">
-                        <p class="total-amount">Total: $<span id="grandTotal">0.00</span></p>
+                        <p class="total-amount">Total: ₦<span id="grandTotal">0.00</span></p>
                     </div>
                 </div>
             </div>
@@ -471,8 +470,8 @@
                     tr.innerHTML = `
                         <td>${description || 'Item'}</td>
                         <td>${qty}</td>
-                        <td>$₦{unitPrice.toFixed(2)}</td>
-                        <td>$₦{total.toFixed(2)}</td>
+                        <td>₦${unitPrice.toFixed(2)}</td>
+                        <td>₦${total.toFixed(2)}</td>
                     `;
                     tableBody.appendChild(tr);
                 }
@@ -573,8 +572,8 @@
                     tableData.push([
                         description || 'Item',
                         qty.toString(),
-                        '$' + unitPrice.toFixed(2),
-                        '$' + total.toFixed(2)
+                        '₦' + unitPrice.toFixed(2),
+                        '₦' + total.toFixed(2)
                     ]);
                 }
             });
