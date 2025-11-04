@@ -27,20 +27,22 @@
 <body class="bg-secondary-gray min-h-screen p-4 sm:p-8">
 
     <div id="app" class="max-w-xl mx-auto">
-        <!-- Header & Status -->
+        <!-- Header & Authentication Status -->
         <header class="text-center mb-8">
             <h1 class="text-4xl font-extrabold text-primary-blue mb-2">Nigerian Classifieds</h1>
             <p class="text-lg text-gray-600 mb-4">Post and browse products in Naira (₦)</p>
 
-            <!-- Auth Status: CRITICAL for seeing if authentication worked -->
-            <div id="auth-status-container" class="text-sm text-gray-600 font-medium rounded-xl p-2 bg-white shadow-lg border border-gray-100 flex justify-between items-center flex-wrap gap-2">
-                <span id="auth-status">Initializing...</span>
-                <span id="user-id-display" class="font-mono text-xs text-gray-400 bg-gray-50 px-2 py-1 rounded-full">User ID: N/A</span>
+            <!-- Authentication Controls and Status -->
+            <div id="auth-controls" class="bg-white p-3 rounded-xl shadow-lg border border-gray-100 flex justify-between items-center flex-wrap gap-2">
+                <span id="auth-status" class="font-medium text-gray-600">Initializing...</span>
+                <div id="auth-buttons">
+                    <!-- Buttons will be rendered here by JS based on login state -->
+                </div>
             </div>
         </header>
 
-        <!-- Product Creation Card -->
-        <div class="bg-white p-6 rounded-xl shadow-2xl mb-8 border border-gray-100">
+        <!-- Product Creation Card (Visible only when logged in) -->
+        <div id="post-product-card" class="bg-white p-6 rounded-xl shadow-2xl mb-8 border border-gray-100 hidden">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">Post a Product for Sale</h2>
 
             <label for="product-name" class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
@@ -64,7 +66,7 @@
                 </div>
             </div>
 
-            <!-- Save Button with integrated click handler and loading state -->
+            <!-- Save Button -->
             <button id="save-post-btn"
                     class="w-full bg-primary-blue text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/50 transition duration-300 transform active:scale-95"
                     onclick="savePost()">
@@ -75,8 +77,8 @@
             <!-- Feedback message area -->
             <p id="feedback-message" class="mt-4 text-center font-medium h-6"></p>
         </div>
-
-        <!-- Monetization Section (Now with proper modal UI) -->
+        
+        <!-- Monetization Section -->
         <div class="bg-yellow-100 p-6 rounded-xl shadow-lg mb-8 border border-yellow-300">
             <h2 class="text-xl font-bold text-yellow-800 mb-2 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -86,7 +88,7 @@
                 Promote Your Listing (Monetization)
             </h2>
             <p class="text-yellow-700 text-sm mb-4">
-                Get more views by promoting your listing. **All prices in Naira (₦) for premium features.**
+                Get more views by promoting your listing. All payments are simulated in **Naira (₦)**.
             </p>
             <button onclick="showMonetizationModal()"
                     class="w-full bg-yellow-500 text-yellow-900 font-bold py-2 rounded-lg shadow-md hover:bg-yellow-600 transition duration-150 transform active:scale-95">
@@ -94,17 +96,47 @@
             </button>
         </div>
 
-        <!-- Posts Display Section -->
+        <!-- Posts Display Section (Visible to everyone) -->
         <div class="mb-4">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Listings from Sellers</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">All Listings from Sellers</h2>
             <div id="posts-container" class="space-y-4">
                 <p id="initial-loading" class="text-center text-gray-500">Authenticating and loading products...</p>
-                <!-- Posts will be injected here by JavaScript -->
+                <!-- Products will be injected here by JavaScript -->
             </div>
         </div>
     </div>
 
-    <!-- Monetization Modal Structure (Hidden by default) -->
+    <!-- Authentication Modal (Register/Login) -->
+    <div id="auth-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 pointer-events-none z-50">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-11/12 transform transition duration-300 scale-95">
+            <h3 id="auth-modal-title" class="text-2xl font-bold text-primary-blue mb-4">Login</h3>
+            
+            <label for="auth-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" id="auth-email" placeholder="you@example.com"
+                   class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-primary-blue focus:border-primary-blue transition duration-150">
+
+            <label for="auth-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input type="password" id="auth-password" placeholder="Min 6 characters"
+                   class="w-full p-3 mb-6 border border-gray-300 rounded-lg focus:ring-primary-blue focus:border-primary-blue transition duration-150">
+            
+            <button id="auth-submit-btn"
+                    class="w-full bg-primary-blue text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-150 transform active:scale-95 mb-3"
+                    onclick="handleAuthSubmit()">Submit</button>
+            
+            <p id="auth-modal-error" class="text-red-500 text-center text-sm h-5 mb-3"></p>
+            
+            <button id="auth-toggle-btn"
+                    class="w-full text-sm text-primary-blue hover:text-blue-700"
+                    onclick="toggleAuthMode()">Need an account? Register</button>
+
+            <button onclick="closeAuthModal()"
+                    class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Monetization Modal Structure -->
     <div id="monetization-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 pointer-events-none z-50">
         <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-11/12 transform transition duration-300 scale-95">
             <h3 class="text-2xl font-bold text-primary-blue mb-4">Promote Your Product!</h3>
@@ -125,11 +157,12 @@
     <!-- Firebase SDKs and Application Logic -->
     <script type="module">
         // ----------------------------------------------------------------
-        // 1. FIREBASE CONFIG & ENVIRONMENT VARIABLES
+        // 1. FIREBASE IMPORTS AND CONFIG
         // ----------------------------------------------------------------
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
-            getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, 
+            getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut, 
+            createUserWithEmailAndPassword, signInWithEmailAndPassword, 
             setPersistence, browserSessionPersistence
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
@@ -137,7 +170,7 @@
             serverTimestamp, setLogLevel 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Hardcoded Firebase configuration provided by the user
+        // Firebase configuration provided by the user
         const firebaseConfig = {
           apiKey: "AIzaSyDMqAYibN8d598SknpPXhOsCgjLx0OSmgE",
           authDomain: "love-hub-a1c51.firebaseapp.com",
@@ -147,23 +180,68 @@
           appId: "1:978736762123:web:a6490b768528b0634a260e"
         };
         
-        // Environment variables required for authentication and Firestore security rules
+        // Environment variables
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         const canvasAppId = typeof __app_id !== 'undefined' ? __app_id : firebaseConfig.projectId;
-
         const appId = canvasAppId; 
 
         let app, db, auth, userId = null;
-        let isAuthReady = false;
+        let authMode = 'login'; // 'login' or 'register'
 
         // DOM elements
         const authStatusElement = document.getElementById('auth-status');
-        const userIdDisplay = document.getElementById('user-id-display');
+        const authButtonsDiv = document.getElementById('auth-buttons');
         const postsContainer = document.getElementById('posts-container');
         const loadingElement = document.getElementById('initial-loading');
-        
-        // --- Custom Modal and Feedback Handlers (Monetization & Alerts) ---
-        function showMonetizationModal() {
+        const postProductCard = document.getElementById('post-product-card');
+
+        // ----------------------------------------------------------------
+        // 2. MODAL & FEEDBACK HANDLERS
+        // ----------------------------------------------------------------
+
+        function getAuthModalElements() {
+             return {
+                modal: document.getElementById('auth-modal'),
+                title: document.getElementById('auth-modal-title'),
+                email: document.getElementById('auth-email'),
+                password: document.getElementById('auth-password'),
+                error: document.getElementById('auth-modal-error'),
+                submit: document.getElementById('auth-submit-btn'),
+                toggle: document.getElementById('auth-toggle-btn')
+             }
+        }
+
+        window.showAuthModal = function(mode) {
+            authMode = mode;
+            const elements = getAuthModalElements();
+            elements.modal.classList.remove('opacity-0', 'pointer-events-none');
+            elements.modal.querySelector('div').classList.remove('scale-95');
+            
+            if (mode === 'register') {
+                elements.title.textContent = 'Register';
+                elements.submit.textContent = 'Sign Up';
+                elements.toggle.textContent = 'Already have an account? Login';
+            } else {
+                elements.title.textContent = 'Login';
+                elements.submit.textContent = 'Sign In';
+                elements.toggle.textContent = 'Need an account? Register';
+            }
+            elements.error.textContent = '';
+            elements.email.value = '';
+            elements.password.value = '';
+        }
+
+        window.closeAuthModal = function() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.add('scale-95');
+        }
+
+        window.toggleAuthMode = function() {
+            showAuthModal(authMode === 'login' ? 'register' : 'login');
+        }
+
+        window.showMonetizationModal = function() {
             const modal = document.getElementById('monetization-modal');
             modal.classList.remove('opacity-0', 'pointer-events-none');
             modal.querySelector('div').classList.remove('scale-95');
@@ -174,8 +252,6 @@
             modal.classList.add('opacity-0', 'pointer-events-none');
             modal.querySelector('div').classList.add('scale-95');
         }
-
-        window.showMonetizationModal = showMonetizationModal;
 
         function displayFeedback(message, type = 'success') {
             const feedbackEl = document.getElementById('feedback-message');
@@ -194,93 +270,136 @@
         }
 
         // ----------------------------------------------------------------
-        // 2. INITIALIZATION FUNCTION (Auth Fix for Permissions)
+        // 3. AUTHENTICATION LOGIC (Login, Register, Logout)
+        // ----------------------------------------------------------------
+
+        window.handleAuthSubmit = async function() {
+            const elements = getAuthModalElements();
+            const email = elements.email.value.trim();
+            const password = elements.password.value.trim();
+            
+            elements.error.textContent = '';
+            elements.submit.disabled = true;
+
+            if (!email || password.length < 6) {
+                elements.error.textContent = 'Email required and password must be 6+ chars.';
+                elements.submit.disabled = false;
+                return;
+            }
+
+            try {
+                if (authMode === 'register') {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                    displayFeedback('Registration successful! You are now logged in.', 'success');
+                } else {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    displayFeedback('Login successful!', 'success');
+                }
+                closeAuthModal();
+            } catch (error) {
+                console.error("Auth Error:", error);
+                // Simplify error message for display
+                const msg = error.message.replace(/Firebase: /g, '').replace(/\(auth.*\)/g, '').trim();
+                elements.error.textContent = msg;
+            } finally {
+                elements.submit.disabled = false;
+            }
+        }
+
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                displayFeedback('Logged out successfully.', 'info');
+            } catch (error) {
+                console.error("Logout Error:", error);
+                displayFeedback('Failed to log out.', 'error');
+            }
+        }
+
+        // ----------------------------------------------------------------
+        // 4. INITIALIZATION & STATE LISTENER
         // ----------------------------------------------------------------
         async function initializeAppAndAuth() {
-            authStatusElement.textContent = "Connecting to Firebase...";
             try {
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
                 setLogLevel('debug');
 
-                await setPersistence(auth, browserSessionPersistence);
-
-                // Sign-in attempts before listener
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                
-                // Auth State Listener: ensures data listener starts ONLY when user is ready
+                // This listener handles the user state change, including initial sign-in from custom token
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         userId = user.uid;
-                        authStatusElement.textContent = `Authenticated! Ready to post.`;
-                        userIdDisplay.textContent = `User ID: ${userId}`;
-                        isAuthReady = true;
-                        setupRealtimeListener();
+                        // Check if the user is a full email/password user or a temporary one
+                        const isEmailUser = user.email !== null; 
+
+                        if (!isEmailUser && initialAuthToken) {
+                            // If we signed in via the custom token, we wait for a moment
+                            // This part ensures the environment's token is used first
+                            authStatusElement.innerHTML = `Signed in as <span class="font-mono text-xs bg-gray-100 px-2 py-0.5 rounded">${userId}</span>`;
+                            renderAuthButtons(true);
+                        } else if (isEmailUser) {
+                            // User is fully logged in with email/password
+                            authStatusElement.innerHTML = `Logged in as: <span class="font-semibold text-primary-blue">${user.email}</span>`;
+                            renderAuthButtons(true);
+                            // Show the post form
+                            postProductCard.classList.remove('hidden');
+                        }
+                        
                     } else {
+                        // Not logged in, or logged out
                         userId = null;
-                        authStatusElement.textContent = "Authentication Failed. Data will not sync.";
-                        userIdDisplay.textContent = 'User ID: N/A';
-                        isAuthReady = true; 
+                        authStatusElement.textContent = `Welcome! Please Register or Login to post products.`;
+                        renderAuthButtons(false);
+                        // Hide the post form
+                        postProductCard.classList.add('hidden');
+                        
+                        // We still attempt to sign in anonymously so *unregistered* users can see the public products
+                        signInAnonymously(auth).catch(e => console.error("Anonymous sign-in failed:", e));
                     }
+                    // Start listener regardless of user type, as all users must see the public listings
+                    setupRealtimeListener();
                 });
 
             } catch (error) {
-                console.error("Firebase initialization or sign-in failed:", error);
-                authStatusElement.textContent = `Error: Auth failed (${error.code}).`;
-                isAuthReady = true; 
+                console.error("Firebase initialization failed:", error);
+                authStatusElement.textContent = `Error: Initialization failed.`;
             }
         }
         
-        // --- Helper Functions for Formatting ---
-        
-        // Formats numbers into Nigerian Naira (₦)
-        function formatNaira(amount) {
-            const number = Number(amount);
-            if (isNaN(number)) return amount;
-            // Use en-NG locale for Naira symbol and comma separators
-            return '₦' + number.toLocaleString('en-NG');
-        }
-        
-        // Creates a universal WhatsApp deep link
-        function getWhatsAppLink(phoneNumber) {
-            // Clean non-digits
-            let cleanNumber = phoneNumber.replace(/\D/g, '');
-            
-            // Basic validation/heuristic for Nigerian numbers: 
-            // If the number is 10 digits and doesn't start with country code, assume it needs 234 prefix
-            if (cleanNumber.length >= 10 && !cleanNumber.startsWith('234')) {
-                // If it starts with '0', remove it and add '234'
-                if (cleanNumber.startsWith('0')) {
-                    cleanNumber = '234' + cleanNumber.substring(1);
-                } else {
-                    // Assume a standard 10-digit number is missing the 234 prefix
-                    cleanNumber = '234' + cleanNumber;
-                }
+        // Renders the correct buttons based on authentication status
+        function renderAuthButtons(isLoggedIn) {
+            authButtonsDiv.innerHTML = '';
+            if (isLoggedIn) {
+                authButtonsDiv.innerHTML = `
+                    <button onclick="logout()" class="bg-red-500 text-white font-bold py-1 px-3 rounded-lg shadow-md hover:bg-red-600 transition duration-150 transform active:scale-95 text-sm">
+                        Logout
+                    </button>
+                `;
+            } else {
+                authButtonsDiv.innerHTML = `
+                    <button onclick="showAuthModal('login')" class="bg-primary-blue text-white font-bold py-1 px-3 rounded-lg shadow-md hover:bg-blue-700 transition duration-150 transform active:scale-95 text-sm mr-2">
+                        Login
+                    </button>
+                    <button onclick="showAuthModal('register')" class="bg-gray-200 text-gray-800 font-bold py-1 px-3 rounded-lg shadow-md hover:bg-gray-300 transition duration-150 transform active:scale-95 text-sm">
+                        Register
+                    </button>
+                `;
             }
-            
-            return `https://wa.me/${cleanNumber}`;
         }
 
         // ----------------------------------------------------------------
-        // 3. REALTIME DATA LISTENER
+        // 5. REALTIME DATA LISTENER (Uses Public Path)
         // ----------------------------------------------------------------
         function setupRealtimeListener() {
-            if (!db || !userId) {
-                if (loadingElement) loadingElement.remove();
-                postsContainer.innerHTML = '<p class="text-red-500 text-center py-4">Cannot load listings: Not authenticated.</p>';
+            if (!db) {
+                console.warn("Firestore not ready for listener.");
                 return;
             }
 
-            // Secure Path: /artifacts/{appId}/users/{userId}/posts
-            // Note: For a public classifieds app, you might use /artifacts/{appId}/public/data/listings
-            // But we keep it private for simplicity and security matching the rules.
-            const postsCollectionPath = `artifacts/${appId}/users/${userId}/posts`; 
-            const q = query(collection(db, postsCollectionPath), orderBy("createdAt", "desc"));
+            // NEW PUBLIC PATH: /artifacts/{appId}/public/data/listings
+            const publicCollectionPath = `artifacts/${appId}/public/data/listings`;
+            const q = query(collection(db, publicCollectionPath), orderBy("createdAt", "desc"));
             
             onSnapshot(q, (snapshot) => {
                 if (loadingElement) loadingElement.remove();
@@ -292,17 +411,37 @@
 
                 renderPosts(posts);
             }, (error) => {
-                console.error("Error listening to listings:", error);
-                postsContainer.innerHTML = `<p class="text-red-500">Error loading listings: ${error.message}. Permissions are likely the issue.</p>`;
+                console.error("Error listening to public listings (Check Rules):", error);
+                postsContainer.innerHTML = `<p class="text-red-500">Error loading public listings: ${error.message}. You must update your Firestore security rules!</p>`;
             });
+        }
+        
+        // --- Helper Functions for Formatting ---
+        
+        function formatNaira(amount) {
+            const number = Number(amount);
+            if (isNaN(number)) return amount;
+            return '₦' + number.toLocaleString('en-NG', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+        
+        function getWhatsAppLink(phoneNumber) {
+            let cleanNumber = phoneNumber.replace(/\D/g, '');
+            if (cleanNumber.length >= 10 && !cleanNumber.startsWith('234')) {
+                if (cleanNumber.startsWith('0')) {
+                    cleanNumber = '234' + cleanNumber.substring(1);
+                } else {
+                    cleanNumber = '234' + cleanNumber;
+                }
+            }
+            return `https://wa.me/${cleanNumber}`;
         }
 
         // ----------------------------------------------------------------
-        // 4. RENDERING PRODUCTS
+        // 6. RENDERING PRODUCTS
         // ----------------------------------------------------------------
         function renderPosts(posts) {
             if (posts.length === 0) {
-                postsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No products posted yet. Be the first!</p>';
+                postsContainer.innerHTML = '<p class="text-gray-500 text-center py-4">No products posted yet. Register and be the first!</p>';
                 return;
             }
 
@@ -328,16 +467,22 @@
                             Contact Seller via WhatsApp
                         </a>
                         
-                        <p class="text-xs text-gray-500 mt-2">Posted: ${date} | Contact: ${post.contactNumber || 'N/A'}</p>
+                        <p class="text-xs text-gray-500 mt-2">Posted: ${date}</p>
                     </div>
                 `;
             }).join('');
         }
 
         // ----------------------------------------------------------------
-        // 5. SAVE FUNCTION (Product Posting Logic)
+        // 7. SAVE FUNCTION (Uses Public Path)
         // ----------------------------------------------------------------
         window.savePost = async function() {
+            if (!auth.currentUser || !auth.currentUser.email) {
+                displayFeedback('You must be logged in with an email/password account to post a product.', 'error');
+                showAuthModal('login');
+                return;
+            }
+
             const nameInput = document.getElementById('product-name');
             const descriptionInput = document.getElementById('product-description');
             const priceInput = document.getElementById('product-price');
@@ -346,41 +491,31 @@
             const btnText = document.getElementById('button-text');
             const spinner = document.getElementById('loading-spinner');
 
-            if (!isAuthReady || !userId) {
-                displayFeedback('Authentication is not complete. Please wait for the "Authenticated" status.', 'error');
-                return;
-            }
-
             const name = nameInput.value.trim();
             const description = descriptionInput.value.trim();
             const price = priceInput.value.trim();
             const contactNumber = numberInput.value.trim();
 
             if (!name || !description || !price || !contactNumber) {
-                displayFeedback('All product details (Name, Description, Price, Number) are required.', 'error');
+                displayFeedback('All fields are required.', 'error');
                 return;
             }
 
-            // Simple validation
-            if (isNaN(Number(price)) || Number(price) <= 0) {
-                 displayFeedback('Price must be a valid number greater than zero.', 'error');
-                 return;
-            }
-
-            // Disable button and show spinner
             saveBtn.disabled = true;
             btnText.textContent = 'Posting...';
             spinner.classList.remove('hidden');
 
             try {
-                // Secure Path: /artifacts/{appId}/users/{userId}/posts
-                const postsRef = collection(db, `artifacts/${appId}/users/${userId}/posts`);
+                // NEW PUBLIC PATH: /artifacts/{appId}/public/data/listings
+                const postsRef = collection(db, `artifacts/${appId}/public/data/listings`);
                 
                 await addDoc(postsRef, {
                     name: name,
                     description: description,
-                    price: price, // Storing as a string/number is fine; display logic handles formatting.
+                    price: price,
                     contactNumber: contactNumber,
+                    posterId: auth.currentUser.uid, // Track the poster's ID
+                    posterEmail: auth.currentUser.email, // Track the poster's email
                     createdAt: serverTimestamp()
                 });
 
@@ -393,10 +528,9 @@
                 numberInput.value = '';
 
             } catch (e) {
-                console.error("Error adding document (Permission Check): ", e);
-                displayFeedback(`Error posting: ${e.code || e.message}. Check network or permissions.`, 'error');
+                console.error("Error adding document (Check Public Rules): ", e);
+                displayFeedback(`Error posting: ${e.code || e.message}. Check your Firestore rules for public access!`, 'error');
             } finally {
-                // Re-enable button and hide spinner
                 saveBtn.disabled = false;
                 btnText.textContent = 'Post Product';
                 spinner.classList.add('hidden');
