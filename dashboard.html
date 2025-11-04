@@ -9,6 +9,20 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓💰</text></svg>">
     <script src="https://checkout.flutterwave.com/v3.js"></script> 
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Minimal required style for visibility/structure */
+        .premium-badge {
+            background-color: gold;
+            color: black;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        .locked {
+            /* Applied by JS */
+            filter: grayscale(100%);
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
@@ -24,7 +38,7 @@
                         <span id="premiumBadge" class="premium-badge ms-2 d-none">💎 Premium</span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="showSection('profile')">👤 Profile</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="showSection('profile', event)">👤 Profile</a></li>
                         <li><a class="dropdown-item" href="#" onclick="showPayment()">💳 Upgrade</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="#" onclick="logout()">🚪 Logout</a></li>
@@ -39,41 +53,42 @@
             <div class="col-md-3 col-lg-2 p-3">
                 <div class="sidebar p-3">
                     <nav class="nav flex-column">
-                        <a class="nav-link active" href="#" onclick="showSection('overview')">📊 Dashboard</a>
-                        <a class="nav-link" href="#" onclick="showSection('profile')">👤 Profile</a>
+                        <a class="nav-link active" href="#" onclick="showSection('overview', event)">📊 Dashboard</a>
+                        <a class="nav-link" href="#" onclick="showSection('profile', event)">👤 Profile</a>
                         <hr>
                         <h6 class="text-muted small">Free Features</h6>
-                        <a class="nav-link" href="#" onclick="showSection('cgpa')">📈 CGPA Calculator</a>
-                        <a class="nav-link" href="#" onclick="showSection('todo')">✅ To-Do List</a>
-                        <a class="nav-link" href="#" onclick="showSection('timer')">⏰ Simple Timer</a>
-                        <a class="nav-link" href="#" onclick="showSection('notes')">📝 Notes</a>
-                        <a class="nav-link" href="#" onclick="showSection('converter')">🔄 Unit Converter</a>
-                        <a class="nav-link" href="#" onclick="showSection('dictionary')">📖 Dictionary</a>
+                        <a class="nav-link" href="#" onclick="showSection('cgpa', event)">📈 CGPA Calculator</a>
+                        <a class="nav-link" href="#" onclick="showSection('todo', event)">✅ To-Do List</a>
+                        <a class="nav-link" href="#" onclick="showSection('timer', event)">⏰ Simple Timer</a>
+                        <a class="nav-link" href="#" onclick="showSection('notes', event)">📝 Notes</a>
+                        <a class="nav-link" href="#" onclick="showSection('converter', event)">🔄 Unit Converter</a>
+                        <a class="nav-link" href="#" onclick="showSection('dictionary', event)">📖 Dictionary</a>
                         <a class="nav-link" href="reviews generator .html">📝 Reviews Generator</a>
                         <a class="nav-link" href=" market.html">📝Campus Boost Acedemy</a>
                         <a class="nav-link" href="save.html">🐷 Save Box</a>
-                        <a class="nav-link" href="#" onclick="showSection('community')">💬 Community</a>
+                        <a class="nav-link" href="#" onclick="showSection('community', event)">💬 Community</a>
                         <hr>
                         <h6 class="text-muted small">Premium Features</h6>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('pomodoro')">🍅 Pomodoro Timer</a>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('flashcards')">📚 Flashcard Creator</a>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('goals')">🎯 Goal Tracker</a>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('habits')">🔄 Habit Tracker</a>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('vocabulary')">📚 Vocabulary Builder</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('pomodoro', event)">🍅 Pomodoro Timer</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('flashcards', event)">📚 Flashcard Creator</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('goals', event)">🎯 Goal Tracker</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('habits', event)">🔄 Habit Tracker</a>
+                        <a class="nav-link premium-feature" href="#" onclick="showSection('vocabulary', event)">📚 Vocabulary Builder</a>
                         <a class="nav-link premium-feature" href="timetable.html">📋 Premium Timetable</a>
                         <a class="nav-link premium-feature" href="attend.html">👥 Attendance Generator</a>
                         <a class="nav-link premium-feature" href="report.html" >🧾 Report Card Generator</a>
-                        <a class="nav-link premium-feature" href="https://whatsapp.com/channel/0029VbB53m4KQuJQBUgpQu1f" onclick="showSection('vip-community')">👑 VIP Community</a>
+                        <a class="nav-link premium-feature" href="https://whatsapp.com/channel/0029VbB53m4KQuJQBUgpQu1f" onclick="showSection('vip-community', event)">👑 VIP Community</a>
                         <a class="nav-link premium-feature" href="tool.html" >📢 Business Tools</a>
-                          <a class="nav-link premium-feature" href="opulence.html" >📢 Market Place</a>
+                        <a class="nav-link premium-feature" href="opulence.html" >📢 Market Place</a>
                         <hr>
                         <h6 class="text-muted small">Support</h6>
-                        <a class="nav-link" href="#" onclick="showSection('support')">💬 Contact & Social</a>
+                        <a class="nav-link" href="#" onclick="showSection('support', event)">💬 Contact & Social</a>
                     </nav>
                 </div>
             </div>
 
             <div class="col-md-9 col-lg-10 p-4">
+                
                 <div id="premiumAlert" class="alert alert-info d-none">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -91,92 +106,170 @@
                             <p class="text-muted">Here's your Campus Boost dashboard with all your tools</p>
                         </div>
                     </div>
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <div class="card p-3 shadow-sm">
+                                <h5 class="text-primary">Current CGPA</h5>
+                                <h3 id="currentCGPA" class="fw-bold">0.00</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card p-3 shadow-sm">
+                                <h5 class="text-success">Total Study Hours</h5>
+                                <h3 id="studyHours" class="fw-bold">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card p-3 shadow-sm">
+                                <h5 class="text-info">Items Sold (Market)</h5>
+                                <h3 id="itemsSold" class="fw-bold">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card p-3 shadow-sm">
+                                <h5 class="text-warning">Total Earnings</h5>
+                                <h3 id="totalEarnings" class="fw-bold">₦0</h3>
+                            </div>
+                        </div>
                     </div>
-
-                <div id="profile" class="section d-none">
-                   </div>
+                </div>
 
                 <div id="cgpa" class="section d-none">
+                    <h3 class="mb-4">📈 CGPA Calculator</h3>
+                    <div id="subjectsContainer">
+                        <div class="subject-row row mb-3 align-items-center">
+                            <div class="col-md-4 mb-2 mb-md-0">
+                                <input type="text" class="form-control" placeholder="Subject Name">
+                            </div>
+                            <div class="col-md-3 mb-2 mb-md-0">
+                                <input type="number" class="form-control" placeholder="Credit Units" min="1" max="6">
+                            </div>
+                            <div class="col-md-3 mb-2 mb-md-0">
+                                <select class="form-control">
+                                    <option value="0">Select Grade</option>
+                                    <option value="5">A (5.0)</option>
+                                    <option value="4">B (4.0)</option>
+                                    <option value="3">C (3.0)</option>
+                                    <option value="2">D (2.0)</option>
+                                    <option value="1">E (1.0)</option>
+                                    <option value="0">F (0.0)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-danger w-100" onclick="removeSubject(this)">Remove</button>
+                            </div>
+                        </div>
                     </div>
-
-                <div id="planner" class="section d-none">
+                    <div class="mb-4">
+                        <button class="btn btn-outline-primary" onclick="addSubject()">+ Add Subject</button>
+                        <button class="btn btn-success ms-2" onclick="calculateCGPA()">Calculate & Save CGPA</button>
                     </div>
-
-                <div id="timetable-basic" class="section d-none">
+                    <div class="alert alert-secondary">
+                        Your Calculated CGPA: <strong class="fs-4" id="cgpaResult">0.00</strong>
                     </div>
-
-                <div id="budget-basic" class="section d-none">
+                </div>
+                
+                <div id="todo" class="section d-none">
+                    <h3 class="mb-4">✅ Study Planner (To-Do List)</h3>
+                    <form id="taskForm" class="p-3 mb-4 border rounded shadow-sm">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <input type="text" id="taskName" class="form-control" placeholder="Task Name (e.g., Read Chapter 5)" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="text" id="taskSubject" class="form-control" placeholder="Subject (Optional)">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <input type="date" id="taskDate" class="form-control" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <select id="taskPriority" class="form-control">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary w-100">Add Task</button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <h4>Pending Tasks</h4>
+                    <div id="tasksList" class="list-group">
+                        <div class="text-center p-4 text-muted">Loading tasks...</div>
                     </div>
-
-                <div id="marketplace" class="section d-none">
-                    </div>
-
-                <div id="community" class="section d-none">
-                    </div>
-
-                <div id="advanced-planner" class="section d-none premium-section">
-                    </div>
-
-                <div id="timetable-premium" class="section d-none premium-section">
-                    </div>
-
-                <div id="budget-premium" class="section d-none premium-section">
-                    </div>
-
-                <div id="attendance" class="section d-none premium-section">
-                    </div>
-
-                <div id="reports" class="section d-none premium-section">
-                    </div>
-
-                <div id="vip-community" class="section d-none premium-section">
-                    </div>
-
-                <div id="promotion" class="section d-none premium-section">
-                    </div>
+                </div>
 
                 <div id="timer" class="section d-none">
+                    <h3 class="mb-4">⏰ Study Timers</h3>
+
+                    <div class="card p-4 mb-4 shadow-sm">
+                        <h5 class="card-title text-primary">Simple Countdown Timer</h5>
+                        <div class="text-center my-3">
+                            <h1 id="timerDisplay" class="display-3 fw-bold">00:00</h1>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <input type="number" id="timerMinutes" class="form-control" placeholder="Minutes" min="0">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" id="timerSeconds" class="form-control" placeholder="Seconds" min="0" max="59">
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 d-md-block">
+                            <button id="timerStart" class="btn btn-success" onclick="startTimer()">Start</button>
+                            <button id="timerStop" class="btn btn-warning" onclick="stopTimer()" disabled>Stop</button>
+                            <button id="timerReset" class="btn btn-danger" onclick="resetTimer()" disabled>Reset</button>
+                        </div>
                     </div>
 
-                <div id="todo" class="section d-none">
+                    <div class="card p-4 shadow-sm">
+                        <h5 class="card-title text-success">Stopwatch (Record Study Time)</h5>
+                        <div class="text-center my-3">
+                            <h1 id="stopwatchDisplay" class="display-3 fw-bold" data-start-time="">00:00:00</h1>
+                        </div>
+                        <div class="d-grid gap-2 d-md-block">
+                            <button id="stopwatchStart" class="btn btn-success" onclick="startStopwatch()">Start</button>
+                            <button id="stopwatchStop" class="btn btn-warning" onclick="stopStopwatch()" disabled>Stop & Log</button>
+                            <button id="stopwatchReset" class="btn btn-danger" onclick="resetStopwatch()" disabled>Reset</button>
+                        </div>
                     </div>
-
-                <div id="notes" class="section d-none">
-                    </div>
-
-                <div id="converter" class="section d-none">
-                    </div>
-
-                <div id="dictionary" class="section d-none">
-                    </div>
+                </div>
 
                 <div id="pomodoro" class="section d-none premium-section">
+                    <h3 class="mb-4">🍅 Pomodoro Timer (Premium)</h3>
+                    <div class="card p-4 shadow-sm">
+                        <p class="text-muted">This is an advanced study tool accessible only to Premium users.</p>
+                        <div class="text-center my-3">
+                            <h1 id="pomodoroDisplay" class="display-3 fw-bold">25:00</h1>
+                        </div>
+                        <div class="d-grid gap-2 d-md-block">
+                            <button id="pomodoroStart" class="btn btn-primary" onclick="startPomodoro()">Start Session</button>
+                            <button id="pomodoroStop" class="btn btn-warning" onclick="stopPomodoro()" disabled>Stop</button>
+                        </div>
                     </div>
+                </div>
+                
+                <div id="flashcards" class="section d-none premium-section"><h4>📚 Flashcard Creator (Premium)</h4></div>
+                <div id="goals" class="section d-none premium-section"><h4>🎯 Goal Tracker (Premium)</h4></div>
+                <div id="habits" class="section d-none premium-section"><h4>🔄 Habit Tracker (Premium)</h4></div>
+                <div id="vocabulary" class="section d-none premium-section"><h4>📚 Vocabulary Builder (Premium)</h4></div>
+                <div id="profile" class="section d-none"><h4>👤 Profile Settings</h4><p>Edit your user details here.</p></div>
+                <div id="notes" class="section d-none"><h4>📝 Notes</h4><p>Simple note-taking area.</p></div>
+                <div id="converter" class="section d-none"><h4>🔄 Unit Converter</h4><p>Convert units.</p></div>
+                <div id="dictionary" class="section d-none"><h4>📖 Dictionary</h4><p>Search for definitions.</p></div>
+                <div id="community" class="section d-none"><h4>💬 Community</h4><p>Access the general community forum.</p></div>
+                <div id="vip-community" class="section d-none premium-section"><h4>👑 VIP Community (Premium)</h4></div>
+                <div id="support" class="section d-none"><h4>💬 Contact & Social</h4><p>Get help and follow us!</p></div>
 
-                <div id="flashcards" class="section d-none premium-section">
-                    </div>
 
-                <div id="calculator" class="section d-none premium-section">
-                    </div>
-
-                <div id="goals" class="section d-none premium-section">
-                    </div>
-
-                <div id="habits" class="section d-none premium-section">
-                    </div>
-
-                <div id="vocabulary" class="section d-none premium-section">
-                    </div>
-
-                <div id="support" class="section d-none">
-                    </div>
-
-                <div class="modal fade" id="paymentModal" tabindex="-1">
+                <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">💎 Upgrade to Premium</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                <h5 class="modal-title" id="paymentModalLabel">💎 Upgrade to Premium</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="text-center mb-4">
@@ -185,16 +278,21 @@
                                 </div>
                                 <h6>✨ Premium Features Include:</h6>
                                 <ul class="list-unstyled">
-                                    <li>✅ Smart Study Planner with Reminders</li>
-                                    <li>✅ Premium Timetable Generator (PDF Export)</li>
-                                    <li>✅ Advanced Budget Allocator with Analytics</li>
-                                    <li>✅ Attendance Sheet Generator</li>
-                                    <li>✅ Report Card Generator</li>
-                                    <li>✅ Priority Product Promotion</li>
-                                    <li>✅ VIP Community Access</li>
-                                    <li>✅ Premium Badge & Priority Support</li>
+                                    <li>✅ Advanced Study Tools (Pomodoro, Flashcards)</li>
+                                    <li>✅ Premium Calculators (e.g., Target CGPA)</li>
+                                    <li>✅ Commerce Tools (Promotions, Analytics)</li>
+                                    <li>✅ Unlimited Storage & Analytics</li>
+                                    <li>✅ Priority Support</li>
                                 </ul>
-                                <button class="btn btn-primary w-100" onclick="processPayment()">Pay with Flutterwave</button>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary btn-lg" onclick="processPayment()">
+                                        💳 Upgrade Now - ₦1000
+                                    </button>
+                                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                        Maybe Later
+                                    </button>
+                                </div>
+                                <div id="paymentStatus" class="mt-3 text-center"></div>
                             </div>
                         </div>
                     </div>
