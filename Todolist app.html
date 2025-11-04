@@ -5,34 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Universal To-Do List</title>
   <style>
-    :root {
-      --bg: #212121;
-      --sidebar: #1A1D23;
-      --card: #1A1D23;
-      --accent: #667eea;
-      --accent-secondary: #764ba2;
-      --text: #ffffff;
-      --light-text: #000000;
-      --light-bg: #f8f9fa;
-      --success: #2ecc71;
-      --danger: #e74c3c;
-      --warning: #f39c12;
-      --info: #3498db;
-      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-      --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background-color: var(--bg);
+      background-color: #212121;
       font-family: 'Segoe UI', sans-serif;
-      color: var(--text);
+      color: #fff;
       display: flex;
       justify-content: center;
       align-items: flex-start;
@@ -43,16 +20,16 @@
     .container {
       max-width: 500px;
       width: 100%;
-      background-color: var(--card);
+      background-color: #1A1D23;
       border-radius: 20px;
       padding: 25px;
-      box-shadow: var(--card-shadow);
+      box-shadow: 0 0 15px rgba(52, 199, 89, 0.2);
       animation: slideIn 1s ease;
     }
 
     h1 {
       text-align: center;
-      color: var(--accent);
+      color: #34C759;
       margin-bottom: 25px;
       font-size: 28px;
       animation: fadeIn 1s ease;
@@ -69,29 +46,29 @@
       padding: 12px;
       border: none;
       border-radius: 10px;
-      background: #2c2f36;
-      color: var(--text);
+      background: #2C2F36;
+      color: #fff;
       font-size: 16px;
-      transition: var(--transition);
+      transition: 0.3s;
     }
 
     input[type="text"]:focus {
-      outline: 2px solid var(--accent);
+      outline: 2px solid #34C759;
     }
 
     button {
-      background: var(--accent);
-      color: var(--light-text);
+      background: #34C759;
+      color: #000;
       padding: 12px 18px;
       border: none;
       border-radius: 10px;
       font-weight: bold;
       cursor: pointer;
-      transition: var(--transition);
+      transition: 0.3s;
     }
 
     button:hover {
-      background: var(--accent-secondary);
+      background: #28a745;
     }
 
     ul {
@@ -99,7 +76,7 @@
     }
 
     li {
-      background: #2c2f36;
+      background: #2C2F36;
       padding: 14px;
       margin-bottom: 12px;
       border-radius: 10px;
@@ -117,7 +94,7 @@
     .actions button {
       background: transparent;
       border: none;
-      color: var(--accent);
+      color: #34C759;
       margin-left: 10px;
       font-size: 16px;
       cursor: pointer;
@@ -126,22 +103,6 @@
 
     .actions button:hover {
       transform: scale(1.2);
-    }
-
-    .back-link {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 10px 20px;
-      background: #333;
-      color: var(--accent);
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 500;
-      transition: var(--transition);
-    }
-
-    .back-link:hover {
-      background: #444;
     }
 
     @keyframes slideIn {
