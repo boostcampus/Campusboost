@@ -11,6 +11,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .modal { transition: opacity 0.3s ease-in-out; }
+        .promoted-listing { border: 3px solid #FBBF24; }
     </style>
     <script>
         tailwind.config = {
@@ -46,7 +47,7 @@
             </div>
         </header>
 
-        <!-- Product Creation Card (Visible only when logged in) -->
+        <!-- Product Creation Card (Visible only when logged in with email/password) -->
         <div id="post-product-card" class="bg-white p-6 rounded-xl shadow-2xl mb-8 border border-gray-100 hidden">
             <h2 class="text-2xl font-bold text-gray-800 mb-4">Post a Product for Sale</h2>
 
@@ -87,30 +88,24 @@
             <p id="feedback-message" class="mt-4 text-center font-medium h-6"></p>
         </div>
         
-        <!-- Monetization Section -->
+        <!-- Monetization Section (Only for Premium Upgrade) -->
         <div class="bg-yellow-100 p-6 rounded-xl shadow-lg mb-8 border border-yellow-300 space-y-4">
             <h2 class="text-xl font-bold text-yellow-800 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 12v-2" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5m-9 0h9" />
                 </svg>
-                Upgrade & Promotion Options
+                Unlock Premium Features
             </h2>
 
             <p class="text-yellow-700 text-sm">
-                Unlock unlimited posting, editing, and deleting by upgrading, or pay to feature a listing.
+                Upgrade to Premium for **₦3000/month** to get **unlimited posting**, and the ability to **Edit/Delete** your own listings.
             </p>
 
-            <!-- Premium Upgrade -->
+            <!-- Premium Upgrade Button -->
             <button id="upgrade-premium-btn" onclick="handlePremiumPayment()"
                     class="w-full bg-premium-gold text-yellow-900 font-bold py-2 rounded-lg shadow-md hover:bg-yellow-600 transition duration-150 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                 Upgrade to Premium (₦3000/Month)
-            </button>
-            
-            <!-- Feature Listing -->
-            <button onclick="handlePromotionPayment()"
-                    class="w-full bg-flutterwave-purple text-white font-bold py-2 rounded-lg shadow-md hover:bg-purple-700 transition duration-150 transform active:scale-95">
-                Feature Listing (₦1000/24 hours)
             </button>
         </div>
 
@@ -210,7 +205,7 @@
         };
         
         const FLUTTERWAVE_PUBLIC_KEY = "FLWPUBK-b144c0c07294bbc6f4b3ac884960f766-X";
-        const PROMOTION_PRICE = 1000; // ₦1000
+        const PROMOTION_PRICE = 1000; // ₦1000 for 24 hours
         const PREMIUM_PRICE = 3000; // ₦3000 monthly
         const NON_PREMIUM_LIMIT = 3; // Limit non-premium users to 3 posts
 
@@ -341,7 +336,6 @@
         // ----------------------------------------------------------------
 
         window.handleAuthSubmit = async function() {
-            // ... (Auth Submit Logic - same as previous step)
             const elements = getAuthModalElements();
             const email = elements.email.value.trim();
             const password = elements.password.value.trim();
@@ -403,7 +397,7 @@
         function renderPremiumStatus() {
             if (userIsPremium) {
                 premiumStatusElement.innerHTML = `⭐ <span class="text-premium-gold">PREMIUM MEMBER</span>`;
-                upgradePremiumBtn.textContent = 'You are Premium!';
+                upgradePremiumBtn.textContent = 'You are Premium! (Unlimited Posts)';
                 upgradePremiumBtn.disabled = true;
                 upgradePremiumBtn.classList.remove('bg-premium-gold');
                 upgradePremiumBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
@@ -429,21 +423,30 @@
             return true;
         }
 
-        window.handlePromotionPayment = function() {
+        window.handlePromotionPayment = function(postId, productName) {
             if (!checkAuthForPayment('promote a product')) return;
             
             FlutterwaveCheckout({
                 public_key: FLUTTERWAVE_PUBLIC_KEY,
-                tx_ref: "PROMO_" + Date.now() + "_" + auth.currentUser.uid.substring(0, 8),
+                tx_ref: "PROMO_" + Date.now() + "_" + auth.currentUser.uid.substring(0, 8) + "_" + postId.substring(0, 8),
                 amount: PROMOTION_PRICE, 
                 currency: "NGN", 
                 payment_options: "card,mobilemoney,ussd",
                 customer: { email: auth.currentUser.email, phone_number: '08000000000', name: auth.currentUser.email },
-                customizations: { title: "24-Hour Product Promotion", description: `Product featuring service for ₦${PROMOTION_PRICE}`, logo: "https://placehold.co/60x60/9D50E5/ffffff?text=NG" },
-                callback: function (data) {
+                customizations: { title: `24-Hour Promotion for ${productName}`, description: `Product featuring service for ₦${PROMOTION_PRICE}`, logo: "https://placehold.co/60x60/9D50E5/ffffff?text=NG" },
+                callback: async function (data) {
                     if (data.status === 'successful') {
-                        // In a real app, you would mark the listing as 'featured' with a 24hr expiration.
-                        displayFeedback(`Promotion Payment successful (₦${PROMOTION_PRICE})! Your product is now featured.`, 'success');
+                        // Update the post in Firestore to mark it as promoted (set an expiration time)
+                        const postRef = doc(db, `artifacts/${appId}/public/data/listings`, postId);
+                        const expiryTimestamp = serverTimestamp(); // Use server timestamp to set the moment of promotion
+                        
+                        await updateDoc(postRef, {
+                            isPromoted: true,
+                            // In a real app, the client would calculate a time 24 hours from now, 
+                            // but for Firestore rules simplicity, we just set the flag here.
+                            // The rendering logic below will handle the simple visual effect.
+                        });
+                        displayFeedback(`Promotion Payment successful (₦${PROMOTION_PRICE})! Your product, ${productName}, is now featured!`, 'success');
                     } else {
                         displayFeedback('Promotion payment failed or was cancelled.', 'error');
                     }
@@ -468,7 +471,7 @@
                         const statusRef = doc(db, `artifacts/${appId}/users/${auth.currentUser.uid}/profile/status`);
                         await setDoc(statusRef, { 
                             isPremium: true,
-                            premiumUntil: serverTimestamp() // For simulation, real expiry logic is more complex
+                            premiumStarted: serverTimestamp() 
                         }, { merge: true });
                         displayFeedback(`Premium Upgrade successful (₦${PREMIUM_PRICE})! You now have unlimited features!`, 'success');
                     } else {
@@ -598,16 +601,42 @@
                 const whatsappLink = getWhatsAppLink(post.contactNumber || '');
                 const formattedPrice = formatNaira(post.price);
                 const isOwner = userId && post.posterId === userId;
+                const isPromoted = post.isPromoted === true; 
 
-                // Determine if Edit/Delete should be visible (only if owner AND premium)
-                const actionButtons = isOwner && userIsPremium ? `
-                    <div class="flex space-x-2 mt-3">
+                let editDeleteButtons = '';
+                let promoteButton = '';
+
+                // Edit/Delete: Only if owner AND premium
+                if (isOwner && userIsPremium) {
+                    editDeleteButtons = `
                         <button onclick="prepareEdit('${post.id}')" class="bg-blue-500 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-blue-600 transition duration-150 transform active:scale-95 flex-1">
                             Edit
                         </button>
                         <button onclick="deletePost('${post.id}')" class="bg-red-500 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-red-600 transition duration-150 transform active:scale-95 flex-1">
                             Delete
                         </button>
+                    `;
+                }
+
+                // Promote: Only if owner (regardless of premium status)
+                if (isOwner) {
+                     if (isPromoted) {
+                        promoteButton = `<span class="text-xs font-bold text-premium-gold py-1 px-3 rounded-md bg-yellow-50 flex-1 text-center">FEATURED LISTING</span>`;
+                    } else {
+                        promoteButton = `
+                            <button onclick="handlePromotionPayment('${post.id}', '${post.name}')"
+                                    class="bg-flutterwave-purple text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-purple-700 transition duration-150 transform active:scale-95 flex-1">
+                                Promote (₦${PROMOTION_PRICE}/24hrs)
+                            </button>
+                        `;
+                    }
+                }
+
+                // Combine action buttons
+                const actionButtons = editDeleteButtons || promoteButton ? `
+                    <div class="flex space-x-2 mt-3">
+                        ${promoteButton}
+                        ${editDeleteButtons}
                     </div>
                 ` : '';
 
@@ -618,9 +647,12 @@
                         No Image Available
                     </div>
                 `;
+                
+                const cardClass = isPromoted ? 'bg-white p-4 rounded-xl shadow-2xl border-4 border-premium-gold' : 'bg-white p-4 rounded-xl shadow-md border border-gray-200';
+
 
                 return `
-                    <div class="bg-white p-4 rounded-xl shadow-md border border-gray-200">
+                    <div class="${cardClass}">
                         ${imageBlock}
                         <div class="flex justify-between items-start mb-2 flex-wrap gap-2">
                             <h3 class="text-2xl font-bold text-gray-800">${post.name || 'Untitled Product'}</h3>
@@ -701,6 +733,7 @@
                     base64Image: base64Image, // Save Base64 image data
                     posterId: auth.currentUser.uid,
                     posterEmail: auth.currentUser.email,
+                    isPromoted: false, // Default to not promoted
                     createdAt: serverTimestamp()
                 });
 
@@ -743,13 +776,11 @@
             };
 
             if (!updatedData.name || !updatedData.description || !updatedData.price) {
-                // Instead of alert, use a local message or console.error since this is a modal flow
                 console.error('All fields must be filled for update.');
                 return;
             }
 
             try {
-                // Ensure only the owner can update (checked again by Firestore rules)
                 const postRef = doc(db, `artifacts/${appId}/public/data/listings`, postId);
                 await updateDoc(postRef, updatedData);
                 closeEditModal();
@@ -766,7 +797,6 @@
             if (!confirmed) return;
             
             try {
-                // Ensure only the owner can delete (checked again by Firestore rules)
                 const postRef = doc(db, `artifacts/${appId}/public/data/listings`, postId);
                 await deleteDoc(postRef);
                 displayFeedback('Product deleted successfully!', 'info');
