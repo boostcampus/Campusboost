@@ -6,6 +6,8 @@
     <title>Nigerian Classifieds</title>
     <!-- Load Tailwind CSS for modern, responsive styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Flutterwave Checkout SDK for payment handling -->
+    <script src="https://checkout.flutterwave.com/v3.js"></script> 
     <style>
         body { font-family: 'Inter', sans-serif; }
         .modal { transition: opacity 0.3s ease-in-out; }
@@ -18,6 +20,7 @@
                         'primary-blue': '#1E40AF',
                         'secondary-gray': '#F3F4F6',
                         'whatsapp-green': '#25D366',
+                        'flutterwave-purple': '#9D50E5',
                     }
                 }
             }
@@ -88,11 +91,11 @@
                 Promote Your Listing (Monetization)
             </h2>
             <p class="text-yellow-700 text-sm mb-4">
-                Get more views by promoting your listing. All payments are simulated in **Naira (₦)**.
+                Simulated integration with Flutterwave using **₦500** for promotion.
             </p>
-            <button onclick="showMonetizationModal()"
-                    class="w-full bg-yellow-500 text-yellow-900 font-bold py-2 rounded-lg shadow-md hover:bg-yellow-600 transition duration-150 transform active:scale-95">
-                Feature Listing (₦500/day)
+            <button onclick="handleMonetizationPayment()"
+                    class="w-full bg-flutterwave-purple text-white font-bold py-2 rounded-lg shadow-md hover:bg-purple-700 transition duration-150 transform active:scale-95">
+                Pay ₦500 to Feature (Flutterwave)
             </button>
         </div>
 
@@ -108,7 +111,7 @@
 
     <!-- Authentication Modal (Register/Login) -->
     <div id="auth-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 pointer-events-none z-50">
-        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-11/12 transform transition duration-300 scale-95">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-11/12 transform transition duration-300 scale-95 relative">
             <h3 id="auth-modal-title" class="text-2xl font-bold text-primary-blue mb-4">Login</h3>
             
             <label for="auth-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -136,23 +139,7 @@
         </div>
     </div>
 
-    <!-- Monetization Modal Structure -->
-    <div id="monetization-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 pointer-events-none z-50">
-        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-11/12 transform transition duration-300 scale-95">
-            <h3 class="text-2xl font-bold text-primary-blue mb-4">Promote Your Product!</h3>
-            <p class="text-gray-700 mb-6">
-                Pay **₦500** to feature your listing at the top for 24 hours. This payment would be processed through a Nigerian gateway.
-            </p>
-            <button onclick="closeMonetizationModal(); displayFeedback('Thank you! ₦500 payment simulation successful!', 'info')"
-                    class="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-150 transform active:scale-95 mb-3">
-                Pay ₦500 to Promote
-            </button>
-            <button onclick="closeMonetizationModal()"
-                    class="w-full bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg shadow-md hover:bg-gray-300 transition duration-150 transform active:scale-95">
-                Cancel
-            </button>
-        </div>
-    </div>
+    <!-- The old Monetization Modal is removed as Flutterwave handles the payment UI -->
 
     <!-- Firebase SDKs and Application Logic -->
     <script type="module">
@@ -161,9 +148,8 @@
         // ----------------------------------------------------------------
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
-            getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut, 
+            getAuth, signInAnonymously, onAuthStateChanged, signOut, 
             createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-            setPersistence, browserSessionPersistence
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, collection, addDoc, onSnapshot, query, orderBy, 
@@ -180,6 +166,9 @@
           appId: "1:978736762123:web:a6490b768528b0634a260e"
         };
         
+        // FLUTTERWAVE PUBLIC KEY
+        const FLUTTERWAVE_PUBLIC_KEY = "FLWPUBK-b144c0c07294bbc6f4b3ac884960f766-X";
+
         // Environment variables
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
         const canvasAppId = typeof __app_id !== 'undefined' ? __app_id : firebaseConfig.projectId;
@@ -241,18 +230,6 @@
             showAuthModal(authMode === 'login' ? 'register' : 'login');
         }
 
-        window.showMonetizationModal = function() {
-            const modal = document.getElementById('monetization-modal');
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modal.querySelector('div').classList.remove('scale-95');
-        }
-
-        window.closeMonetizationModal = function() {
-            const modal = document.getElementById('monetization-modal');
-            modal.classList.add('opacity-0', 'pointer-events-none');
-            modal.querySelector('div').classList.add('scale-95');
-        }
-
         function displayFeedback(message, type = 'success') {
             const feedbackEl = document.getElementById('feedback-message');
             feedbackEl.textContent = message;
@@ -266,7 +243,7 @@
                  feedbackEl.classList.add('text-blue-600');
             }
 
-            setTimeout(() => { feedbackEl.textContent = ''; feedbackEl.className = 'mt-4 text-center font-medium h-6'; }, 3000);
+            setTimeout(() => { feedbackEl.textContent = ''; feedbackEl.className = 'mt-4 text-center font-medium h-6'; }, 5000);
         }
 
         // ----------------------------------------------------------------
@@ -298,7 +275,6 @@
                 closeAuthModal();
             } catch (error) {
                 console.error("Auth Error:", error);
-                // Simplify error message for display
                 const msg = error.message.replace(/Firebase: /g, '').replace(/\(auth.*\)/g, '').trim();
                 elements.error.textContent = msg;
             } finally {
@@ -317,7 +293,53 @@
         }
 
         // ----------------------------------------------------------------
-        // 4. INITIALIZATION & STATE LISTENER
+        // 4. FLUTTERWAVE MONETIZATION PAYMENT
+        // ----------------------------------------------------------------
+        window.handleMonetizationPayment = function() {
+            if (!auth.currentUser || !auth.currentUser.email) {
+                displayFeedback('You must be logged in with an email/password account to promote a product.', 'error');
+                showAuthModal('login');
+                return;
+            }
+            
+            // This transaction is a simulation of the payment initiation process.
+            // The actual payment would open a secure Flutterwave window/modal.
+            
+            FlutterwaveCheckout({
+                public_key: FLUTTERWAVE_PUBLIC_KEY,
+                tx_ref: "NC_" + Date.now() + "_" + auth.currentUser.uid.substring(0, 8),
+                amount: 500, // Fixed amount for featuring the listing
+                currency: "NGN", // Naira is specified
+                payment_options: "card,mobilemoney,ussd",
+                customer: {
+                    email: auth.currentUser.email,
+                    phone_number: '08000000000', // Mock phone number
+                    name: auth.currentUser.email,
+                },
+                customizations: {
+                    title: "Classifieds Product Promotion",
+                    description: "24-hour product featuring service for ₦500",
+                    logo: "https://placehold.co/60x60/9D50E5/ffffff?text=NG",
+                },
+                callback: function (data) {
+                    // This function is called after the transaction is completed (or failed)
+                    if (data.status === 'successful') {
+                        // In a real app, you would now update the product in Firestore 
+                        // to mark it as 'featured' for 24 hours.
+                        displayFeedback('Payment successful (Simulated)! Your product is now featured.', 'success');
+                    } else {
+                        displayFeedback('Payment failed or was cancelled.', 'error');
+                    }
+                },
+                onclose: function() {
+                    console.log('Payment modal closed by user.');
+                }
+            });
+        };
+
+
+        // ----------------------------------------------------------------
+        // 5. INITIALIZATION & STATE LISTENER
         // ----------------------------------------------------------------
         async function initializeAppAndAuth() {
             try {
@@ -326,38 +348,30 @@
                 auth = getAuth(app);
                 setLogLevel('debug');
 
-                // This listener handles the user state change, including initial sign-in from custom token
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         userId = user.uid;
-                        // Check if the user is a full email/password user or a temporary one
                         const isEmailUser = user.email !== null; 
 
-                        if (!isEmailUser && initialAuthToken) {
-                            // If we signed in via the custom token, we wait for a moment
-                            // This part ensures the environment's token is used first
-                            authStatusElement.innerHTML = `Signed in as <span class="font-mono text-xs bg-gray-100 px-2 py-0.5 rounded">${userId}</span>`;
-                            renderAuthButtons(true);
-                        } else if (isEmailUser) {
-                            // User is fully logged in with email/password
+                        if (isEmailUser) {
                             authStatusElement.innerHTML = `Logged in as: <span class="font-semibold text-primary-blue">${user.email}</span>`;
                             renderAuthButtons(true);
-                            // Show the post form
                             postProductCard.classList.remove('hidden');
+                        } else {
+                            // Initial sign-in via token or anonymous user who can only read public data
+                             authStatusElement.innerHTML = `Signed in as <span class="font-mono text-xs bg-gray-100 px-2 py-0.5 rounded">${userId}</span> (Read Only)`;
+                             renderAuthButtons(false);
                         }
                         
                     } else {
-                        // Not logged in, or logged out
                         userId = null;
                         authStatusElement.textContent = `Welcome! Please Register or Login to post products.`;
                         renderAuthButtons(false);
-                        // Hide the post form
                         postProductCard.classList.add('hidden');
                         
-                        // We still attempt to sign in anonymously so *unregistered* users can see the public products
+                        // Sign in anonymously so unregistered users can still see public products
                         signInAnonymously(auth).catch(e => console.error("Anonymous sign-in failed:", e));
                     }
-                    // Start listener regardless of user type, as all users must see the public listings
                     setupRealtimeListener();
                 });
 
@@ -367,7 +381,6 @@
             }
         }
         
-        // Renders the correct buttons based on authentication status
         function renderAuthButtons(isLoggedIn) {
             authButtonsDiv.innerHTML = '';
             if (isLoggedIn) {
@@ -389,15 +402,12 @@
         }
 
         // ----------------------------------------------------------------
-        // 5. REALTIME DATA LISTENER (Uses Public Path)
+        // 6. REALTIME DATA LISTENER (Public Path)
         // ----------------------------------------------------------------
         function setupRealtimeListener() {
-            if (!db) {
-                console.warn("Firestore not ready for listener.");
-                return;
-            }
+            if (!db) return;
 
-            // NEW PUBLIC PATH: /artifacts/{appId}/public/data/listings
+            // Public Path: /artifacts/{appId}/public/data/listings
             const publicCollectionPath = `artifacts/${appId}/public/data/listings`;
             const q = query(collection(db, publicCollectionPath), orderBy("createdAt", "desc"));
             
@@ -437,7 +447,7 @@
         }
 
         // ----------------------------------------------------------------
-        // 6. RENDERING PRODUCTS
+        // 7. RENDERING PRODUCTS
         // ----------------------------------------------------------------
         function renderPosts(posts) {
             if (posts.length === 0) {
@@ -474,7 +484,7 @@
         }
 
         // ----------------------------------------------------------------
-        // 7. SAVE FUNCTION (Uses Public Path)
+        // 8. SAVE FUNCTION (Uses Public Path)
         // ----------------------------------------------------------------
         window.savePost = async function() {
             if (!auth.currentUser || !auth.currentUser.email) {
@@ -506,7 +516,7 @@
             spinner.classList.remove('hidden');
 
             try {
-                // NEW PUBLIC PATH: /artifacts/{appId}/public/data/listings
+                // Public Path: /artifacts/{appId}/public/data/listings
                 const postsRef = collection(db, `artifacts/${appId}/public/data/listings`);
                 
                 await addDoc(postsRef, {
@@ -514,14 +524,13 @@
                     description: description,
                     price: price,
                     contactNumber: contactNumber,
-                    posterId: auth.currentUser.uid, // Track the poster's ID
-                    posterEmail: auth.currentUser.email, // Track the poster's email
+                    posterId: auth.currentUser.uid,
+                    posterEmail: auth.currentUser.email,
                     createdAt: serverTimestamp()
                 });
 
                 displayFeedback('Product posted successfully!');
                 
-                // Clear inputs
                 nameInput.value = '';
                 descriptionInput.value = '';
                 priceInput.value = '';
