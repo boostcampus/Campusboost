@@ -10,7 +10,15 @@
     <script src="https://checkout.flutterwave.com/v3.js"></script> 
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* Minimal required style for visibility/structure */
+        /* Minimal required style for visibility/structure (can be moved to styles.css) */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            background-color: #fff;
+            min-height: 90vh;
+        }
         .premium-badge {
             background-color: gold;
             color: black;
@@ -19,18 +27,12 @@
             font-size: 0.75rem;
         }
         .locked {
-            /* Applied by JS */
             filter: grayscale(100%);
-            pointer-events: none; /* Prevent interaction on locked features */
-        }
-        .locked .lock-icon {
-            display: inline-block;
-            margin-left: 5px;
-            font-size: 1em;
-        }
-        .sidebar .nav-link.locked {
-            color: #6c757d !important; /* Muted color for locked links */
+            pointer-events: none; 
             opacity: 0.6;
+        }
+        .task-item {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -42,12 +44,12 @@
             </a>
             <div class="navbar-nav ms-auto">
                 <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="user-avatar me-2">👤</div>
                         <span id="userName">Loading...</span>
                         <span id="premiumBadge" class="premium-badge ms-2 d-none">💎 Premium</span>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="#" onclick="showSection('profile', event)">👤 Profile</a></li>
                         <li><a class="dropdown-item" href="#" onclick="showPayment()">💳 Upgrade</a></li>
                         <li><hr class="dropdown-divider"></li>
@@ -68,11 +70,8 @@
                         <hr>
                         <h6 class="text-muted small">Free Features</h6>
                         <a class="nav-link" href="#" onclick="showSection('cgpa', event)">📈 CGPA Calculator</a>
-                        <a class="nav-link" href="#" onclick="showSection('todo', event)">✅ To-Do List</a>
+                        <a class="nav-link" href="Todolist app.html" >✅ To-Do List</a>
                         <a class="nav-link" href="#" onclick="showSection('timer', event)">⏰ Study Timers</a>
-                        <a class="nav-link" href="#" onclick="showSection('notes', event)">📝 Notes</a>
-                        <a class="nav-link" href="#" onclick="showSection('converter', event)">🔄 Unit Converter</a>
-                        <a class="nav-link" href="#" onclick="showSection('dictionary', event)">📖 Dictionary</a>
                         <a class="nav-link" href="reviews generator .html">📝 Reviews Generator</a>
                         <a class="nav-link" href=" market.html">📝Campus Boost Acedemy</a>
                         <a class="nav-link" href="save.html">🐷 Save Box</a>
@@ -80,10 +79,6 @@
                         <hr>
                         <h6 class="text-muted small">Premium Features</h6>
                         <a class="nav-link premium-feature" href="#" onclick="showSection('pomodoro', event)">🍅 Pomodoro Timer</a>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('flashcards', event)">📚 Flashcard Creator</a>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('goals', event)">🎯 Goal Tracker</a>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('habits', event)">🔄 Habit Tracker</a>
-                        <a class="nav-link premium-feature" href="#" onclick="showSection('vocabulary', event)">📚 Vocabulary Builder</a>
                         <a class="nav-link premium-feature" href="timetable.html">📋 Premium Timetable</a>
                         <a class="nav-link premium-feature" href="attend.html">👥 Attendance Generator</a>
                         <a class="nav-link premium-feature" href="report.html" >🧾 Report Card Generator</a>
@@ -126,7 +121,7 @@
                         <div class="col-md-3 mb-3">
                             <div class="card p-3 shadow-sm">
                                 <h5 class="text-success">Total Study Hours</h5>
-                                <h3 id="studyHours" class="fw-bold">0</h3>
+                                <h3 id="studyHours" class="fw-bold">0.0</h3>
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
@@ -266,7 +261,7 @@
                 <div id="profile" class="section d-none"><h4>👤 Profile Settings</h4><p>Your user details will be managed here.</p></div>
                 <div id="notes" class="section d-none">
                     <h4>📝 Notes</h4>
-                    <textarea class="form-control mb-3" rows="10" placeholder="Start typing your notes..."></textarea>
+                    <textarea id="notesTextarea" class="form-control mb-3" rows="10" placeholder="Start typing your notes..."></textarea>
                     <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
                     <button class="btn btn-outline-primary" onclick="exportNote()">Export Note (Premium Gated)</button>
                 </div>
