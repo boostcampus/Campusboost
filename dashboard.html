@@ -21,6 +21,16 @@
         .locked {
             /* Applied by JS */
             filter: grayscale(100%);
+            pointer-events: none; /* Prevent interaction on locked features */
+        }
+        .locked .lock-icon {
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 1em;
+        }
+        .sidebar .nav-link.locked {
+            color: #6c757d !important; /* Muted color for locked links */
+            opacity: 0.6;
         }
     </style>
 </head>
@@ -59,7 +69,7 @@
                         <h6 class="text-muted small">Free Features</h6>
                         <a class="nav-link" href="#" onclick="showSection('cgpa', event)">📈 CGPA Calculator</a>
                         <a class="nav-link" href="#" onclick="showSection('todo', event)">✅ To-Do List</a>
-                        <a class="nav-link" href="#" onclick="showSection('timer', event)">⏰ Simple Timer</a>
+                        <a class="nav-link" href="#" onclick="showSection('timer', event)">⏰ Study Timers</a>
                         <a class="nav-link" href="#" onclick="showSection('notes', event)">📝 Notes</a>
                         <a class="nav-link" href="#" onclick="showSection('converter', event)">🔄 Unit Converter</a>
                         <a class="nav-link" href="#" onclick="showSection('dictionary', event)">📖 Dictionary</a>
@@ -173,24 +183,26 @@
                     <h3 class="mb-4">✅ Study Planner (To-Do List)</h3>
                     <form id="taskForm" class="p-3 mb-4 border rounded shadow-sm">
                         <div class="row">
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <input type="text" id="taskName" class="form-control" placeholder="Task Name (e.g., Read Chapter 5)" required>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <input type="text" id="taskSubject" class="form-control" placeholder="Subject (Optional)">
                             </div>
                             <div class="col-md-3 mb-3">
+                                <label for="taskDate" class="form-label visually-hidden">Due Date</label>
                                 <input type="date" id="taskDate" class="form-control" required>
                             </div>
-                            <div class="col-md-2 mb-3">
+                            <div class="col-md-1 mb-3">
+                                <label for="taskPriority" class="form-label visually-hidden">Priority</label>
                                 <select id="taskPriority" class="form-control">
                                     <option value="low">Low</option>
                                     <option value="medium" selected>Medium</option>
                                     <option value="high">High</option>
                                 </select>
                             </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary w-100">Add Task</button>
+                            <div class="col-md-2 mb-3">
+                                <button type="submit" class="btn btn-primary w-100">Add</button>
                             </div>
                         </div>
                     </form>
@@ -240,7 +252,7 @@
                 <div id="pomodoro" class="section d-none premium-section">
                     <h3 class="mb-4">🍅 Pomodoro Timer (Premium)</h3>
                     <div class="card p-4 shadow-sm">
-                        <p class="text-muted">This is an advanced study tool accessible only to Premium users.</p>
+                        <p class="text-muted">Unlock this premium tool for structured study sessions (25 min study, 5 min break).</p>
                         <div class="text-center my-3">
                             <h1 id="pomodoroDisplay" class="display-3 fw-bold">25:00</h1>
                         </div>
@@ -251,16 +263,25 @@
                     </div>
                 </div>
                 
-                <div id="flashcards" class="section d-none premium-section"><h4>📚 Flashcard Creator (Premium)</h4></div>
-                <div id="goals" class="section d-none premium-section"><h4>🎯 Goal Tracker (Premium)</h4></div>
-                <div id="habits" class="section d-none premium-section"><h4>🔄 Habit Tracker (Premium)</h4></div>
-                <div id="vocabulary" class="section d-none premium-section"><h4>📚 Vocabulary Builder (Premium)</h4></div>
-                <div id="profile" class="section d-none"><h4>👤 Profile Settings</h4><p>Edit your user details here.</p></div>
-                <div id="notes" class="section d-none"><h4>📝 Notes</h4><p>Simple note-taking area.</p></div>
-                <div id="converter" class="section d-none"><h4>🔄 Unit Converter</h4><p>Convert units.</p></div>
-                <div id="dictionary" class="section d-none"><h4>📖 Dictionary</h4><p>Search for definitions.</p></div>
+                <div id="profile" class="section d-none"><h4>👤 Profile Settings</h4><p>Your user details will be managed here.</p></div>
+                <div id="notes" class="section d-none">
+                    <h4>📝 Notes</h4>
+                    <textarea class="form-control mb-3" rows="10" placeholder="Start typing your notes..."></textarea>
+                    <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
+                    <button class="btn btn-outline-primary" onclick="exportNote()">Export Note (Premium Gated)</button>
+                </div>
+                <div id="converter" class="section d-none">
+                    <h4>🔄 Unit Converter</h4>
+                    <p>Basic Unit Converter tools will be here.</p>
+                    <button class="btn btn-primary" onclick="convertUnit()">Convert (Premium Gated)</button>
+                </div>
+                <div id="dictionary" class="section d-none"><h4>📖 Dictionary</h4><p>Search for word definitions.</p></div>
+                <div id="flashcards" class="section d-none premium-section"><h4>📚 Flashcard Creator (Premium)</h4><p>Create and practice flashcards.</p></div>
+                <div id="goals" class="section d-none premium-section"><h4>🎯 Goal Tracker (Premium)</h4><p>Set and monitor academic goals.</p></div>
+                <div id="habits" class="section d-none premium-section"><h4>🔄 Habit Tracker (Premium)</h4><p>Monitor your study habits.</p></div>
+                <div id="vocabulary" class="section d-none premium-section"><h4>📚 Vocabulary Builder (Premium)</h4><p>Expand your word bank.</p></div>
                 <div id="community" class="section d-none"><h4>💬 Community</h4><p>Access the general community forum.</p></div>
-                <div id="vip-community" class="section d-none premium-section"><h4>👑 VIP Community (Premium)</h4></div>
+                <div id="vip-community" class="section d-none premium-section"><h4>👑 VIP Community (Premium)</h4><p>Exclusive access for premium members.</p></div>
                 <div id="support" class="section d-none"><h4>💬 Contact & Social</h4><p>Get help and follow us!</p></div>
 
 
