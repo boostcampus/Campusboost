@@ -1,1770 +1,358 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bizkonect - Find Your Trusted Hustler</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #f59e0b;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --success: #10b981;
-            --danger: #ef4444;
-            --border-radius: 12px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --transition: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f1f5f9;
-            color: var(--dark);
-            line-height: 1.6;
-            max-width: 500px;
-            margin: 0 auto;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            min-height: 100vh;
-        }
-
-        .app-container {
-            padding-bottom: 70px;
-        }
-
-        /* Header Styles */
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow);
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            font-size: 1.4rem;
-        }
-
-        .logo i {
-            font-size: 1.8rem;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .header-actions i {
-            font-size: 1.3rem;
-            cursor: pointer;
-        }
-
-        .search-bar {
-            display: flex;
-            background: white;
-            border-radius: 30px;
-            padding: 8px 15px;
-            align-items: center;
-        }
-
-        .search-bar input {
-            border: none;
-            outline: none;
-            flex: 1;
-            padding: 5px 10px;
-            font-size: 0.9rem;
-        }
-
-        .search-bar i {
-            color: var(--gray);
-            cursor: pointer;
-        }
-
-        /* Main Content Styles */
-        main {
-            padding: 20px;
-        }
-
-        section {
-            margin-bottom: 30px;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .section-link {
-            color: var(--primary);
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* Category Filter */
-        .category-filter {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 5px 0 15px;
-            margin-bottom: 10px;
-            scrollbar-width: none;
-        }
-
-        .category-filter::-webkit-scrollbar {
-            display: none;
-        }
-
-        .category-btn {
-            background: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .category-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Hustler Cards */
-        .hustler-cards {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        .hustler-card {
-            background: white;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .hustler-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-header {
-            position: relative;
-            height: 160px;
-            overflow: hidden;
-        }
-
-        .card-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .card-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--secondary);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
-        .card-actions {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .card-action {
-            background: rgba(255, 255, 255, 0.9);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .card-action:hover {
-            background: white;
-        }
-
-        .card-body {
-            padding: 15px;
-        }
-
-        .hustler-name {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 5px;
-        }
-
-        .hustler-name h3 {
-            font-size: 1.1rem;
-        }
-
-        .verified-badge {
-            color: var(--primary);
-            font-size: 0.9rem;
-        }
-
-        .hustler-rating {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 8px;
-        }
-
-        .stars {
-            color: var(--secondary);
-        }
-
-        .rating-count {
-            color: var(--gray);
-            font-size: 0.8rem;
-        }
-
-        .hustler-location {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: var(--gray);
-            font-size: 0.85rem;
-            margin-bottom: 10px;
-        }
-
-        .hustler-description {
-            font-size: 0.9rem;
-            color: var(--dark);
-            margin-bottom: 15px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .hustler-price {
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .contact-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .contact-btn:hover {
-            background: var(--primary-dark);
-        }
-
-        /* Job Hunt Section */
-        .job-hunt-section {
-            display: none;
-            padding: 20px;
-        }
-
-        .job-hunt-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: var(--primary);
-            text-align: center;
-        }
-
-        .job-cards {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        .job-card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 15px;
-            border-left: 4px solid var(--primary);
-            box-shadow: var(--shadow);
-        }
-
-        .job-title {
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--dark);
-        }
-
-        .job-location {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: var(--gray);
-            font-size: 0.85rem;
-            margin-bottom: 10px;
-        }
-
-        .job-description {
-            font-size: 0.9rem;
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .job-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .job-budget {
-            font-weight: 700;
-            color: var(--success);
-        }
-
-        .apply-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        /* Search Section */
-        .search-section {
-            display: none;
-            padding: 20px;
-        }
-
-        .search-results {
-            margin-top: 20px;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
-        }
-
-        .no-results i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: var(--gray);
-        }
-
-        /* Ad Banner */
-        .ad-banner {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 15px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .ad-banner h3 {
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .ad-banner p {
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-bottom: 15px;
-        }
-
-        .ad-btn {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* Business Tips */
-        .tips-section {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 15px;
-            box-shadow: var(--shadow);
-        }
-
-        .tip-card {
-            padding: 10px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .tip-card:last-child {
-            border-bottom: none;
-        }
-
-        .tip-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--dark);
-        }
-
-        .tip-excerpt {
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-
-        /* WhatsApp Community Section (New Style) */
-        .whatsapp-community {
-            background: #dcfce7; /* Light green background */
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            text-align: center;
-            border: 2px solid var(--success);
-        }
-
-        .whatsapp-community h3 {
-            color: #059669; /* Darker green text */
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
-
-        .whatsapp-community p {
-            font-size: 0.95rem;
-            color: #1c1917; /* Near black text */
-            margin-bottom: 15px;
-        }
-
-        .whatsapp-community-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none; /* Make it look like a button */
-        }
-
-        .whatsapp-community-btn:hover {
-            background: #047857; /* Slightly darker green on hover */
-        }
-
-
-        /* Request Service */
-        .request-service {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-
-        .request-service h3 {
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
-
-        .request-service p {
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-bottom: 15px;
-        }
-
-        .request-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Premium Features Section */
-        .premium-section {
-            display: none;
-            padding: 20px;
-        }
-
-        .premium-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .premium-title {
-            font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .premium-subtitle {
-            color: var(--gray);
-            font-size: 1rem;
-        }
-
-        .premium-features {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .premium-feature {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .feature-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--dark);
-        }
-
-        .feature-price {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .feature-description {
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-bottom: 15px;
-        }
-
-        .feature-benefits {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        .benefit {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-
-        .benefit i {
-            color: var(--success);
-        }
-
-        .premium-contact {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            text-align: center;
-        }
-
-        .contact-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: var(--dark);
-        }
-
-        .contact-info {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .contact-btn-large {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1rem;
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            margin: 0 auto;
-            z-index: 100;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            color: var(--gray);
-            text-decoration: none;
-            font-size: 0.8rem;
-            transition: var(--transition);
-            cursor: pointer;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
-
-        .nav-item i {
-            font-size: 1.2rem;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: var(--border-radius);
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .modal-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--gray);
-        }
-
-        .modal-body {
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-        }
-
-        .btn-secondary {
-            background: #e2e8f0;
-            color: var(--dark);
-            border: none;
-        }
-
-        /* Admin Panel */
-        .admin-panel {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            z-index: 99;
-        }
-
-        .admin-btn {
-            background: var(--primary);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-        }
-
-        /* Responsive Adjustments */
-        @media (min-width: 768px) {
-            body {
-                max-width: 500px;
-                margin: 20px auto;
-                border-radius: 20px;
-                overflow: hidden;
-            }
-            
-            .app-container {
-                border-radius: 20px;
-                overflow: hidden;
-            }
-        }
-    </style>
+    <title>Campus Boost - Boost Your Student Life</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="app-container">
-        <header>
-            <div class="header-top">
-                <div class="logo">
-                    <i class="fas fa-plug"></i>
-                    <span>Bizkonect</span>
-                </div>
-                <div class="header-actions">
-                    <i class="fas fa-bell"></i>
-                </div>
-            </div>
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Search for hustlers, services...">
-                <i class="fas fa-search" id="searchButton"></i>
-            </div>
-        </header>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="#">
+                <span class="fs-3">🚀 Campus Boost</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#pricing">Pricing</a>
+                    </li>
 
-        <main id="homeContent">
-            <section>
-                <div class="category-filter">
-                    <button class="category-btn active" data-category="all">All</button>
-                    <button class="category-btn" data-category="fashion">Fashion</button>
-                    <button class="category-btn" data-category="food">Food</button>
-                    <button class="category-btn" data-category="tech">Tech</button>
-                    <button class="category-btn" data-category="repairs">Repairs</button>
-                    <button class="category-btn" data-category="beauty">Beauty</button>
-                    <button class="category-btn" data-category="home">Home Services</button>
-                </div>
-            </section>
-
-            <section>
-                <div class="section-header">
-                    <h2 class="section-title">Featured Hustlers</h2>
-                    <a href="#" class="section-link">See All</a>
-                </div>
-                <div class="hustler-cards" id="hustlerCards">
-                    </div>
-            </section>
-
-            <section>
-                <div class="whatsapp-community">
-                    <h3>Join Our WhatsApp Community!</h3>
-                    <p>Connect with other hustlers and stay updated with the latest tips and opportunities.</p>
-                    <a href="https://whatsapp.com/channel/0029VbB53m4KQuJQBUgpQu1f" target="_blank" class="whatsapp-community-btn">
-                        <i class="fab fa-whatsapp"></i>
-                        Join Community
-                    </a>
-                </div>
-            </section>
-            <section>
-                <div class="ad-banner">
-                    <h3>Advertise Your Business Here</h3>
-                    <p>Reach thousands of potential customers daily</p>
-                    <button class="ad-btn">Get Started</button>
-                </div>
-            </section>
-
-            <section>
-                <div class="section-header">
-                    <h2 class="section-title">Hustle Tips</h2>
-                    <a href="#" class="section-link">See All</a>
-                </div>
-                <div class="tips-section">
-                    <div class="tip-card">
-                        <div class="tip-title">5 Ways to Grow Your Hustle on WhatsApp</div>
-                        <div class="tip-excerpt">Learn how to effectively use WhatsApp Business to attract and retain customers...</div>
-                    </div>
-                    <div class="tip-card">
-                        <div class="tip-title">How to Price Your Services Competitively</div>
-                        <div class="tip-excerpt">Find the sweet spot between affordability and profitability for your services...</div>
-                    </div>
-                    <div class="tip-card">
-                        <div class="tip-title">Building Customer Trust as a New Hustler</div>
-                        <div class="tip-excerpt">Strategies to establish credibility and build lasting relationships with customers...</div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <div class="job-hunt-section" id="jobHuntContent">
-            <div class="section-header">
-                <h2 class="section-title">Job Hunt 🔥</h2>
-                <a href="#" class="section-link">See All</a>
-            </div>
-            <div class="job-cards" id="jobCards">
-                </div>
-
-            <section>
-                <div class="ad-banner">
-                    <h3>Looking for Workers?</h3>
-                    <p>Post your job and find qualified hustlers</p>
-                    <button class="ad-btn">Post a Job</button>
-                </div>
-            </section>
-        </div>
-
-        <div class="search-section" id="searchContent">
-            <div class="section-header">
-                <h2 class="section-title">Search Results</h2>
-                <span id="searchResultsCount">0 results</span>
-            </div>
-            <div class="search-results" id="searchResults">
-                </div>
-        </div>
-
-        <div class="premium-section" id="premiumContent">
-            <div class="premium-header">
-                <h1 class="premium-title">Premium Features</h1>
-                <p class="premium-subtitle">Boost your visibility and grow your business with our premium packages</p>
-            </div>
-
-            <div class="premium-features">
-                <div class="premium-feature">
-                    <div class="feature-icon">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <h3 class="feature-title">Website Design & Development</h3>
-                    <div class="feature-price">₦50,000+</div>
-                    <p class="feature-description">Get a professional website for your brand, business, company, or organization.</p>
-                    <div class="feature-benefits">
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Custom design for your brand</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Mobile-responsive and fast</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>SEO-friendly structure</span>
-                        </div>
-                    </div>
-                    <button class="contact-btn-large" onclick="contactWhatsApp('Website Design & Development')">
-                        <i class="fab fa-whatsapp"></i>
-                        Get This Feature
-                    </button>
-                </div>
-
-                <div class="premium-feature">
-                    <div class="feature-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <h3 class="feature-title">Featured Listing</h3>
-                    <div class="feature-price">₦2,000/month</div>
-                    <p class="feature-description">Get your business featured at the top of search results</p>
-                    <div class="feature-benefits">
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Priority placement in search results</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Increased visibility and clicks</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Featured badge on your profile</span>
-                        </div>
-                    </div>
-                    <button class="contact-btn-large" onclick="contactWhatsApp('Featured Listing')">
-                        <i class="fab fa-whatsapp"></i>
-                        Get This Feature
-                    </button>
-                </div>
-
-                <div class="premium-feature">
-                    <div class="feature-icon">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <h3 class="feature-title">Search Boost</h3>
-                    <div class="feature-price">₦1,000/month</div>
-                    <p class="feature-description">Always appear at the top of search results</p>
-                    <div class="feature-benefits">
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Always appear first in searches</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Higher conversion rates</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Boosted badge on your profile</span>
-                        </div>
-                    </div>
-                    <button class="contact-btn-large" onclick="contactWhatsApp('Search Boost')">
-                        <i class="fab fa-whatsapp"></i>
-                        Get This Feature
-                    </button>
-                </div>
-
-                <div class="premium-feature">
-                    <div class="feature-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3 class="feature-title">Verified Badge</h3>
-                    <div class="feature-price">₦1,500/Month</div>
-                    <p class="feature-description">Build trust with customers with our verification badge</p>
-                    <div class="feature-benefits">
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Blue verification badge</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Increased customer trust</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Manual verification process</span>
-                        </div>
-                    </div>
-                    <button class="contact-btn-large" onclick="contactWhatsApp('Verified Badge')">
-                        <i class="fab fa-whatsapp"></i>
-                        Get This Feature
-                    </button>
-                </div>
-
-                <div class="premium-feature">
-                    <div class="feature-icon">
-                        <i class="fas fa-images"></i>
-                    </div>
-                    <h3 class="feature-title">Invoice, Recipt or Quotation</h3>
-                    <div class="feature-price">₦1,0000/page</div>
-                    <p class="feature-description">Generate high and great pdf format for all invoice,recipt or quotation</p>
-                    <div class="feature-benefits">
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>pdf invoice</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>pdf quotations</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>pdf recipts</span>
-                        </div>
-                    </div>
-                    <button class="contact-btn-large" onclick="contactWhatsApp('Invoice, Recipt or Quotation')">
-                        <i class="fab fa-whatsapp"></i>
-                        Get This Feature
-                    </button>
-                </div>
-
-                <div class="premium-feature">
-                    <div class="feature-icon">
-                        <i class="fas fa-qrcode"></i>
-                    </div>
-                    <h3 class="feature-title">QR Card</h3>
-                    <div class="feature-price">₦3,000</div>
-                    <p class="feature-description">Professional contact card with QR code</p>
-                    <div class="feature-benefits">
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>QR code linking to your WhatsApp</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Professional digital business card</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Easy sharing with customers</span>
-                        </div>
-                    </div>
-                    <button class="contact-btn-large" onclick="contactWhatsApp('QR Card')">
-                        <i class="fab fa-whatsapp"></i>
-                        Get This Feature
-                    </button>
-                </div>
-
-                <div class="premium-feature">
-                    <div class="feature-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <h3 class="feature-title">Map Featured</h3>
-                    <div class="feature-price">₦3,000/month</div>
-                    <p class="feature-description">Appear on our location map with a marker</p>
-                    <div class="feature-benefits">
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Visible on location map</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Custom marker with your logo</span>
-                        </div>
-                        <div class="benefit">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Increased local visibility</span>
-                        </div>
-                    </div>
-                    <button class="contact-btn-large" onclick="contactWhatsApp('Map Featured')">
-                        <i class="fab fa-whatsapp"></i>
-                        Get This Feature
-                    </button>
-                </div>
-            </div>
-
-            <div class="premium-contact">
-                <h3 class="contact-title">Contact Us for Premium Services</h3>
-                <div class="contact-info">
-                    <i class="fab fa-whatsapp"></i>
-                    <span>08086556841</span>
-                </div>
-                <p>Message us on WhatsApp to get started with any premium feature</p>
-                <button class="contact-btn-large" onclick="contactWhatsApp('General Inquiry')">
-                    <i class="fab fa-whatsapp"></i>
-                    Contact on WhatsApp
-                </button>
+                    <li class="nav-item">
+                        <a class="nav-link" href="market.html">Campus Boost Academy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-primary px-3 ms-2" href="register.html">Get Started</a>
+                    </li>
+                </ul>
             </div>
         </div>
+    </nav>
 
-        <nav class="bottom-nav">
-            <div class="nav-item active" data-page="home">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
-            </div>
-            <div class="nav-item" data-page="jobhunt">
-                <i class="fas fa-briefcase"></i>
-                <span>Job Hunt</span>
-            </div>
-            <div class="nav-item" data-page="search">
-                <i class="fas fa-search"></i>
-                <span>Search</span>
-            </div>
-            <div class="nav-item" data-page="premium">
-                <i class="fas fa-crown"></i>
-                <span>Premium</span>
-            </div>
-        </nav>
-
-        <div class="admin-panel">
-            <div class="admin-btn" id="adminBtn">
-                <i class="fas fa-plus"></i>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="requestModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">I Need a Service</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="serviceType">What service do you need?</label>
-                    <input type="text" id="serviceType" class="form-control" placeholder="e.g. Plumber, Tailor, Chef">
+    <!-- Hero Section -->
+    <section class="hero-section bg-gradient-primary text-white py-5">
+        <div class="container">
+            <div class="row align-items-center min-vh-75">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Boost Your Student Life 🎓</h1>
+                    <p class="lead mb-4">Everything you need to excel academically, manage finances, and connect with fellow students - all in one platform.</p>
+                    <div class="mb-4">
+                        <span class="badge bg-success fs-6 me-2">✨ 30-Day Free Trial</span>
+                        <span class="badge bg-warning fs-6">💰 Only ₦1000/month</span>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <a href="register.html" class="btn btn-light btn-lg px-4">Start Free Trial</a>
+                        <a href="#features" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="location">Your Location</label>
-                    <input type="text" id="location" class="form-control" placeholder="e.g. Lagos, Abuja">
-                </div>
-                <div class="form-group">
-                    <label for="budget">Budget Range</label>
-                    <input type="text" id="budget" class="form-control" placeholder="e.g. ₦5,000 - ₦10,000">
-                </div>
-                <div class="form-group">
-                    <label for="description">Additional Details</label>
-                    <textarea id="description" class="form-control" rows="3" placeholder="Describe what you need..."></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary close-modal">Cancel</button>
-                <button class="btn btn-primary" id="submitRequest">Submit Request</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Sample data for hustlers
-        const hustlersData = [
-            {
-                id: 1,
-                name: "Elite Fashion House",
-                category: "fashion",
-                location: "Ikeja, Lagos",
-                description: "Professional tailoring services for men and women. We deliver quality outfits for all occasions with quick turnaround time.",
-                price: 5000,
-                rating: 4.5,
-                ratingCount: 124,
-                image: "https://images.unsplash.com/photo-1588516903720-8ceb67f9ef84?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dGFpbG9yfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
-                verified: true,
-                featured: true,
-                searchBoost: false
-            },
-            {
-                id: 2,
-                name: "Tasty Bites Kitchen",
-                category: "food",
-                location: "Victoria Island, Lagos",
-                description: "Delicious homemade meals delivered to your doorstep. We specialize in local and continental dishes with fresh ingredients.",
-                price: 2500,
-                rating: 5,
-                ratingCount: 89,
-                image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Zm9vZCUyMGRlbGl2ZXJ5fGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
-                verified: true,
-                featured: false,
-                searchBoost: true
-            },
-            {
-                id: 3,
-                name: "Tech Guru Solutions",
-                category: "tech",
-                location: "Yaba, Lagos",
-                description: "Professional tech support, phone repairs, and software solutions. We fix all kinds of gadgets with warranty.",
-                price: 3000,
-                rating: 4.2,
-                ratingCount: 67,
-                image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dGVjaCUyMHJlcGFpcnN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
-                verified: true,
-                featured: false,
-                searchBoost: false
-            },
-            {
-                id: 4,
-                name: "Beauty by Temi",
-                category: "beauty",
-                location: "Lekki, Lagos",
-                description: "Professional makeup, hairstyling, and beauty services for all occasions. We come to your location.",
-                price: 8000,
-                rating: 4.8,
-                ratingCount: 156,
-                image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmVhdXR5JTIwc2Fsb258ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60",
-                verified: true,
-                featured: true,
-                searchBoost: false
-            },
-            {
-                id: 5,
-                name: "Fix It All Repairs",
-                category: "repairs",
-                location: "Surulere, Lagos",
-                description: "Home appliance repairs, plumbing, and electrical services. We fix it right the first time.",
-                price: 4000,
-                rating: 4.3,
-                ratingCount: 92,
-                image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmVwYWlyc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60",
-                verified: false,
-                featured: false,
-                searchBoost: true
-            },
-            {
-                id: 6,
-                name: "Home Comfort Services",
-                category: "home",
-                location: "Gbagada, Lagos",
-                description: "Cleaning, interior decoration, and home organization services. We make your home comfortable and beautiful.",
-                price: 6000,
-                rating: 4.6,
-                ratingCount: 78,
-                image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8aG9tZSUyMGRlY29yfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60",
-                verified: true,
-                featured: false,
-                searchBoost: false
-            }
-        ];
-
-        // Sample data for job requests
-        const jobsData = [
-            {
-                id: 1,
-                title: "Need a Tailor for Wedding Dress",
-                location: "Victoria Island, Lagos",
-                description: "I need an experienced tailor to create a custom wedding dress. Must have experience with lace and beadwork.",
-                budget: 50000,
-                category: "fashion"
-            },
-            {
-                id: 2,
-                title: "Catering for Office Event",
-                location: "Ikeja, Lagos",
-                description: "Looking for a caterer to provide lunch for 50 people at our office event next week. Both local and continental dishes preferred.",
-                budget: 75000,
-                category: "food"
-            },
-            {
-                id: 3,
-                title: "Website Development for Small Business",
-                location: "Remote",
-                description: "Need a web developer to create a simple e-commerce website for my fashion business. Should include payment integration.",
-                budget: 80000,
-                category: "tech"
-            },
-            {
-                id: 4,
-                title: "Makeup Artist for Traditional Wedding",
-                location: "Lekki, Lagos",
-                description: "Looking for a professional makeup artist for my traditional wedding next month. Must be experienced with traditional Nigerian makeup styles.",
-                budget: 25000,
-                category: "beauty"
-            },
-            {
-                id: 5,
-                title: "Phone Screen Replacement",
-                location: "Yaba, Lagos",
-                description: "Need someone to replace the screen of my iPhone 12. Must use original parts and provide warranty.",
-                budget: 15000,
-                category: "repairs"
-            },
-            {
-                id: 6,
-                title: "Home Cleaning Service",
-                location: "Ikoyi, Lagos",
-                description: "Looking for a reliable cleaning service for my 4-bedroom apartment. Need deep cleaning before moving in.",
-                budget: 20000,
-                category: "home"
-            }
-        ];
-
-        // DOM Elements
-        const homeContent = document.getElementById('homeContent');
-        const jobHuntContent = document.getElementById('jobHuntContent');
-        const searchContent = document.getElementById('searchContent');
-        const premiumContent = document.getElementById('premiumContent');
-        const hustlerCards = document.getElementById('hustlerCards');
-        const jobCards = document.getElementById('jobCards');
-        const searchResults = document.getElementById('searchResults');
-        const searchResultsCount = document.getElementById('searchResultsCount');
-        const categoryBtns = document.querySelectorAll('.category-btn');
-        const navItems = document.querySelectorAll('.nav-item');
-        const requestModal = document.getElementById('requestModal');
-        const adminBtn = document.getElementById('adminBtn');
-        const closeModalBtns = document.querySelectorAll('.close-modal');
-        const submitRequestBtn = document.getElementById('submitRequest');
-        const searchInput = document.getElementById('searchInput');
-        const searchButton = document.getElementById('searchButton');
-
-        // Initialize the app
-        function initApp() {
-            renderHustlers();
-            renderJobs();
-            setupEventListeners();
-        }
-
-        // Render hustlers to the page
-        function renderHustlers(filterCategory = 'all') {
-            hustlerCards.innerHTML = '';
-            
-            const filteredHustlers = filterCategory === 'all' 
-                ? hustlersData 
-                : hustlersData.filter(hustler => hustler.category === filterCategory);
-            
-            if (filteredHustlers.length === 0) {
-                hustlerCards.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-search"></i>
-                        <h3>No hustlers found</h3>
-                        <p>Try a different category or search term</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            filteredHustlers.forEach(hustler => {
-                const card = document.createElement('div');
-                card.className = 'hustler-card';
-                card.innerHTML = `
-                    <div class="card-header">
-                        <img src="${hustler.image}" alt="${hustler.name}" class="card-image">
-                        ${hustler.featured ? '<div class="card-badge">Featured</div>' : ''}
-                        ${hustler.searchBoost ? '<div class="card-badge" style="background: var(--success);">Search Boosted</div>' : ''}
-                        <div class="card-actions">
-                            <div class="card-action">
-                                <i class="fas fa-heart"></i>
-                            </div>
-                            <div class="card-action">
-                                <i class="fas fa-share-alt"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="hustler-name">
-                            <h3>${hustler.name}</h3>
-                            ${hustler.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
-                        </div>
-                        <div class="hustler-rating">
-                            <div class="stars">
-                                ${generateStars(hustler.rating)}
-                            </div>
-                            <span class="rating-count">(${hustler.ratingCount})</span>
-                        </div>
-                        <div class="hustler-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${hustler.location}</span>
-                        </div>
-                        <p class="hustler-description">${hustler.description}</p>
-                        <div class="card-footer">
-                            <div class="hustler-price">From ₦${hustler.price.toLocaleString()}</div>
-                            <button class="contact-btn" onclick="contactHustler('${hustler.name}')">
-                                <i class="fab fa-whatsapp"></i>
-                                Contact
-                            </button>
-                        </div>
-                    </div>
-                `;
-                hustlerCards.appendChild(card);
-            });
-        }
-
-        // Render job requests to the page
-        function renderJobs() {
-            jobCards.innerHTML = '';
-            
-            if (jobsData.length === 0) {
-                jobCards.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-briefcase"></i>
-                        <h3>No jobs available</h3>
-                        <p>Check back later for new job opportunities</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            jobsData.forEach(job => {
-                const card = document.createElement('div');
-                card.className = 'job-card';
-                card.innerHTML = `
-                    <div class="job-title">${job.title}</div>
-                    <div class="job-location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>${job.location}</span>
-                    </div>
-                    <p class="job-description">${job.description}</p>
-                    <div class="job-footer">
-                        <div class="job-budget">₦${job.budget.toLocaleString()}</div>
-                        <button class="apply-btn" onclick="applyForJob(${job.id})">Apply</button>
-                    </div>
-                `;
-                jobCards.appendChild(card);
-            });
-        }
-
-        // Perform search
-        function performSearch(query) {
-            searchResults.innerHTML = '';
-            
-            if (!query || query.trim() === '') {
-                searchResults.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-search"></i>
-                        <h3>Search for hustlers or services</h3>
-                        <p>Enter a search term to find what you're looking for</p>
-                    </div>
-                `;
-                searchResultsCount.textContent = '0 results';
-                return;
-            }
-            
-            const searchTerm = query.toLowerCase().trim();
-            
-            // Search in hustlers
-            const hustlerResults = hustlersData.filter(hustler => 
-                hustler.name.toLowerCase().includes(searchTerm) ||
-                hustler.description.toLowerCase().includes(searchTerm) ||
-                hustler.location.toLowerCase().includes(searchTerm) ||
-                hustler.category.toLowerCase().includes(searchTerm)
-            );
-            
-            // Search in jobs
-            const jobResults = jobsData.filter(job => 
-                job.title.toLowerCase().includes(searchTerm) ||
-                job.description.toLowerCase().includes(searchTerm) ||
-                job.location.toLowerCase().includes(searchTerm) ||
-                job.category.toLowerCase().includes(searchTerm)
-            );
-            
-            const totalResults = hustlerResults.length + jobResults.length;
-            searchResultsCount.textContent = `${totalResults} results`;
-            
-            if (totalResults === 0) {
-                searchResults.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-search"></i>
-                        <h3>No results found</h3>
-                        <p>Try different keywords or check the spelling</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Display hustler results
-            if (hustlerResults.length > 0) {
-                const hustlerSection = document.createElement('div');
-                hustlerSection.innerHTML = `
-                    <div class="section-header" style="margin-top: 20px;">
-                        <h3 class="section-title">Hustlers (${hustlerResults.length})</h3>
-                    </div>
-                `;
-                searchResults.appendChild(hustlerSection);
-                
-                hustlerResults.forEach(hustler => {
-                    const card = document.createElement('div');
-                    card.className = 'hustler-card';
-                    card.innerHTML = `
-                        <div class="card-header">
-                            <img src="${hustler.image}" alt="${hustler.name}" class="card-image">
-                            ${hustler.featured ? '<div class="card-badge">Featured</div>' : ''}
-                            ${hustler.searchBoost ? '<div class="card-badge" style="background: var(--success);">Search Boosted</div>' : ''}
-                        </div>
-                        <div class="card-body">
-                            <div class="hustler-name">
-                                <h3>${hustler.name}</h3>
-                                ${hustler.verified ? '<i class="fas fa-check-circle verified-badge"></i>' : ''}
-                            </div>
-                            <div class="hustler-rating">
-                                <div class="stars">
-                                    ${generateStars(hustler.rating)}
+                <div class="col-lg-6 text-center">
+                    <div class="hero-image">
+                        <div class="card shadow-lg border-0 mx-auto" style="max-width: 400px;">
+                            <div class="card-body p-4">
+                                <h5 class="text-dark">📊 Your Dashboard</h5>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar bg-primary" style="width: 75%"></div>
                                 </div>
-                                <span class="rating-count">(${hustler.ratingCount})</span>
-                            </div>
-                            <div class="hustler-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${hustler.location}</span>
-                            </div>
-                            <p class="hustler-description">${hustler.description}</p>
-                            <div class="card-footer">
-                                <div class="hustler-price">From ₦${hustler.price.toLocaleString()}</div>
-                                <button class="contact-btn" onclick="contactHustler('${hustler.name}')">
-                                    <i class="fab fa-whatsapp"></i>
-                                    Contact
-                                </button>
+                                <small class="text-muted">CGPA: 4.2/5.0</small>
                             </div>
                         </div>
-                    `;
-                    searchResults.appendChild(card);
-                });
-            }
-            
-            // Display job results
-            if (jobResults.length > 0) {
-                const jobSection = document.createElement('div');
-                jobSection.innerHTML = `
-                    <div class="section-header" style="margin-top: 20px;">
-                        <h3 class="section-title">Jobs (${jobResults.length})</h3>
                     </div>
-                `;
-                searchResults.appendChild(jobSection);
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Everything You Need to Succeed</h2>
+                <p class="text-muted">25+ powerful tools designed specifically for Nigerian students</p>
+                <div class="mb-3">
+                    <span class="badge bg-success fs-6 me-2">✨ 30-Day Free Trial for All Premium Features</span>
+                </div>
+            </div>
+            
+            <!-- Free Features -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <h3 class="text-center mb-4">🆓 Free Features (Always Available)</h3>
+                </div>
                 
-                jobResults.forEach(job => {
-                    const card = document.createElement('div');
-                    card.className = 'job-card';
-                    card.innerHTML = `
-                        <div class="job-title">${job.title}</div>
-                        <div class="job-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${job.location}</span>
+                <!-- Study Tools -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">📊</div>
+                            <h6>CGPA Calculator</h6>
+                            <small class="text-muted">Track your academic performance</small>
                         </div>
-                        <p class="job-description">${job.description}</p>
-                        <div class="job-footer">
-                            <div class="job-budget">₦${job.budget.toLocaleString()}</div>
-                            <button class="apply-btn" onclick="applyForJob(${job.id})">Apply</button>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">⏳</div>
+                            <h6>Basic Study Planner</h6>
+                            <small class="text-muted">Plan your study sessions</small>
                         </div>
-                    `;
-                    searchResults.appendChild(card);
-                });
-            }
-        }
-
-        // Generate star ratings
-        function generateStars(rating) {
-            let stars = '';
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 !== 0;
-            
-            for (let i = 0; i < fullStars; i++) {
-                stars += '<i class="fas fa-star"></i>';
-            }
-            
-            if (hasHalfStar) {
-                stars += '<i class="fas fa-star-half-alt"></i>';
-            }
-            
-            const emptyStars = 5 - Math.ceil(rating);
-            for (let i = 0; i < emptyStars; i++) {
-                stars += '<i class="far fa-star"></i>';
-            }
-            
-            return stars;
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Navigation
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const page = this.getAttribute('data-page');
-                    
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Hide all sections
-                    homeContent.style.display = 'none';
-                    jobHuntContent.style.display = 'none';
-                    searchContent.style.display = 'none';
-                    premiumContent.style.display = 'none';
-                    
-                    // Show selected section
-                    if (page === 'home') {
-                        homeContent.style.display = 'block';
-                    } else if (page === 'jobhunt') {
-                        jobHuntContent.style.display = 'block';
-                    } else if (page === 'search') {
-                        searchContent.style.display = 'block';
-                        // Perform search with current input value
-                        performSearch(searchInput.value);
-                    } else if (page === 'premium') {
-                        premiumContent.style.display = 'block';
-                    }
-                });
-            });
-
-            // Category filter
-            categoryBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const category = this.getAttribute('data-category');
-                    
-                    categoryBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    renderHustlers(category);
-                });
-            });
-
-            // Admin button - opens request service modal
-            adminBtn.addEventListener('click', function() {
-                requestModal.style.display = 'flex';
-            });
-
-            // Close modals
-            closeModalBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    requestModal.style.display = 'none';
-                });
-            });
-
-            // Submit request
-            submitRequestBtn.addEventListener('click', function() {
-                submitServiceRequest();
-            });
-
-            // Search functionality
-            searchButton.addEventListener('click', function() {
-                // Switch to search tab and perform search
-                navItems.forEach(nav => nav.classList.remove('active'));
-                document.querySelector('.nav-item[data-page="search"]').classList.add('active');
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">⏰</div>
+                            <h6>Simple Timer</h6>
+                            <small class="text-muted">Basic countdown timer</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">📝</div>
+                            <h6>Note-taking App</h6>
+                            <small class="text-muted">Basic text editor</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">✅</div>
+                            <h6>To-Do List</h6>
+                            <small class="text-muted">Task management</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">🔄</div>
+                            <h6>Unit Converter</h6>
+                            <small class="text-muted">Length, weight, temperature</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">📖</div>
+                            <h6>Dictionary</h6>
+                            <small class="text-muted">Basic word definitions</small>
+                        </div>
+                    </div>
+                </div>
                 
-                homeContent.style.display = 'none';
-                jobHuntContent.style.display = 'none';
-                searchContent.style.display = 'block';
-                premiumContent.style.display = 'none';
+            </div>
+
+            <!-- Premium Features -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <h3 class="text-center mb-4">💎 Premium Features (₦500/month after trial)</h3>
+                    <p class="text-center text-muted mb-4">Advanced tools with PDF export, analytics, and unlimited access</p>
+                </div>
                 
-                performSearch(searchInput.value);
-            });
+                <!-- Advanced Study Tools -->
+                <div class="col-12 mb-3">
+                    <h5 class="text-primary">📚 Advanced Study Tools</h5>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">⭐</div>
+                            <h6>Smart Study Planner</h6>
+                            <small class="text-muted">AI suggestions & reminders</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">🍅</div>
+                            <h6>Pomodoro Timer</h6>
+                            <small class="text-muted">25-min productivity sessions</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">📚</div>
+                            <h6>Flashcard Creator</h6>
+                            <small class="text-muted">Create & study flashcards</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">🧮</div>
+                            <h6>Scientific Calculator</h6>
+                            <small class="text-muted">Advanced calculations</small>
+                        </div>
+                    </div>
+                </div>
 
-            // Search on Enter key
-            searchInput.addEventListener('keyup', function(event) {
-                if (event.key === 'Enter') {
-                    // Switch to search tab and perform search
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    document.querySelector('.nav-item[data-page="search"]').classList.add('active');
-                    
-                    homeContent.style.display = 'none';
-                    jobHuntContent.style.display = 'none';
-                    searchContent.style.display = 'block';
-                    premiumContent.style.display = 'none';
-                    
-                    performSearch(searchInput.value);
-                }
-            });
+                <div class="col-lg-3 col-md-6 mb-4">
+    <div class="card h-100 border-success">
+        <div class="card-body text-center">
+            <div class="feature-icon mb-3">💰</div>
+            <h6>Save Box</h6>
+            <small class="text-muted">Game-style tool to record & control savings (we don’t collect money)</small>
+        </div>
+    </div>
+                </div>
 
-            // Close modal when clicking outside
-            window.addEventListener('click', (e) => {
-                if (e.target === requestModal) {
-                    requestModal.style.display = 'none';
-                }
-            });
-        }
+                <!-- Goal & Habit Management -->
+                <div class="col-12 mb-3 mt-4">
+                    <h5 class="text-primary">🎯 Goal & Habit Management</h5>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">🎯</div>
+                            <h6>Goal Tracker</h6>
+                            <small class="text-muted">Advanced progress tracking</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">🔄</div>
+                            <h6>Habit Tracker</h6>
+                            <small class="text-muted">Streak monitoring</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">📚</div>
+                            <h6>Vocabulary Builder</h6>
+                            <small class="text-muted">Pre-set word lists</small>
+                        </div>
+                    </div>
+                </div>
 
-        // Contact hustler via WhatsApp
-        function contactHustler(hustlerName) {
-            const message = `Hello, I'm interested in your services on Bizkonect. My name is [Your Name] and I'd like to know more about ${hustlerName}.`;
-            const encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/2348086556841?text=${encodedMessage}`, '_blank');
-        }
+                <!-- Academic Generators -->
+                <div class="col-12 mb-3 mt-4">
+                    <h5 class="text-primary">🎓 Academic Generators</h5>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">📅</div>
+                            <h6>Premium Timetable</h6>
+                            <small class="text-muted">PDF export + colorful formats</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">🧾</div>
+                            <h6>Report Card Generator</h6>
+                            <small class="text-muted">Professional PDF reports</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">👥</div>
+                            <h6>Attendance Generator</h6>
+                            <small class="text-muted">Multiple students + PDF</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mb-3">💰</div>
+                            <h6>Advanced Budget</h6>
+                            <small class="text-muted">Full analytics + PDF reports</small>
+                        </div>
+                    </div>
+                </div>
 
-        // Contact for premium features
-        function contactWhatsApp(feature) {
-            const message = `Hello, I'm interested in the ${feature} premium feature on Bizkonect. My name is [Your Name].`;
-            const encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/2348086556841?text=${encodedMessage}`, '_blank');
-        }
+               
+            </div>
 
-        // Apply for job
-        function applyForJob(jobId) {
-            const job = jobsData.find(j => j.id === jobId);
-            const message = `Hello, I'm interested in the job: "${job.title}" on Bizkonect. My name is [Your Name] and I believe I'm a good fit for this opportunity.`;
-            const encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/2348086556841?text=${encodedMessage}`, '_blank');
-        }
+           
+        </div>
+    </section>
 
-        // Submit service request
-        function submitServiceRequest() {
-            const serviceType = document.getElementById('serviceType').value;
-            const location = document.getElementById('location').value;
-            const budget = document.getElementById('budget').value;
-            const description = document.getElementById('description').value;
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Simple, Student-Friendly Pricing</h2>
+                <p class="text-muted">Start with a 30-day free trial, then just ₦500/month</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow border-0">
+                        <div class="card-body p-5 text-center">
+                            <div class="pricing-badge mb-3">
+                                <span class="badge bg-success fs-6">30-Day Free Trial</span>
+                            </div>
+                            <h3 class="fw-bold">Premium Access</h3>
+                            <div class="pricing-amount my-4">
+                                <span class="display-4 fw-bold text-primary">₦1000</span>
+                                <span class="text-muted">/month</span>
+                            </div>
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2">✅ All free features included</li>
+                                <li class="mb-2">✅ PDF generators & downloads</li>
+                                <li class="mb-2">✅ Advanced study planner</li>
+                                <li class="mb-2">✅ School Management System</li> 
+                                <li class="mb-2">✅ Company Mangement System</li>
+                                <li class="mb-2">✅ Inventory Management System</li>
+                            </ul>
+                            <a href="register.html" class="btn btn-primary btn-lg px-5">Start Free Trial</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            if (!serviceType || !location || !budget || !description) {
-                alert('Please fill in all fields');
-                return;
-            }
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="fw-bold">🚀 Campus Boost</h5>
+                    <p class="text-muted">Empowering Nigerian students to achieve academic excellence</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Connect With Us</h6>
+                    <div class="social-links">
+                        <a href="https://wa.me/2348086556841" class="text-white me-3">📱 WhatsApp</a>
+                        <a href="https://t.me/+Ec2r_TwSfuVlYTVk" class="text-white me-3">📱 Telegram</a>
+                        <a href="https://tiktok.com/@campus.boost1" class="text-white">🎵 TikTok</a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="text-center">
+                <small>&copy; 2024 Campus Boost. All rights reserved.</small>
+            </div>
+        </div>
+    </footer>
 
-            const message = `New Service Request on Bizkonect:\n\nService Needed: ${serviceType}\nLocation: ${location}\nBudget: ${budget}\nDetails: ${description}`;
-            const encodedMessage = encodeURIComponent(message);
-            window.open(`https://wa.me/2348086556841?text=${encodedMessage}`, '_blank');
-            
-            requestModal.style.display = 'none';
-            
-            // Reset form
-            document.getElementById('serviceType').value = '';
-            document.getElementById('location').value = '';
-            document.getElementById('budget').value = '';
-            document.getElementById('description').value = '';
-            
-            alert('Your request has been submitted! We will contact you shortly.');
-        }
-
-        // Initialize the app when the page loads
-        window.onload = initApp;
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
