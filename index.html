@@ -1,358 +1,724 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Boost - Boost Your Student Life</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BizNaija | Investor Ready OS</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <style>
+        /* --- BRAND PALETTE --- */
+        :root {
+            --bg-dark: #09090b;
+            --bg-panel: #18181b;
+            --bg-glass: rgba(24, 24, 27, 0.85);
+            --primary: #00ff9d; 
+            --secondary: #00b8d4;
+            --accent: #ff0055;
+            --whatsapp: #25D366;
+            --text-main: #ffffff;
+            --border: 1px solid rgba(255, 255, 255, 0.1);
+            --sidebar-width: 260px;
+        }
+
+        /* --- CORE STYLES --- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1, h2, h3, h4, h5, .font-display { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
+        .font-tech { font-family: 'Rajdhani', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- LAYOUT --- */
+        .app-layout { display: flex; height: 100vh; width: 100vw; }
+        
+        /* SIDEBAR (Mobile Optimized) */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-panel);
+            border-right: var(--border);
+            display: flex; flex-direction: column;
+            z-index: 1050; /* Above content */
+            transition: transform 0.3s ease-in-out;
+            height: 100%;
+        }
+        .sidebar-header { 
+            height: 80px; display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 20px; border-bottom: var(--border); 
+        }
+        .nav-items { flex: 1; overflow-y: auto; padding: 20px 10px; }
+        
+        .nav-btn {
+            padding: 12px 15px; margin: 4px 0; border-radius: 8px; color: #888;
+            cursor: pointer; display: flex; align-items: center; transition: 0.2s;
+            font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1.1rem;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .nav-btn.active { background: rgba(0, 255, 157, 0.1); color: var(--primary); border-left: 3px solid var(--primary); }
+        .nav-btn i { width: 30px; text-align: center; margin-right: 10px; }
+
+        /* Mobile Overlay */
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(3px);
+            z-index: 1040; display: none;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; }
+        .top-bar { 
+            height: 80px; border-bottom: var(--border); display: flex; align-items: center; 
+            justify-content: space-between; padding: 0 20px; background: var(--bg-glass); 
+            backdrop-filter: blur(10px); z-index: 100; 
+        }
+        .content-area { flex: 1; padding: 20px; overflow-y: auto; position: relative; }
+        .app-page { display: none; animation: fadeIn 0.3s ease; padding-bottom: 80px; }
+        .app-page.active { display: block; }
+
+        /* --- UI COMPONENTS --- */
+        .glass-card { background: var(--bg-panel); border: var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); margin-bottom: 20px; }
+        
+        /* High Contrast Inputs */
+        .form-control, .form-select { 
+            background: #222; border: 1px solid #444; color: #fff; padding: 12px; font-size: 1rem; 
+        }
+        .form-control:focus { background: #000; border-color: var(--primary); color: #fff; box-shadow: 0 0 0 2px rgba(0,255,157,0.2); }
+        .form-control::placeholder { color: #666; }
+
+        .btn-glow {
+            background: var(--primary); color: #000; border: none; font-weight: 700;
+            padding: 10px 25px; border-radius: 6px; font-family: 'Rajdhani', sans-serif;
+            letter-spacing: 1px; box-shadow: 0 0 15px rgba(0, 255, 157, 0.2); transition: 0.3s;
+        }
+        .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(0, 255, 157, 0.4); }
+
+        /* --- PROMPT STUDIO SCROLL --- */
+        .prompt-container {
+            height: calc(100vh - 220px); /* Dynamic height calculation */
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .prompt-container::-webkit-scrollbar { width: 8px; }
+        .prompt-container::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+        .prompt-container::-webkit-scrollbar-track { background: #111; }
+
+        .prompt-card { background: #121212; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 15px; transition: 0.2s; }
+        .prompt-card:hover { border-color: var(--primary); transform: translateX(5px); }
+
+        /* --- AI FAB --- */
+        .ai-fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #000; box-shadow: 0 0 20px rgba(0,255,157,0.5); cursor: pointer; z-index: 2000; }
+        .ai-modal { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; background: #000; border: 1px solid var(--primary); border-radius: 20px; z-index: 1999; display: none; flex-direction: column; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.9); }
+        .ai-body { flex: 1; padding: 15px; overflow-y: auto; }
+        .chat-msg { margin-bottom: 10px; padding: 10px; border-radius: 8px; font-size: 0.9rem; }
+        .bot-msg { background: #222; border-left: 3px solid var(--primary); color: #ddd; }
+        .user-msg { background: var(--primary); color: #000; align-self: flex-end; margin-left: auto; text-align: right; }
+        .ai-options { padding: 10px; border-top: 1px solid #333; display: flex; flex-wrap: wrap; gap: 5px; }
+        .ai-btn { background: #222; color: white; border: 1px solid #444; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; }
+        .ai-btn:hover { background: var(--primary); color: black; }
+
+        /* --- CALCULATOR VIEW --- */
+        .calc-view { display: none; animation: fadeIn 0.3s; }
+        .calc-view.active { display: block; }
+
+        /* --- MODALS (Bootstrap Dark Override) --- */
+        .modal-content { background-color: var(--bg-panel); border: 1px solid var(--border); color: #fff; }
+        .modal-header { border-bottom: 1px solid #333; }
+        .modal-footer { border-top: 1px solid #333; }
+        .btn-close { filter: invert(1); }
+
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .content-area { padding: 15px; }
+            .ai-modal { width: 90%; right: 5%; bottom: 100px; }
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-primary" href="#">
-                <span class="fs-3">🚀 Campus Boost</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#pricing">Pricing</a>
-                    </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="market.html">Campus Boost Academy</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-outline-primary px-3 ms-2" href="register.html">Get Started</a>
-                    </li>
-                </ul>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-cube text-primary fa-lg me-2"></i>
+                <span class="font-display fs-4">BIZ<span class="text-primary">NAIJA</span></span>
             </div>
+            <button class="btn btn-link text-white d-md-none" onclick="toggleSidebar()"><i class="fas fa-times fa-lg"></i></button>
+        </div>
+        <div class="nav-items">
+            <div class="nav-btn active" onclick="navTo('dashboard', this)"><i class="fas fa-chart-line"></i> Dashboard</div>
+            <div class="nav-btn" onclick="navTo('crm', this)"><i class="fas fa-users"></i> CRM & Leads</div>
+            <div class="nav-btn" onclick="navTo('ledger', this)"><i class="fas fa-wallet"></i> Finance Ledger</div>
+            <div class="nav-btn" onclick="navTo('tasks', this)"><i class="fas fa-check-double"></i> Task Manager</div>
+            <div class="nav-btn" onclick="navTo('menuMaker', this)"><i class="fas fa-utensils"></i> Menu Builder</div>
+            <div class="nav-btn" onclick="navTo('prompts', this)"><i class="fas fa-image"></i> Prompt Studio</div>
+            <div class="nav-btn" onclick="navTo('calculators', this)"><i class="fas fa-calculator"></i> Toolkit (9)</div>
+        </div>
+        <div class="p-3">
+            <small class="text-muted d-block text-center mb-2">v2.5 Investor Edition</small>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section bg-gradient-primary text-white py-5">
-        <div class="container">
-            <div class="row align-items-center min-vh-75">
-                <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-4">Boost Your Student Life 🎓</h1>
-                    <p class="lead mb-4">Everything you need to excel academically, manage finances, and connect with fellow students - all in one platform.</p>
-                    <div class="mb-4">
-                        <span class="badge bg-success fs-6 me-2">✨ 30-Day Free Trial</span>
-                        <span class="badge bg-warning fs-6">💰 Only ₦1000/month</span>
+    <div class="main-wrapper">
+        <header class="top-bar">
+            <div class="d-flex align-items-center">
+                <button class="btn text-white me-3 d-md-none" onclick="toggleSidebar()"><i class="fas fa-bars fa-lg"></i></button>
+                <h4 class="m-0 font-tech" id="pageTitle">DASHBOARD</h4>
+            </div>
+            <div class="font-tech text-primary fs-5" id="clock">00:00</div>
+        </header>
+
+        <div class="content-area">
+
+            <div id="dashboard" class="app-page active">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-8">
+                        <div class="glass-card bg-gradient d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #18181b 0%, #0f2e22 100%);">
+                            <div>
+                                <h2 class="font-display text-white">Welcome, Boss.</h2>
+                                <p class="text-secondary mb-0">Your business operations are running perfectly.</p>
+                            </div>
+                            <i class="fas fa-rocket fa-3x text-primary opacity-50"></i>
+                        </div>
                     </div>
-                    <div class="d-flex gap-3">
-                        <a href="register.html" class="btn btn-light btn-lg px-4">Start Free Trial</a>
-                        <a href="#features" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+                    <div class="col-md-4">
+                        <div class="glass-card text-center">
+                            <small class="font-tech text-muted">CURRENT NET WORTH</small>
+                            <h1 class="font-display text-primary mt-2" id="dashNetWorth">₦0.00</h1>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-6 text-center">
-                    <div class="hero-image">
-                        <div class="card shadow-lg border-0 mx-auto" style="max-width: 400px;">
-                            <div class="card-body p-4">
-                                <h5 class="text-dark">📊 Your Dashboard</h5>
-                                <div class="progress mb-3">
-                                    <div class="progress-bar bg-primary" style="width: 75%"></div>
-                                </div>
-                                <small class="text-muted">CGPA: 4.2/5.0</small>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="glass-card">
+                            <h5 class="font-tech mb-3">Quick Actions</h5>
+                            <button class="btn btn-outline-light w-100 mb-2 text-start" onclick="navTo('ledger')"><i class="fas fa-plus-circle text-success me-2"></i> Log Income</button>
+                            <button class="btn btn-outline-light w-100 mb-2 text-start" onclick="navTo('crm')"><i class="fas fa-user-plus text-secondary me-2"></i> Add Customer</button>
+                            <button class="btn btn-outline-light w-100 text-start" onclick="navTo('tasks')"><i class="fas fa-tasks text-warning me-2"></i> Create Task</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="glass-card">
+                            <h5 class="font-tech mb-3">System Health</h5>
+                            <div class="d-flex justify-content-between mb-2"><span>Database</span><span class="text-success"><i class="fas fa-check me-1"></i> Connected</span></div>
+                            <div class="d-flex justify-content-between mb-2"><span>AI Engine</span><span class="text-success"><i class="fas fa-check me-1"></i> Online</span></div>
+                            <div class="d-flex justify-content-between"><span>Security</span><span class="text-success"><i class="fas fa-lock me-1"></i> Encrypted</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="crm" class="app-page">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="font-display">Client Database</h3>
+                        <p class="text-muted small m-0">Manage your leads securely.</p>
+                    </div>
+                    <button class="btn btn-glow" data-bs-toggle="modal" data-bs-target="#addContactModal">
+                        <i class="fas fa-user-plus me-2"></i> Add New Client
+                    </button>
+                </div>
+
+                <div class="row g-3" id="crmList">
+                    </div>
+                <div id="crmEmpty" class="text-center text-muted mt-5" style="display:none;">
+                    <i class="fas fa-users fa-3x mb-3 opacity-25"></i>
+                    <p>No contacts yet. Add one to get started.</p>
+                </div>
+            </div>
+
+            <div id="ledger" class="app-page">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="glass-card">
+                            <h4 class="font-display mb-3 text-primary">New Transaction</h4>
+                            <input id="finDesc" class="form-control mb-2" placeholder="Description (e.g. Sales)">
+                            <input type="number" id="finAmount" class="form-control mb-2" placeholder="Amount (₦)">
+                            <input type="date" id="finDate" class="form-control mb-2">
+                            <select id="finType" class="form-select mb-3">
+                                <option value="income">Income (+)</option>
+                                <option value="expense">Expense (-)</option>
+                            </select>
+                            <button class="btn btn-glow w-100" onclick="addTransaction()">Log Entry</button>
+                            
+                            <hr class="border-secondary my-4">
+                            
+                            <h5 class="font-tech text-white">Export Report</h5>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-secondary btn-sm" onclick="genReport('daily')"><i class="fas fa-file-pdf me-2"></i> Daily PDF</button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="genReport('monthly')"><i class="fas fa-file-pdf me-2"></i> Monthly PDF</button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="genReport('yearly')"><i class="fas fa-file-pdf me-2"></i> Yearly PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="glass-card p-0 overflow-hidden">
+                            <table class="table table-dark table-hover m-0 align-middle">
+                                <thead class="bg-black"><tr><th>Date</th><th>Desc</th><th>Type</th><th>Amount</th><th></th></tr></thead>
+                                <tbody id="finTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tasks" class="app-page">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="font-display m-0">Task Manager</h3>
+                    <div class="d-flex gap-2">
+                        <input id="taskInput" class="form-control" style="width: 200px;" placeholder="New Task...">
+                        <button class="btn btn-glow" onclick="addTask()"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="row g-3" id="taskList"></div>
+            </div>
+
+            <div id="menuMaker" class="app-page">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="glass-card">
+                            <h4 class="font-display mb-3">Menu Editor</h4>
+                            <input id="menuItem" class="form-control mb-2" placeholder="Item Name">
+                            <input id="menuPrice" class="form-control mb-2" placeholder="Price (₦)">
+                            <textarea id="menuDesc" class="form-control mb-3" placeholder="Description"></textarea>
+                            <button class="btn btn-secondary w-100 mb-3" onclick="addMenuItem()">Add to Menu</button>
+                            <button class="btn btn-glow w-100" onclick="downloadMenuImage()"><i class="fas fa-camera me-2"></i> Download Image</button>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div id="menuPreview" class="p-5 border border-warning position-relative" style="background: #000; min-height: 500px;">
+                            <div class="text-center border-bottom border-warning pb-3 mb-4">
+                                <h1 class="font-display text-warning display-4">MENU</h1>
+                                <p class="text-white small letter-spacing-2">FRESH & PREMIUM</p>
+                            </div>
+                            <div id="menuList"></div>
+                            <div class="position-absolute bottom-0 start-0 w-100 text-center pb-3">
+                                <small class="text-muted">Powered by BizNaija</small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Everything You Need to Succeed</h2>
-                <p class="text-muted">25+ powerful tools designed specifically for Nigerian students</p>
-                <div class="mb-3">
-                    <span class="badge bg-success fs-6 me-2">✨ 30-Day Free Trial for All Premium Features</span>
-                </div>
-            </div>
-            
-            <!-- Free Features -->
-            <div class="row mb-5">
-                <div class="col-12">
-                    <h3 class="text-center mb-4">🆓 Free Features (Always Available)</h3>
+            <div id="prompts" class="app-page">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="font-display m-0">Prompt Studio</h3>
+                    <input id="promptSearch" class="form-control w-50" placeholder="Search 500+ prompts..." onkeyup="filterPrompts()">
                 </div>
                 
-                <!-- Study Tools -->
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">📊</div>
-                            <h6>CGPA Calculator</h6>
-                            <small class="text-muted">Track your academic performance</small>
-                        </div>
+                <div class="prompt-container custom-scrollbar" id="promptGrid">
                     </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">⏳</div>
-                            <h6>Basic Study Planner</h6>
-                            <small class="text-muted">Plan your study sessions</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">⏰</div>
-                            <h6>Simple Timer</h6>
-                            <small class="text-muted">Basic countdown timer</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">📝</div>
-                            <h6>Note-taking App</h6>
-                            <small class="text-muted">Basic text editor</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">✅</div>
-                            <h6>To-Do List</h6>
-                            <small class="text-muted">Task management</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">🔄</div>
-                            <h6>Unit Converter</h6>
-                            <small class="text-muted">Length, weight, temperature</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">📖</div>
-                            <h6>Dictionary</h6>
-                            <small class="text-muted">Basic word definitions</small>
-                        </div>
-                    </div>
-                </div>
-                
             </div>
 
-            <!-- Premium Features -->
-            <div class="row mb-5">
-                <div class="col-12">
-                    <h3 class="text-center mb-4">💎 Premium Features (₦500/month after trial)</h3>
-                    <p class="text-center text-muted mb-4">Advanced tools with PDF export, analytics, and unlimited access</p>
-                </div>
+            <div id="calculators" class="app-page">
+                <h3 class="font-display mb-4">Toolkit (9 Apps)</h3>
                 
-                <!-- Advanced Study Tools -->
-                <div class="col-12 mb-3">
-                    <h5 class="text-primary">📚 Advanced Study Tools</h5>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">⭐</div>
-                            <h6>Smart Study Planner</h6>
-                            <small class="text-muted">AI suggestions & reminders</small>
-                        </div>
+                <ul class="nav nav-pills mb-4 gap-2" id="calcTabs">
+                    <li class="nav-item"><button class="nav-link active btn-sm text-white border border-secondary" onclick="showCalc('c-pl')">Profit/Loss</button></li>
+                    <li class="nav-item"><button class="nav-link btn-sm text-white border border-secondary" onclick="showCalc('c-vat')">VAT</button></li>
+                    <li class="nav-item"><button class="nav-link btn-sm text-white border border-secondary" onclick="showCalc('c-loan')">Loan</button></li>
+                    <li class="nav-item"><button class="nav-link btn-sm text-white border border-secondary" onclick="showCalc('c-budget')">Budget</button></li>
+                    <li class="nav-item"><button class="nav-link btn-sm text-white border border-secondary" onclick="showCalc('c-cgpa')">CGPA</button></li>
+                    <li class="nav-item"><button class="nav-link btn-sm text-white border border-secondary" onclick="showCalc('c-tax')">Tax</button></li>
+                    <li class="nav-item"><button class="nav-link btn-sm text-white border border-secondary" onclick="showCalc('c-ot')">Overtime</button></li>
+                    <li class="nav-item"><button class="nav-link btn-sm text-white border border-secondary" onclick="showCalc('c-daily')">Daily Goal</button></li>
+                    <li class="nav-item"><button class="nav-link btn-sm text-white border border-secondary" onclick="showCalc('c-conv')">Converter</button></li>
+                </ul>
+
+                <div id="c-pl" class="calc-view active glass-card">
+                    <h4>Profit & Loss</h4>
+                    <div class="row g-2">
+                        <div class="col-4"><input id="pl-rev" class="form-control" placeholder="Revenue" oninput="runPL()"></div>
+                        <div class="col-4"><input id="pl-cogs" class="form-control" placeholder="COGS" oninput="runPL()"></div>
+                        <div class="col-4"><input id="pl-exp" class="form-control" placeholder="Expenses" oninput="runPL()"></div>
                     </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">🍅</div>
-                            <h6>Pomodoro Timer</h6>
-                            <small class="text-muted">25-min productivity sessions</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">📚</div>
-                            <h6>Flashcard Creator</h6>
-                            <small class="text-muted">Create & study flashcards</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">🧮</div>
-                            <h6>Scientific Calculator</h6>
-                            <small class="text-muted">Advanced calculations</small>
-                        </div>
-                    </div>
+                    <div id="pl-res" class="mt-3 text-center fs-3 font-tech text-white">₦0</div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 mb-4">
-    <div class="card h-100 border-success">
-        <div class="card-body text-center">
-            <div class="feature-icon mb-3">💰</div>
-            <h6>Save Box</h6>
-            <small class="text-muted">Game-style tool to record & control savings (we don’t collect money)</small>
+                <div id="c-vat" class="calc-view glass-card"><h4>VAT (7.5%)</h4><input id="vat-in" class="form-control mb-2" placeholder="Amount" oninput="runVAT()"><div id="vat-res" class="text-center fs-3 font-tech text-primary">₦0</div></div>
+                <div id="c-loan" class="calc-view glass-card"><h4>Loan Repayment</h4><input id="l-p" class="form-control mb-2" placeholder="Principal"><input id="l-r" class="form-control mb-2" placeholder="Rate %"><input id="l-n" class="form-control mb-2" placeholder="Months"><button class="btn btn-glow w-100" onclick="runLoan()">Calculate</button><div id="l-res" class="mt-2 text-center fs-3 font-tech text-primary"></div></div>
+                <div id="c-budget" class="calc-view glass-card"><h4>Budget 50/30/20</h4><input id="b-in" class="form-control" placeholder="Income" oninput="runBud()"><div id="b-res" class="mt-2 text-white text-center"></div></div>
+                <div id="c-cgpa" class="calc-view glass-card"><h4>CGPA</h4><input id="cg-pts" class="form-control mb-2" placeholder="Points"><input id="cg-un" class="form-control mb-2" placeholder="Units"><button class="btn btn-primary w-100" onclick="runCGPA()">Calc</button><div id="cg-res" class="mt-2 text-center fs-3 text-white"></div></div>
+                <div id="c-tax" class="calc-view glass-card"><h4>Tax Est.</h4><input id="tx-in" class="form-control" placeholder="Yearly Income" oninput="runTax()"><div id="tx-res" class="mt-2 text-center fs-3 text-danger"></div></div>
+                <div id="c-ot" class="calc-view glass-card"><h4>Overtime</h4><input id="ot-hr" class="form-control mb-2" placeholder="Hourly Pay"><input id="ot-hrs" class="form-control mb-2" placeholder="Hours"><button class="btn btn-primary w-100" onclick="runOT()">Calc</button><div id="ot-res" class="mt-2 text-center fs-3 text-success"></div></div>
+                <div id="c-daily" class="calc-view glass-card"><h4>Daily Goal</h4><input id="dg-mon" class="form-control mb-2" placeholder="Monthly Goal"><input id="dg-days" class="form-control mb-2" placeholder="Days"><button class="btn btn-primary w-100" onclick="runDaily()">Calc</button><div id="dg-res" class="mt-2 text-center fs-3 text-success"></div></div>
+                <div id="c-conv" class="calc-view glass-card"><h4>Converter</h4><input id="cv-in" class="form-control mb-2" placeholder="Value"><select id="cv-type" class="form-select mb-2"><option value="kg-lb">Kg to Lb</option><option value="m-ft">Meter to Feet</option></select><button class="btn btn-primary w-100" onclick="runConv()">Convert</button><div id="cv-res" class="mt-2 text-center fs-3 text-white"></div></div>
+
+            </div>
         </div>
     </div>
-                </div>
 
-                <!-- Goal & Habit Management -->
-                <div class="col-12 mb-3 mt-4">
-                    <h5 class="text-primary">🎯 Goal & Habit Management</h5>
+    <div class="modal fade" id="addContactModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-display">Add New Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">🎯</div>
-                            <h6>Goal Tracker</h6>
-                            <small class="text-muted">Advanced progress tracking</small>
-                        </div>
-                    </div>
+                <div class="modal-body">
+                    <input type="text" id="crmName" class="form-control mb-3" placeholder="Full Name">
+                    <input type="email" id="crmEmail" class="form-control mb-3" placeholder="Email Address">
+                    <input type="tel" id="crmPhone" class="form-control mb-3" placeholder="Phone Number">
                 </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">🔄</div>
-                            <h6>Habit Tracker</h6>
-                            <small class="text-muted">Streak monitoring</small>
-                        </div>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-glow" onclick="addContact()">Save Permanently</button>
                 </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">📚</div>
-                            <h6>Vocabulary Builder</h6>
-                            <small class="text-muted">Pre-set word lists</small>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Academic Generators -->
-                <div class="col-12 mb-3 mt-4">
-                    <h5 class="text-primary">🎓 Academic Generators</h5>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">📅</div>
-                            <h6>Premium Timetable</h6>
-                            <small class="text-muted">PDF export + colorful formats</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">🧾</div>
-                            <h6>Report Card Generator</h6>
-                            <small class="text-muted">Professional PDF reports</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">👥</div>
-                            <h6>Attendance Generator</h6>
-                            <small class="text-muted">Multiple students + PDF</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100 border-primary">
-                        <div class="card-body text-center">
-                            <div class="feature-icon mb-3">💰</div>
-                            <h6>Advanced Budget</h6>
-                            <small class="text-muted">Full analytics + PDF reports</small>
-                        </div>
-                    </div>
-                </div>
-
-               
             </div>
-
-           
         </div>
-    </section>
+    </div>
 
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-5 bg-light">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Simple, Student-Friendly Pricing</h2>
-                <p class="text-muted">Start with a 30-day free trial, then just ₦500/month</p>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="card shadow border-0">
-                        <div class="card-body p-5 text-center">
-                            <div class="pricing-badge mb-3">
-                                <span class="badge bg-success fs-6">30-Day Free Trial</span>
+    <div class="ai-fab" onclick="toggleAI()"><i class="fas fa-brain"></i></div>
+    <div class="ai-modal" id="naijaIQ">
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom border-secondary bg-dark">
+            <span class="font-tech text-primary">NAIJA IQ</span>
+            <i class="fas fa-times cursor-pointer" onclick="toggleAI()"></i>
+        </div>
+        <div class="ai-body" id="aiChat">
+            <div class="chat-msg bot-msg">Hello Boss! I am NaijaIQ. Ask me about your business or click an option below.</div>
+        </div>
+        <div class="ai-options" id="aiOptions"></div>
+        <div class="p-2 bg-dark border-top border-secondary">
+            <a href="https://whatsapp.com/channel/0029VbC9opfFsn0lKuwJTm1o" target="_blank" class="btn btn-success w-100 btn-sm fw-bold"><i class="fab fa-whatsapp"></i> JOIN CHANNEL</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        /* --- STATE MANAGEMENT --- */
+        const store = {
+            contacts: JSON.parse(localStorage.getItem('biz_contacts')) || [],
+            ledger: JSON.parse(localStorage.getItem('biz_ledger')) || [],
+            tasks: JSON.parse(localStorage.getItem('biz_tasks')) || [],
+            menu: JSON.parse(localStorage.getItem('biz_menu')) || []
+        };
+
+        const save = (key) => {
+            localStorage.setItem(`biz_${key}`, JSON.stringify(store[key]));
+            updateUI();
+        };
+
+        /* --- NAVIGATION --- */
+        function navTo(pageId, btn) {
+            document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.getElementById('pageTitle').innerText = pageId.toUpperCase();
+            if(btn) {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            // If on mobile, close sidebar after clicking
+            if(window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('sidebarOverlay').classList.remove('active');
+            }
+        }
+
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sidebarOverlay');
+            sb.classList.toggle('active');
+            ov.classList.toggle('active');
+        }
+
+        setInterval(() => document.getElementById('clock').innerText = new Date().toLocaleTimeString(), 1000);
+
+        /* --- CRM LOGIC --- */
+        function addContact() {
+            const name = document.getElementById('crmName').value;
+            const email = document.getElementById('crmEmail').value;
+            const phone = document.getElementById('crmPhone').value;
+            if(name) {
+                store.contacts.push({ id: Date.now(), name, email, phone });
+                save('contacts');
+                document.getElementById('crmName').value = ''; document.getElementById('crmEmail').value = ''; document.getElementById('crmPhone').value = '';
+                
+                // Close Modal
+                const modalEl = document.getElementById('addContactModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
+            }
+        }
+
+        /* --- LEDGER & PDF REPORTS --- */
+        function addTransaction() {
+            const desc = document.getElementById('finDesc').value;
+            const amt = parseFloat(document.getElementById('finAmount').value);
+            const type = document.getElementById('finType').value;
+            const date = document.getElementById('finDate').value || new Date().toISOString().split('T')[0];
+            
+            if(desc && amt) {
+                store.ledger.push({ id: Date.now(), date, desc, amt, type });
+                save('ledger');
+                document.getElementById('finDesc').value = ''; document.getElementById('finAmount').value = '';
+            }
+        }
+
+        function genReport(period) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const now = new Date();
+            const data = store.ledger.filter(item => {
+                const iDate = new Date(item.date);
+                if(period === 'daily') return iDate.toDateString() === now.toDateString();
+                if(period === 'monthly') return iDate.getMonth() === now.getMonth() && iDate.getFullYear() === now.getFullYear();
+                if(period === 'yearly') return iDate.getFullYear() === now.getFullYear();
+                return true;
+            });
+
+            doc.setFillColor(0, 0, 0); doc.rect(0, 0, 210, 20, 'F');
+            doc.setTextColor(0, 255, 157); doc.setFontSize(16); doc.text("BizNaija Financial Report", 14, 13);
+            doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.text(`Period: ${period.toUpperCase()}`, 14, 30);
+
+            const rows = data.map(d => [d.date, d.desc, d.type.toUpperCase(), d.amt.toLocaleString()]);
+            doc.autoTable({
+                head: [['Date', 'Description', 'Type', 'Amount (NGN)']],
+                body: rows,
+                startY: 35,
+                theme: 'grid',
+                headStyles: { fillColor: [0, 0, 0], textColor: [0, 255, 157] }
+            });
+
+            let income = data.filter(d=>d.type=='income').reduce((a,b)=>a+b.amt,0);
+            let expense = data.filter(d=>d.type=='expense').reduce((a,b)=>a+b.amt,0);
+            let net = income - expense;
+            
+            let finalY = doc.lastAutoTable.finalY + 10;
+            doc.text(`Total Income: ${income.toLocaleString()}`, 14, finalY);
+            doc.text(`Total Expense: ${expense.toLocaleString()}`, 14, finalY + 7);
+            doc.setFontSize(14); doc.setTextColor(net >= 0 ? 0 : 255, net >= 0 ? 150 : 0, 0);
+            doc.text(`Net Profit: ${net.toLocaleString()}`, 14, finalY + 15);
+
+            doc.save(`BizNaija_${period}_report.pdf`);
+        }
+
+        /* --- TASKS --- */
+        function addTask() {
+            const txt = document.getElementById('taskInput').value;
+            if(txt) {
+                store.tasks.push({ id: Date.now(), text: txt, done: false });
+                save('tasks');
+                document.getElementById('taskInput').value = '';
+            }
+        }
+        function toggleTask(id) {
+            const t = store.tasks.find(x => x.id === id);
+            if(t) { t.done = !t.done; save('tasks'); }
+        }
+        function deleteTask(id) {
+            store.tasks = store.tasks.filter(x => x.id !== id);
+            save('tasks');
+        }
+
+        /* --- MENU BUILDER --- */
+        function addMenuItem() {
+            const n = document.getElementById('menuItem').value;
+            const p = document.getElementById('menuPrice').value;
+            const d = document.getElementById('menuDesc').value;
+            if(n) {
+                store.menu.push({ id: Date.now(), n, p, d });
+                save('menu');
+            }
+        }
+        function downloadMenuImage() {
+            const element = document.getElementById('menuPreview');
+            html2canvas(element, { backgroundColor: '#000000', scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'BizNaija_Menu.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        /* --- PROMPT STUDIO (SCROLLING ENABLED) --- */
+        const promptsList = [];
+        const categories = ['Photography', 'Logo Design', '3D Render', 'Web UI', 'Fashion', 'Architecture'];
+        for(let i=1; i<=500; i++) {
+            const cat = categories[Math.floor(Math.random() * categories.length)];
+            promptsList.push({
+                cat: cat,
+                text: `Prompt ${i}: Professional ${cat} shot of a Nigerian futuristic concept, 8k resolution, cinematic lighting, ultra-detailed, photorealistic, trending on artstation.`
+            });
+        }
+
+        function renderPrompts(filter="") {
+            const container = document.getElementById('promptGrid');
+            container.innerHTML = "";
+            const filtered = promptsList.filter(p => p.text.toLowerCase().includes(filter.toLowerCase()));
+            
+            filtered.forEach(p => {
+                container.innerHTML += `
+                    <div class="prompt-card">
+                        <span class="badge bg-secondary mb-2">${p.cat}</span>
+                        <p class="text-white mb-2 small">${p.text}</p>
+                        <button class="btn btn-sm btn-outline-success w-100" onclick="navigator.clipboard.writeText('${p.text}'); alert('Copied!')"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                `;
+            });
+        }
+        function filterPrompts() { renderPrompts(document.getElementById('promptSearch').value); }
+
+        /* --- CALCULATORS LOGIC --- */
+        function showCalc(id) {
+            document.querySelectorAll('.calc-view').forEach(e => e.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('#calcTabs .nav-link').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        function runPL() {
+            const r = parseFloat(document.getElementById('pl-rev').value)||0;
+            const c = parseFloat(document.getElementById('pl-cogs').value)||0;
+            const e = parseFloat(document.getElementById('pl-exp').value)||0;
+            document.getElementById('pl-res').innerText = '₦' + (r-c-e).toLocaleString();
+        }
+        function runVAT() {
+            const v = parseFloat(document.getElementById('vat-in').value)||0;
+            document.getElementById('vat-res').innerText = '₦' + (v * 0.075).toLocaleString();
+        }
+        function runLoan() {
+            const p = parseFloat(document.getElementById('l-p').value);
+            const r = parseFloat(document.getElementById('l-r').value)/100/12;
+            const n = parseFloat(document.getElementById('l-n').value);
+            if(p&&r&&n) {
+                const x = Math.pow(1+r, n);
+                document.getElementById('l-res').innerText = '₦' + ((p*x*r)/(x-1)).toLocaleString();
+            }
+        }
+        function runBud() {
+            const i = parseFloat(document.getElementById('b-in').value)||0;
+            document.getElementById('b-res').innerText = `Needs: ₦${(i*0.5).toLocaleString()} | Wants: ₦${(i*0.3).toLocaleString()} | Save: ₦${(i*0.2).toLocaleString()}`;
+        }
+        function runCGPA() {
+            const p = parseFloat(document.getElementById('cg-pts').value)||0;
+            const u = parseFloat(document.getElementById('cg-un').value)||1;
+            document.getElementById('cg-res').innerText = (p/u).toFixed(2);
+        }
+        function runTax() {
+            const i = parseFloat(document.getElementById('tx-in').value)||0;
+            const taxable = i - (200000 + (i*0.2)); 
+            document.getElementById('tx-res').innerText = '₦' + (taxable > 0 ? (taxable * 0.07).toLocaleString() : 0);
+        }
+        function runOT() {
+            const p = parseFloat(document.getElementById('ot-hr').value)||0;
+            const h = parseFloat(document.getElementById('ot-hrs').value)||0;
+            document.getElementById('ot-res').innerText = '₦' + (p*h*1.5).toLocaleString();
+        }
+        function runDaily() {
+            const m = parseFloat(document.getElementById('dg-mon').value)||0;
+            const d = parseFloat(document.getElementById('dg-days').value)||1;
+            document.getElementById('dg-res').innerText = '₦' + (m/d).toLocaleString();
+        }
+        function runConv() {
+            const v = parseFloat(document.getElementById('cv-in').value)||0;
+            const t = document.getElementById('cv-type').value;
+            document.getElementById('cv-res').innerText = t === 'kg-lb' ? (v*2.204).toFixed(2) + ' lbs' : (v*3.28).toFixed(2) + ' ft';
+        }
+
+        /* --- NAIJA IQ --- */
+        const aiKnowledge = [
+            { txt: "Profit Calculation", resp: "Use the Ledger tool. Income minus Expenses." },
+            { txt: "Marketing Tips", resp: "Use the Prompt Studio to create viral images for Instagram." },
+            { txt: "Contact Support", resp: "Click the Join Channel button below!" }
+        ];
+        function toggleAI() {
+            const m = document.getElementById('naijaIQ');
+            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+            if(m.style.display === 'flex') {
+                const optDiv = document.getElementById('aiOptions');
+                optDiv.innerHTML = '';
+                aiKnowledge.forEach(k => {
+                    optDiv.innerHTML += `<div class="ai-btn" onclick="aiReply('${k.resp}')">${k.txt}</div>`;
+                });
+            }
+        }
+        function aiReply(txt) {
+            const chat = document.getElementById('aiChat');
+            chat.innerHTML += `<div class="chat-msg bot-msg">${txt}</div>`;
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        /* --- UI UPDATER --- */
+        function updateUI() {
+            // CRM
+            const cList = document.getElementById('crmList');
+            cList.innerHTML = '';
+            document.getElementById('crmEmpty').style.display = store.contacts.length ? 'none' : 'block';
+            
+            store.contacts.forEach(c => {
+                cList.innerHTML += `
+                    <div class="col-md-6">
+                        <div class="glass-card p-3">
+                            <h5 class="text-white mb-1">${c.name}</h5>
+                            <small class="text-muted d-block">${c.email}</small>
+                            <small class="text-primary">${c.phone}</small>
+                        </div>
+                    </div>`;
+            });
+
+            // Ledger
+            const fTable = document.getElementById('finTable');
+            fTable.innerHTML = '';
+            let net = 0;
+            store.ledger.forEach(l => {
+                net += (l.type === 'income' ? l.amt : -l.amt);
+                fTable.innerHTML += `<tr><td>${l.date}</td><td>${l.desc}</td><td class="${l.type=='income'?'text-success':'text-danger'}">${l.type}</td><td>₦${l.amt.toLocaleString()}</td><td><i class="fas fa-trash text-secondary cursor-pointer" onclick="store.ledger=store.ledger.filter(x=>x.id!=${l.id});save('ledger')"></i></td></tr>`;
+            });
+            document.getElementById('dashNetWorth').innerText = '₦' + net.toLocaleString();
+
+            // Tasks
+            const tList = document.getElementById('taskList');
+            tList.innerHTML = '';
+            store.tasks.forEach(t => {
+                tList.innerHTML += `
+                    <div class="col-md-6">
+                        <div class="glass-card p-3 d-flex justify-content-between align-items-center ${t.done ? 'opacity-50' : ''}">
+                            <span class="${t.done ? 'text-decoration-line-through text-muted' : 'text-white'}">${t.text}</span>
+                            <div>
+                                <i class="fas fa-check-circle me-2 ${t.done ? 'text-success' : 'text-secondary'} cursor-pointer" onclick="toggleTask(${t.id})"></i>
+                                <i class="fas fa-trash text-danger cursor-pointer" onclick="deleteTask(${t.id})"></i>
                             </div>
-                            <h3 class="fw-bold">Premium Access</h3>
-                            <div class="pricing-amount my-4">
-                                <span class="display-4 fw-bold text-primary">₦1000</span>
-                                <span class="text-muted">/month</span>
-                            </div>
-                            <ul class="list-unstyled mb-4">
-                                <li class="mb-2">✅ All free features included</li>
-                                <li class="mb-2">✅ PDF generators & downloads</li>
-                                <li class="mb-2">✅ Advanced study planner</li>
-                                <li class="mb-2">✅ School Management System</li> 
-                                <li class="mb-2">✅ Company Mangement System</li>
-                                <li class="mb-2">✅ Inventory Management System</li>
-                            </ul>
-                            <a href="register.html" class="btn btn-primary btn-lg px-5">Start Free Trial</a>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                    </div>`;
+            });
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="fw-bold">🚀 Campus Boost</h5>
-                    <p class="text-muted">Empowering Nigerian students to achieve academic excellence</p>
-                </div>
-                <div class="col-md-6">
-                    <h6>Connect With Us</h6>
-                    <div class="social-links">
-                        <a href="https://wa.me/2348086556841" class="text-white me-3">📱 WhatsApp</a>
-                        <a href="https://t.me/+Ec2r_TwSfuVlYTVk" class="text-white me-3">📱 Telegram</a>
-                        <a href="https://tiktok.com/@campus.boost1" class="text-white">🎵 TikTok</a>
+            // Menu
+            const mList = document.getElementById('menuList');
+            mList.innerHTML = '';
+            store.menu.forEach(m => {
+                mList.innerHTML += `
+                    <div class="d-flex justify-content-between mb-3 border-bottom border-warning pb-2">
+                        <div><h4 class="text-warning m-0 font-display">${m.n}</h4><small class="text-white">${m.d}</small></div>
+                        <h4 class="text-white font-tech">₦${parseInt(m.p).toLocaleString()}</h4>
                     </div>
-                </div>
-            </div>
-            <hr class="my-3">
-            <div class="text-center">
-                <small>&copy; 2024 Campus Boost. All rights reserved.</small>
-            </div>
-        </div>
-    </footer>
+                `;
+            });
+        }
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        // Init
+        renderPrompts();
+        updateUI();
+
+    </script>
 </body>
 </html>
