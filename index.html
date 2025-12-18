@@ -115,6 +115,20 @@
         /* Doc Gen Table */
         .doc-table th { background-color: #222; color: var(--primary); font-family: 'Rajdhani'; }
         .doc-table td input { background: transparent; border: none; color: white; width: 100%; }
+        
+        /* Preview Modal Styles (Paper Look) */
+        .paper-preview {
+            background: white;
+            color: black;
+            padding: 40px;
+            font-family: 'Inter', sans-serif;
+            border-radius: 4px;
+        }
+        .paper-preview h2, .paper-preview h3, .paper-preview h4 { color: #000; }
+        .paper-preview table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .paper-preview th { background: #eee; text-align: left; padding: 8px; border-bottom: 2px solid #000; }
+        .paper-preview td { padding: 8px; border-bottom: 1px solid #ddd; }
+        .paper-preview .total-row { font-weight: bold; font-size: 1.2rem; border-top: 2px solid #000; }
     </style>
 </head>
 <body>
@@ -314,9 +328,14 @@
                             <input id="docCliName" class="form-control mb-2" placeholder="Client Name">
                             <input id="docCliAddr" class="form-control mb-2" placeholder="Client Address">
 
-                            <button class="btn btn-glow w-100 mt-3" onclick="generatePDF()">
-                                <i class="fas fa-download me-2"></i> Download PDF
-                            </button>
+                            <div class="d-grid gap-2 mt-4">
+                                <button class="btn btn-outline-primary" onclick="showDocPreview()">
+                                    <i class="fas fa-eye me-2"></i> Preview Document
+                                </button>
+                                <button class="btn btn-glow" onclick="generatePDF()">
+                                    <i class="fas fa-download me-2"></i> Download PDF
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -445,6 +464,25 @@
     </div>
 </div>
 
+<div class="modal fade" id="docPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark border-secondary">
+            <div class="modal-header border-dark">
+                <h5 class="modal-title text-white font-tech">Document Preview</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-secondary p-4">
+                <div class="paper-preview shadow" id="printArea">
+                    </div>
+            </div>
+            <div class="modal-footer border-dark">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Keep Editing</button>
+                <button class="btn btn-primary" onclick="generatePDF()">Download PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // --- CORE DATA & STATE ---
@@ -455,7 +493,7 @@
         menuItems: []
     };
 
-    const PROMPTS = []; // Populated dynamically
+    const PROMPTS = []; 
 
     // --- INIT ---
     window.onload = () => {
@@ -552,57 +590,27 @@
         document.getElementById('taskCount').innerText = `${pending} Pending`;
     }
 
-    // --- PROMPT STUDIO (1000+ GENERATOR) ---
+    // --- PROMPT STUDIO ---
     function generatePrompts() {
-        const industries = [
-            'Real Estate in Lagos', 'POS Business', 'Fashion Brand', 'Poultry Farm', 
-            'Crypto Trading', 'Logistics/Delivery', 'Skincare Brand', 'Food Vendor', 
-            'Tech Startup', 'Import/Export'
-        ];
+        const industries = ['Real Estate', 'POS', 'Fashion', 'Poultry', 'Crypto', 'Logistics', 'Skincare', 'Food'];
+        const categories = ['Marketing', 'Finance', 'Strategy', 'Social Media'];
         
-        const categories = ['Marketing', 'Finance', 'Strategy', 'Social Media', 'Legal', 'Sales', 'HR'];
-        
-        const templates = [
-            "Write a {cat} plan for a {ind} starting with ₦500k.",
-            "Generate 5 Instagram content ideas for a {ind} focusing on {cat}.",
-            "How can a {ind} optimize {cat} to reduce costs in Nigeria?",
-            "Draft a WhatsApp broadcast message for {cat} for a {ind}.",
-            "Create a 30-day {cat} roadmap for a {ind} targeting Gen Z.",
-            "Write a cold email pitch for {cat} services to a {ind}.",
-            "What are the major {cat} risks for a {ind} in 2025?",
-            "Explain how to handle {cat} challenges for a {ind} during fuel scarcity.",
-            "Design a {cat} checklist for launching a {ind}."
-        ];
-        
-        // Loop to generate massive variety
         let count = 0;
-        // 1. Generate based on combinations
         industries.forEach(ind => {
             categories.forEach(cat => {
-                templates.forEach(temp => {
-                    const text = temp.replace('{cat}', cat).replace('{ind}', ind);
-                    PROMPTS.push({ cat: cat, text: text });
-                    count++;
-                });
+                PROMPTS.push({ cat: cat, text: `Write a ${cat} plan for a ${ind} business in Nigeria.` });
+                PROMPTS.push({ cat: cat, text: `Generate 5 Instagram content ideas for a ${ind} brand.` });
             });
         });
-
-        // 2. Add Generic High-Value Prompts to hit numbers
-        for(let i=0; i<400; i++) {
-            const cat = categories[i % categories.length];
-            PROMPTS.push({
-                cat: cat,
-                text: `Advanced ${cat} Strategy #${i+1}: Detailed analysis of market trends in Nigeria for Q${(i%4)+1} 2025.`
-            });
-        }
+        // Fill remainder for demo
+        for(let i=0; i<50; i++) PROMPTS.push({ cat: 'General', text: `Business strategy tip #${i+1} for Nigerian founders.`});
     }
 
     function renderPrompts() {
         const q = document.getElementById('promptSearch').value.toLowerCase();
         const c = document.getElementById('promptContainer');
         c.innerHTML = '';
-        // Limit display to 40 for DOM performance, but search searches ALL
-        const filtered = PROMPTS.filter(p => p.text.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q)).slice(0, 50);
+        const filtered = PROMPTS.filter(p => p.text.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q)).slice(0, 40);
         
         filtered.forEach(p => {
             c.innerHTML += `
@@ -647,24 +655,25 @@
             const i = parseFloat(document.getElementById('t_inv').value) || 0;
             if(i > 0) document.getElementById('r_roi').innerText = (((g-i)/i)*100).toFixed(1);
         }
-        if(type === 'disc') { // Fix for discount
+        if(type === 'disc') {
              const o = parseFloat(document.getElementById('t_orig').value) || 0;
              const d = parseFloat(document.getElementById('t_disc').value) || 0;
              document.getElementById('r_disc').innerText = (o - (o * (d/100))).toLocaleString();
         }
     }
 
-    // --- DOC GENERATOR (INVOICE/RECEIPT) ---
+    // --- DOC GENERATOR (INVOICE/RECEIPT) - UPDATED LOGIC ---
     function addDocRow() {
         const tbody = document.querySelector('#itemTable tbody');
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><input class="desc" placeholder="Item name"></td>
-            <td><input type="number" class="qty" placeholder="1" oninput="calcDocTotal()"></td>
+            <td><input type="number" class="qty" placeholder="1" oninput="calcDocTotal()" value="1"></td>
             <td><input type="number" class="price" placeholder="0" oninput="calcDocTotal()"></td>
             <td><i class="fas fa-times text-danger" style="cursor:pointer" onclick="this.closest('tr').remove(); calcDocTotal()"></i></td>
         `;
         tbody.appendChild(tr);
+        calcDocTotal(); // Recalculate immediately
     }
 
     function calcDocTotal() {
@@ -675,11 +684,76 @@
             total += (q * p);
         });
         document.getElementById('docTotal').innerText = total.toLocaleString(undefined, {minimumFractionDigits:2});
-        return total;
+    }
+
+    // NEW: Generate Preview Function
+    function showDocPreview() {
+        const type = document.getElementById('docType').value;
+        const bizName = document.getElementById('docBizName').value || "Your Business Name";
+        const bizPhone = document.getElementById('docBizPhone').value || "Phone Number";
+        const cliName = document.getElementById('docCliName').value || "Client Name";
+        const cliAddr = document.getElementById('docCliAddr').value || "Client Address";
+        const date = document.getElementById('docDate').innerText;
+        const id = document.getElementById('docId').innerText;
+        const total = document.getElementById('docTotal').innerText;
+
+        let rowsHtml = '';
+        document.querySelectorAll('#itemTable tbody tr').forEach(tr => {
+            const d = tr.querySelector('.desc').value;
+            const q = tr.querySelector('.qty').value;
+            const p = tr.querySelector('.price').value;
+            if(d) {
+                const rowTotal = (parseFloat(q||0) * parseFloat(p||0)).toLocaleString();
+                rowsHtml += `<tr><td>${d}</td><td>${q}</td><td>${p}</td><td>${rowTotal}</td></tr>`;
+            }
+        });
+
+        const html = `
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid black; padding-bottom:10px; margin-bottom:20px;">
+                <div>
+                    <h2 style="margin:0;">${bizName}</h2>
+                    <small>${bizPhone}</small>
+                </div>
+                <div style="text-align:right;">
+                    <h1 style="margin:0; color:#444;">${type}</h1>
+                    <small>#${id}</small><br>
+                    <small>${date}</small>
+                </div>
+            </div>
+            
+            <div style="margin-bottom:30px;">
+                <strong>BILL TO:</strong><br>
+                ${cliName}<br>
+                ${cliAddr}
+            </div>
+
+            <table>
+                <thead>
+                    <tr><th>Item Description</th><th width="15%">Qty</th><th width="20%">Price</th><th width="20%">Total</th></tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+            </table>
+
+            <div class="text-end mt-4">
+                <h3>Total: ₦${total}</h3>
+            </div>
+            
+            <div class="text-center mt-5" style="border-top:1px solid #ddd; padding-top:10px;">
+                <small>Thank you for your business!</small>
+            </div>
+        `;
+
+        document.getElementById('printArea').innerHTML = html;
+        const modal = new bootstrap.Modal(document.getElementById('docPreviewModal'));
+        modal.show();
     }
 
     async function generatePDF() {
         const { jsPDF } = window.jspdf;
+        if (!jsPDF) { alert("PDF Library not loaded. Check internet."); return; }
+
         const doc = new jsPDF();
         
         const type = document.getElementById('docType').value;
@@ -693,34 +767,45 @@
         doc.text(type, 105, 20, { align: 'center' });
         
         doc.setFontSize(12);
-        doc.text(bizName, 20, 40);
+        doc.text(bizName, 15, 40);
         doc.setFontSize(10);
-        doc.text(bizPhone, 20, 45);
+        doc.text(bizPhone, 15, 45);
         
         doc.setFontSize(12);
         doc.text("To:", 140, 40);
         doc.text(cliName, 140, 45);
+        doc.setFontSize(10);
         doc.text(document.getElementById('docCliAddr').value, 140, 50);
 
-        doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 60);
+        doc.text(`Date: ${new Date().toLocaleDateString()}`, 15, 60);
+        doc.text(`ID: #${document.getElementById('docId').innerText}`, 15, 65);
         
         // Table data
         const rows = [];
         document.querySelectorAll('#itemTable tbody tr').forEach(tr => {
             const d = tr.querySelector('.desc').value;
-            const q = tr.querySelector('.qty').value;
-            const p = tr.querySelector('.price').value;
-            const t = (q*p).toLocaleString();
-            if(d) rows.push([d, q, p, t]);
+            const q = tr.querySelector('.qty').value || 0;
+            const p = tr.querySelector('.price').value || 0;
+            const t = (parseFloat(q)*parseFloat(p)).toLocaleString();
+            if(d) rows.push([d, q, parseFloat(p).toLocaleString(), t]);
         });
-        rows.push(['', '', 'TOTAL', document.getElementById('docTotal').innerText]);
+        
+        const total = document.getElementById('docTotal').innerText;
+        rows.push(['', '', 'TOTAL (NGN)', total]);
 
         doc.autoTable({
-            startY: 70,
+            startY: 75,
             head: [['Item', 'Qty', 'Price', 'Total']],
             body: rows,
             theme: 'grid',
-            headStyles: { fillColor: [0, 255, 157], textColor: [0,0,0] }
+            headStyles: { fillColor: [0, 0, 0], textColor: [255,255,255] }, // Black header for professionalism
+            columnStyles: { 3: { halign: 'right', fontStyle: 'bold' } },
+            didParseCell: function (data) {
+                if (data.row.index === rows.length - 1) {
+                    data.cell.styles.fontStyle = 'bold';
+                    data.cell.styles.fillColor = [240, 240, 240];
+                }
+            }
         });
 
         // Watermark
@@ -729,10 +814,10 @@
             doc.setPage(i);
             doc.setFontSize(10);
             doc.setTextColor(150);
-            doc.text('Created for free by BizNaija OS - biznaija.netlify.app', 105, 285, { align: 'center' });
+            doc.text('Generated by BizNaija OS', 105, 285, { align: 'center' });
         }
 
-        doc.save(`${type}_BizNaija.pdf`);
+        doc.save(`${type}_${cliName}_BizNaija.pdf`);
     }
 
     // --- MENU DESIGNER ---
@@ -746,7 +831,6 @@
         if(item.n && item.p) {
             DB.menuItems.push(item);
             renderMenuPreview();
-            // Clear inputs
             document.getElementById('mItem').value = '';
             document.getElementById('mDesc').value = '';
             document.getElementById('mPrice').value = '';
@@ -761,7 +845,6 @@
     function renderMenuPreview() {
         const c = document.getElementById('menuItemsContainer');
         c.innerHTML = '';
-        // Group by category
         const cats = {};
         DB.menuItems.forEach(i => {
             if(!cats[i.c]) cats[i.c] = [];
